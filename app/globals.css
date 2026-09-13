@@ -88,13 +88,19 @@
 }
 
 @layer base {
+  /* The sky itself: a soft lift behind the title, dark at every edge.
+     Fixed, so it is anchored to the screen rather than stretched down the
+     whole document. The star field sits over it and under everything
+     else, which is only possible while the body has no ground of its
+     own: an opaque body would paint over a negative z-index. */
   html {
-    background: var(--ground);
+    background: radial-gradient(ellipse 90% 60% at 50% 34%, #141c17 0%, var(--ground) 72%) fixed;
+    background-color: var(--ground);
     color-scheme: dark;
   }
 
   body {
-    background: var(--ground);
+    background: transparent;
     color: var(--moss);
     font-family: var(--font-body);
     font-size: var(--type-size);
@@ -270,6 +276,62 @@
 /* A hairline between the closing sections, in the dark green. */
 .rule-top {
   border-top: 1px solid var(--hairline);
+}
+
+/* ------------------------------------------------------------------ */
+/* Night sky                                                           */
+/* ------------------------------------------------------------------ */
+
+/* Behind the whole page, and behind every section's content: a negative
+   z-index, which paints above the ground and below the rest. Fixed, so
+   the sky stays put while the page scrolls over it. */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  opacity: 0.62;
+  pointer-events: none;
+}
+
+/* One element, several hundred box-shadows, each shadow a star. The list
+   arrives as --shadows from components/StarField.tsx. The ::after is the
+   same field again, one field-height below, so as the layer rises the
+   copy takes its place and the loop never shows a seam. */
+.stars,
+.stars::after {
+  position: absolute;
+  left: 0;
+  background: transparent;
+  box-shadow: var(--shadows);
+}
+
+.stars {
+  top: 0;
+  will-change: transform;
+}
+
+.stars::after {
+  content: "";
+  top: 2000px;
+}
+
+.stars-1,
+.stars-1::after {
+  width: 1px;
+  height: 1px;
+}
+
+.stars-2,
+.stars-2::after {
+  width: 2px;
+  height: 2px;
+}
+
+.stars-3,
+.stars-3::after {
+  width: 3px;
+  height: 3px;
 }
 
 /* ------------------------------------------------------------------ */
@@ -457,6 +519,28 @@
     transition:
       opacity 1.4s var(--ease) var(--reveal-delay, 0ms),
       transform 1.4s var(--ease) var(--reveal-delay, 0ms);
+  }
+
+  /* The sky drifts upward, the near layers faster than the far, so the
+     three pass one another. The distance is one field height, which is
+     where the ::after copy is waiting. */
+  .stars-1 {
+    animation: star-rise 50s linear infinite;
+  }
+  .stars-2 {
+    animation: star-rise 100s linear infinite;
+  }
+  .stars-3 {
+    animation: star-rise 150s linear infinite;
+  }
+
+  @keyframes star-rise {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-2000px);
+    }
   }
 
   /* The fire breathes: each bloom swells and settles at its own pace. */

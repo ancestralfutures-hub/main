@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import Grain from "@/components/Grain";
 import Header from "@/components/Header";
 import RevealObserver from "@/components/RevealObserver";
+import StarField from "@/components/StarField";
 import { siteConfig } from "@/lib/content";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
@@ -56,8 +57,11 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${instrument.variable} ${bricolage.variable}`}>
-      <body className="min-h-screen bg-ground font-body text-body text-moss">
+      {/* No ground on the body: the sky is on <html>, and an opaque body
+          would paint over the star field behind it. */}
+      <body className="min-h-screen font-body text-body text-moss">
         <RevealObserver />
+        <StarField />
         <Grain />
         <Header />
         <main>{children}</main>
