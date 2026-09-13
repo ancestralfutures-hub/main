@@ -1,0 +1,29 @@
+{
+  "siteConfig": {
+    "name": "Ancestral Futures",
+    "project": "DARÉ",
+    "tagline": "A sonic installation by Shumba Maasai",
+    "metaTitle": "DARÉ — A sonic installation by Shumba Maasai",
+    "metaDescription": "DARÉ, a sonic installation by Shumba Maasai. London, October 2026. Presented by Ancestral Futures. Shoes off. Phones outside. Enter the Daré.",
+    "url": "https://ancestralfutures.com"
+  },
+  "navigation": [
+    {
+      "name": "The Daré",
+      "href": "#dare"
+    },
+    {
+      "name": "Artist",
+      "href": "#artist"
+    },
+    {
+      "name": "Sign up",
+      "href": "#signup"
+    }
+  ],
+  "footer": {
+    "presentedBy": "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe in London.",
+    "copyright": "© 2026 Ancestral Futures",
+    "socials": []
+  }
+}

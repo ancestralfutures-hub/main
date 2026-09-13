@@ -1,0 +1,36 @@
+{
+  "hero": {
+    "title": "DARÉ",
+    "subtitle": "A sonic installation by Shumba Maasai",
+    "when": "October 2026",
+    "where": "London"
+  },
+  "about": {
+    "title": "The Daré",
+    "paragraphs": [
+      "A daré is a place of gathering. In Shona life it is where a community sits together to listen, to speak and to settle what matters: in the round, close to the ground, with a fire at the centre.",
+      "For one week in October 2026 a daré is built in London and filled with sound. Step inside and the city falls away. The work moves around you in the dark, and asks only that you sit with it."
+    ]
+  },
+  "artist": {
+    "title": "The Artist",
+    "name": "Shumba Maasai",
+    "bio": "Shumba Maasai is a Zimbabwean-born, London-based artist working across music, sound and performance. DARÉ is his first installation."
+  },
+  "rules": {
+    "title": "The way in",
+    "lines": ["Shoes off.", "Phones outside.", "Enter the Daré."]
+  },
+  "signup": {
+    "title": "Be there",
+    "lede": "Dates, the door and the way in, when they are announced. Leave your email and you will hear first.",
+    "form": {
+      "label": "Email",
+      "placeholder": "your@email.com",
+      "submit": "Keep me posted",
+      "sending": "Sending",
+      "success": "You're on the list. Thank you.",
+      "error": "That did not go through. Please try again."
+    }
+  }
+}
