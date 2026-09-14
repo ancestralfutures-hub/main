@@ -24,7 +24,7 @@
     "title": "Sign up",
     "lede": "Sign up below for first access to announcements, tickets and future experiences of Daré.",
     "form": {
-      "action": "",
+      "action": "https://e98512d6.sibforms.com/serve/MUIFAExlCxchxMmKARVrktm6EAMX-Qa3GLnJoa5q1bpxEI-F27LV7j0-8fmPKFRHJ6_IpoYyXK5_PvEix3iZr6Sg780RBBtWax2AgSE_5Wrmis9SsLwuFebN52jZqTajXzXvImR6HDBDW_vUgUTGntyAeusxBE4kkfL__LTGpvaXM8hOO0XMArd2rew7SYxTF8BIYjpRzzZjZc2u_w==",
       "label": "Email",
       "placeholder": "your@email.com",
       "submit": "Keep me posted",
