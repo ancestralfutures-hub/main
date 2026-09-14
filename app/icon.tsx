@@ -17,7 +17,7 @@ export default function Icon() {
           background: "#0b0d0c",
           color: "#3f8f55",
           fontSize: 44,
-          fontWeight: 800,
+          fontWeight: 400,
           fontFamily: "sans-serif",
         }}
       >

@@ -4,10 +4,15 @@
   DARÉ
   ------------------------------------------------------------------
   Green type on a near-black ground, an ember glowing low in the dark,
-  and grain over everything, as on the poster. Body copy is one sans at
-  one size. The display face carries the title and the rules. Motion is
-  slow and small, and every animation is switched off under
+  and grain over everything, as on the poster. One typeface at one
+  weight carries the whole site, from the title down to the captions.
+  Motion is slow and small, and every animation is switched off under
   prefers-reduced-motion.
+
+  Halyard Pro is licensed from Darden Studio and is not bundled, so no
+  @font-face is declared for it: a declaration for a missing file costs a
+  failed request on every page. Both stacks below name it first and fall
+  through to Figtree, the free stand-in. See public/fonts/README.md.
 
   The layout is the same as iandiworldwide.org: full-height screens, a
   four-column grid with the heading in the first column and the copy in
@@ -59,9 +64,12 @@
   --color-dusk: var(--dusk);
   --color-ember: var(--ember);
 
+  /* Two names for one face, so a component can say which job it is doing
+     even though both resolve the same today. Halyard's optical sizes are
+     what would tell them apart once the licensed files are installed. */
   --font-*: initial;
-  --font-body: var(--font-instrument), "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--font-bricolage), "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Halyard Text", "Halyard Pro", var(--font-figtree), "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Halyard Display", "Halyard Pro", var(--font-figtree), "Helvetica Neue", Arial, sans-serif;
 
   --text-*: initial;
   --text-body: var(--type-size);
@@ -71,9 +79,10 @@
   --text-rule: var(--size-rule);
   --text-rule--line-height: 1.02;
 
+  /* One weight. Halyard Regular is the face the poster is set in, and
+     nothing on the site is asked to shout louder than it does. */
   --font-weight-*: initial;
   --font-weight-regular: 400;
-  --font-weight-heavy: 800;
 
   --spacing-xs: var(--space-xs);
   --spacing-sm: var(--space-sm);
@@ -212,23 +221,24 @@
   color: var(--green);
 }
 
-/* The title. Heavy, tight, and as wide as the screen allows. */
+/* The title. Regular like everything else, tight, and as wide as the
+   screen allows. Size does the work that weight would otherwise do. */
 .title {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 400;
   font-size: var(--size-title);
-  line-height: 0.86;
-  letter-spacing: -0.03em;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
   color: var(--green);
 }
 
-/* The rules: the display face, a step up, one line each. */
+/* The rules and the two short lines: a step up, one line each. */
 .rule-line {
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 400;
   font-size: var(--size-rule);
-  line-height: 1.02;
-  letter-spacing: -0.01em;
+  line-height: 1.06;
+  letter-spacing: 0;
   text-transform: uppercase;
   color: var(--green);
 }
@@ -242,7 +252,7 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--font-display);
-  font-weight: 800;
+  font-weight: 400;
   font-size: var(--size-caption);
   letter-spacing: 0.28em;
   text-transform: uppercase;

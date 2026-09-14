@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google";
+import { Figtree } from "next/font/google";
 import Footer from "@/components/Footer";
 import Grain from "@/components/Grain";
 import Header from "@/components/Header";
@@ -9,20 +9,20 @@ import { siteConfig } from "@/lib/content";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
-// Body: a plain grotesque, self-hosted by next/font.
-const instrument = Instrument_Sans({
-  variable: "--font-instrument",
+/*
+  One typeface for everything, at one weight.
+
+  The face is Halyard Pro Regular, which is licensed from Darden Studio
+  and so is not bundled here. Figtree is the stand-in: the same geometric
+  skeleton, the same tall x-height, free, and self-hosted by next/font.
+  Both stacks in globals.css name Halyard first, so the moment the licensed
+  files are installed the site takes them without a code change. See
+  public/fonts/README.md.
+*/
+const figtree = Figtree({
+  variable: "--font-figtree",
   subsets: ["latin"],
   weight: "400",
-  display: "swap",
-});
-
-// Title and rules: a grotesque with ink traps, heavy, close to the
-// poster's lettering. 400 carries the section headings.
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
-  subsets: ["latin"],
-  weight: ["400", "800"],
   display: "swap",
 });
 
@@ -56,7 +56,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${instrument.variable} ${bricolage.variable}`}>
+    <html lang="en" className={figtree.variable}>
       {/* No ground on the body: the sky is on <html>, and an opaque body
           would paint over the star field behind it. */}
       <body className="min-h-screen font-body text-body text-moss">

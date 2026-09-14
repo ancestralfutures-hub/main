@@ -5,8 +5,9 @@ import { siteUrl } from "@/lib/site-url";
 /*
   The card shown when the site is shared: the title in green on the dark,
   the line beneath it, the ember low in the frame and the address. Drawn
-  once at build time. The display face is fetched from Google Fonts then;
-  if that fails the card is still drawn, in the default face.
+  once at build time. Figtree, the stand-in for Halyard Pro, is fetched
+  from Google Fonts then; if that fails the card is still drawn, in the
+  default face.
 */
 export const alt = siteConfig.metaTitle;
 export const size = { width: 1200, height: 630 };
@@ -32,11 +33,11 @@ async function googleFont(family: string, weight: number) {
 }
 
 export default async function Image() {
-  const display = await googleFont("Bricolage Grotesque", 800);
+  const display = await googleFont("Figtree", 400);
   const fonts = display
-    ? [{ name: "Bricolage Grotesque", data: display, weight: 800 as const, style: "normal" as const }]
+    ? [{ name: "Figtree", data: display, weight: 400 as const, style: "normal" as const }]
     : [];
-  const face = display ? "Bricolage Grotesque" : "sans-serif";
+  const face = display ? "Figtree" : "sans-serif";
 
   return new ImageResponse(
     (
@@ -61,7 +62,7 @@ export default async function Image() {
             style={{
               fontFamily: face,
               fontSize: 250,
-              fontWeight: 800,
+              fontWeight: 400,
               lineHeight: 0.86,
               letterSpacing: "-0.03em",
             }}

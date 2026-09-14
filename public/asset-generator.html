@@ -7,7 +7,9 @@
 <title>DARÉ · Asset Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,800&family=Instrument+Sans:wght@400&display=swap" rel="stylesheet">
+<!-- Figtree stands in for Halyard Pro, which is licensed and not bundled.
+     Installed Halyard is used first when present. See /fonts/README.md. -->
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400&display=swap" rel="stylesheet">
 <style>
 /*
   A tool for whoever is making the posts, not a page of the site. It draws
@@ -22,8 +24,8 @@
   --moss:#b8c3b5; --dusk:#6f8b74; --hairline:#2a3a2f;
   --ember:#d4602b; --ember-glow:#f0904f; --ember-deep:#7a2f12;
   --caption:11.5px; --pad:14.4px; --pad-md:28.8px;
-  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
-  --body:'Instrument Sans','Helvetica Neue',Arial,sans-serif;
+  --display:'Halyard Display','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif;
+  --body:'Halyard Text','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif;
 }
 * { box-sizing:border-box; }
 body {
@@ -116,7 +118,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
 
 <header class="top">
   <div>
-    <h1 style="font-weight:800;font-size:16px;letter-spacing:-.01em;">DARÉ</h1>
+    <h1 style="font-size:16px;letter-spacing:-.01em;">DARÉ</h1>
     <p class="caps" style="color:var(--dusk);">Asset generator</p>
   </div>
   <div class="top-right">
@@ -319,8 +321,8 @@ const PALETTE = {
   bone:'#e6e2d6', moss:'#b8c3b5', dusk:'#6f8b74',
   ember:'#d4602b', emberGlow:'#f0904f', emberDeep:'#7a2f12',
 };
-const FONT_DISPLAY = "'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif";
-const FONT_BODY = "'Instrument Sans','Helvetica Neue',Arial,sans-serif";
+const FONT_DISPLAY = "'Halyard Display','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif";
+const FONT_BODY = "'Halyard Text','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif";
 
 // The five kept on screen. Each preview is scaled down; the file is full size.
 const FMT = {
@@ -611,7 +613,7 @@ function measureBlocks(ctx, base, scale, maxWidth) {
 
   if (S.title.trim()) {
     const size = base * 0.17 * (S.titleScale / 100) * scale;
-    ctx.font = `800 ${size}px ${FONT_DISPLAY}`;
+    ctx.font = `400 ${size}px ${FONT_DISPLAY}`;
     blocks.push({
       kind:'title', size, ascent:size * 0.76, lh:size * 0.94,
       lines: wrapLines(ctx, S.title.trim().toUpperCase(), maxWidth),
@@ -686,7 +688,7 @@ function drawText(ctx, w, h) {
 
   for (const [i, block] of m.blocks.entries()) {
     if (i) top += m.gap;
-    const weight = block.kind === 'title' ? 800 : 400;
+    const weight = 400;
     const face = block.kind === 'title' ? FONT_DISPLAY : FONT_BODY;
     ctx.font = `${weight} ${block.size}px ${face}`;
     for (const line of block.lines) {
@@ -730,7 +732,7 @@ function drawChrome(ctx, w, h) {
   ctx.fillStyle = S.text;
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
-  ctx.font = `800 ${size}px ${FONT_DISPLAY}`;
+  ctx.font = `400 ${size}px ${FONT_DISPLAY}`;
   fillTracked(ctx, 'ANCESTRAL FUTURES', pad, pad + size, size * 0.28);
 }
 
