@@ -8,9 +8,9 @@
   "about": {
     "title": "The Daré",
     "paragraphs": [
-      "A daré is a place of gathering. In Shona life it is where a community sits together to listen, to speak and to settle what matters: in the round, close to the ground, with a fire at the centre.",
-      "For one week in October 2026 a daré is built in London and filled with sound. Step inside and the city falls away. The work moves around you in the dark, and asks only that you sit with it."
-    ]
+      "Daré creates a space to encounter knowledge through sound, memory, heritage and presence, offering audiences a way to listen beyond information and reconnect with what can only be understood through experience."
+    ],
+    "statement": ["A sonic refuge.", "A gathering of memory, feeling and imagination."]
   },
   "artist": {
     "title": "The Artist",
@@ -23,7 +23,7 @@
   },
   "signup": {
     "title": "Be there",
-    "lede": "Dates, the door and the way in, when they are announced. Leave your email and you will hear first.",
+    "lede": "Sign up below for first access to announcements, tickets and future experiences of Daré.",
     "form": {
       "label": "Email",
       "placeholder": "your@email.com",
