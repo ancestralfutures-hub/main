@@ -25,7 +25,7 @@ npm run dev
 - The typeface is Halyard Pro SemiBold, standing in as Figtree until it is
   licensed. See `public/fonts/README.md`.
 - The drawers open from any link to `#about` or `#signup`, so
-  `ancestralfutures.com/#signup` goes straight to the form, from an
+  `www.ancestralfutures.co.uk/#signup` goes straight to the form, from an
   Instagram bio for instance. Back, Escape and Close all shut them.
 - The asset generator for social posts is at `/asset-generator.html`.
 
@@ -45,25 +45,30 @@ Until a domain is attached the site is at
 
 ## The domain
 
-In **Settings > Pages > Custom domain**, enter the domain and save. Then add
-these records wherever the domain's DNS is managed:
+The site's address is **www.ancestralfutures.co.uk**, registered with IONOS.
+The DNS there already points at GitHub:
 
 | Type | Host | Value |
 |---|---|---|
-| A | @ | 185.199.108.153 |
-| A | @ | 185.199.109.153 |
-| A | @ | 185.199.110.153 |
-| A | @ | 185.199.111.153 |
-| AAAA | @ | 2606:50c0:8000::153 |
-| AAAA | @ | 2606:50c0:8001::153 |
-| AAAA | @ | 2606:50c0:8002::153 |
-| AAAA | @ | 2606:50c0:8003::153 |
+| A | @ | 185.199.108.153, .109.153, .110.153, .111.153 |
 | CNAME | www | ancestralfutures-hub.github.io |
 
-Remove any other A, AAAA or CNAME records on `@` and `www` first, such as a
-Squarespace site or a forwarding rule. Once GitHub shows the domain as
-verified, tick **Enforce HTTPS**. Then re-run the workflow from the
-Actions tab, so the site is rebuilt for the domain's root.
+GitHub will only attach a domain to one repository. If it reports the
+domain as already taken, verify it on the account that owns this
+repository, which releases it from anywhere else:
+
+1. Signed in as **ancestralfutures-hub**, open your account's
+   **Settings > Pages > Add a domain** and enter `ancestralfutures.co.uk`.
+2. GitHub shows a TXT record. In IONOS, under **Domains & SSL > the domain >
+   DNS**, add it: type TXT, host `_github-pages-challenge-ancestralfutures-hub`,
+   value as shown.
+3. Back in GitHub, press **Verify**.
+4. In this repository, **Settings > Pages > Custom domain**: enter
+   `www.ancestralfutures.co.uk` and save.
+5. Once the DNS check passes, tick **Enforce HTTPS**, then re-run the
+   deploy from the Actions tab so the site is rebuilt for the domain's root.
+
+The address the site builds its links from is `url` in `content/site.json`.
 
 ## Sign-up (Brevo)
 
