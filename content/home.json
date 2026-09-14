@@ -2,11 +2,10 @@
   "hero": {
     "title": "DARÉ",
     "subtitle": "A sonic installation by Shumba Maasai",
-    "when": "October 2026",
-    "where": "London"
+    "when": "October 2026"
   },
   "about": {
-    "title": "The Daré",
+    "title": "About",
     "paragraphs": [
       "Daré creates a space to encounter knowledge through sound, memory, heritage and presence, offering audiences a way to listen beyond information and reconnect with what can only be understood through experience."
     ],
@@ -22,15 +21,17 @@
     "lines": ["Shoes off.", "Phones outside.", "Enter the Daré."]
   },
   "signup": {
-    "title": "Be there",
+    "title": "Sign up",
     "lede": "Sign up below for first access to announcements, tickets and future experiences of Daré.",
     "form": {
+      "action": "",
       "label": "Email",
       "placeholder": "your@email.com",
       "submit": "Keep me posted",
       "sending": "Sending",
       "success": "You're on the list. Thank you.",
-      "error": "That did not go through. Please try again."
+      "error": "That did not go through. Please check your connection and try again.",
+      "notReady": "Sign-up opens very soon. Please check back shortly."
     }
   }
 }

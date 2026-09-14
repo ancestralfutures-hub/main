@@ -1,21 +1,21 @@
 import AboutSection from "@/components/sections/AboutSection";
-import ArtistSection from "@/components/sections/ArtistSection";
 import HeroSection from "@/components/sections/HeroSection";
-import RulesSection from "@/components/sections/RulesSection";
 import SignupSection from "@/components/sections/SignupSection";
 
 /*
-  One page, read from top to bottom: the title and the fire, what a daré
-  is, who made this one, the three rules, and the way to hear first. The
-  venue and the dates are not on it yet; the month is.
+  Kept deliberately clean for now: the logo and the hut, what the Daré is,
+  and the way to hear first. The month is on it; the venue and the dates
+  are not.
+
+  The artist and the three rules are built and waiting in
+  components/sections (ArtistSection, RulesSection), with their words
+  still in content/home.json. Import them here to bring them back.
 */
 export default function Home() {
   return (
     <>
       <HeroSection />
       <AboutSection />
-      <ArtistSection />
-      <RulesSection />
       <SignupSection />
     </>
   );

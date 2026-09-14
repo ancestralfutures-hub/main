@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>DARÉ · Asset Generator</title>
+<link rel="icon" href="icon.png" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Figtree stands in for Halyard Pro, which is licensed and not bundled.
@@ -160,7 +161,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
       </div>
       <div class="field">
         <div class="field-label"><span>Foot left</span></div>
-        <input id="inFootL" value="London">
+        <input id="inFootL" value="">
       </div>
       <div class="field">
         <div class="field-label"><span>Foot right</span></div>
@@ -173,8 +174,8 @@ select { border:1px solid var(--hairline); padding:.4em; }
       <div class="field">
         <div class="field-label"><span>Where the words sit</span></div>
         <div class="pos-grid" id="posGrid">
-          <button class="pos-cell active" data-pos="tl">TL</button>
-          <button class="pos-cell" data-pos="tc">TC</button>
+          <button class="pos-cell" data-pos="tl">TL</button>
+          <button class="pos-cell active" data-pos="tc">TC</button>
           <button class="pos-cell" data-pos="tr">TR</button>
           <button class="pos-cell" data-pos="ml">ML</button>
           <button class="pos-cell" data-pos="mc">MC</button>
@@ -189,9 +190,8 @@ select { border:1px solid var(--hairline); padding:.4em; }
     <div class="group">
       <h3>Artwork</h3>
       <p class="note" style="margin-bottom:10px;">
-        Drop in the wordmark or a photograph when the designer sends them.
-        A file named <code>dare-wordmark.png</code> or <code>hut.jpg</code> in
-        this folder is picked up on its own; anything dropped here overrides it.
+        The DARÉ logo and the hut are already built in. Drop a different
+        photograph here to lay it over the sky instead.
       </p>
       <div class="drop" id="drop">
         <img id="dropPreview" alt="">
@@ -280,6 +280,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
 
     <div class="group">
       <h3>Elements</h3>
+      <div class="switch-row"><span>The logo instead of the title</span><input type="checkbox" class="switch" id="swLogo" checked></div>
       <div class="switch-row"><span>The name, top left</span><input type="checkbox" class="switch" id="swName" checked></div>
       <div class="switch-row"><span>Presented-by line</span><input type="checkbox" class="switch" id="swCredit"></div>
       <div class="switch-row"><span>Grain</span><input type="checkbox" class="switch" id="swGrain" checked></div>
@@ -354,14 +355,17 @@ const S = {
   title:'DARÉ',
   sub:'A sonic installation by Shumba Maasai',
   body:'',
-  footL:'London', footR:'October 2026',
-  titleScale:100, pos:'tl',
+  footL:'', footR:'October 2026',
+  titleScale:100, pos:'tc',
   image:null, imgFit:'cover', imgScale:100, imgPos:'center center', imgOpacity:100, wash:0,
   ground:'sky', text:PALETTE.green,
   stars:100, glow:100, ember:true, emberScale:100, emberY:76,
-  showName:true, showCredit:false, showGrain:true, motion:true, showSafe:false,
+  useLogo:true, showName:true, showCredit:false, showGrain:true, motion:true, showSafe:false,
   fileFmt:'png', seconds:8,
 };
+
+const hutImg = new Image();
+const logoImg = new Image();
 
 const CREDIT = 'Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe in London';
 const SITE = 'ancestralfutures.com';
@@ -463,8 +467,21 @@ function drawEmber(ctx, w, h, t) {
   bloom(base * 0.42 * k, PALETTE.ember, 0.6);
   bloom(base * 0.2 * k, PALETTE.emberGlow, 0.75);
 
-  // The hut: a half-ellipse of light, then the thatch laid over it as
-  // vertical bands of the ground colour at varying strength.
+  // The hut. The designer's photograph when it has loaded, drawn with
+  // screen exactly as the page draws it; the old drawn arc otherwise.
+  if (hutImg.complete && hutImg.naturalWidth) {
+    const dw = Math.min(w * 0.8, h * 0.62 * HUT_RATIO) * k;
+    const dh = dw / HUT_RATIO;
+    // The eaves sit 57% of the way down the photograph; they go on cy.
+    const layer = featheredHut(Math.round(dw), Math.round(dh));
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    ctx.globalAlpha = 0.92;
+    ctx.drawImage(layer, cx - dw / 2, cy - dh * 0.57, dw, dh);
+    ctx.restore();
+    return;
+  }
+
   const hw = base * 0.42 * k;
   const hh = base * 0.17 * k;
   ctx.save();
@@ -476,27 +493,29 @@ function drawEmber(ctx, w, h, t) {
   g.addColorStop(1, `rgba(240,144,79,${0.95 * flick})`);
   ctx.fillStyle = g;
   ctx.fillRect(cx - hw, cy - hh, hw * 2, hh);
-
-  const step = Math.max(2, base * 0.006);
-  const next = seeded(7);
-  ctx.fillStyle = PALETTE.ground;
-  for (let x = cx - hw; x < cx + hw; x += step) {
-    ctx.globalAlpha = 0.25 + next() * 0.6;
-    ctx.fillRect(x, cy - hh, step * 0.55, hh);
-  }
   ctx.restore();
+}
 
-  // The ground the fire throws light on. It has to come up from nothing
-  // at the hut's foot, or the top of the band reads as a drawn line.
-  ctx.save();
-  const depth = base * 0.14 * k;
-  const floor = ctx.createLinearGradient(0, cy - depth * 0.15, 0, cy + depth);
-  floor.addColorStop(0, 'rgba(212,96,43,0)');
-  floor.addColorStop(0.28, `rgba(212,96,43,${0.3 * flick})`);
-  floor.addColorStop(1, 'rgba(212,96,43,0)');
-  ctx.fillStyle = floor;
-  ctx.fillRect(0, cy - depth * 0.15, w, depth * 1.15);
-  ctx.restore();
+// The photograph with its edges faded out, so screen adds nothing at the
+// frame and no rectangle ever shows. Made once per size and kept.
+const HUT_RATIO = 1800 / 1048;
+const featherCache = new Map();
+function featheredHut(dw, dh) {
+  const key = `${dw}x${dh}`;
+  if (featherCache.has(key)) return featherCache.get(key);
+  const c = document.createElement('canvas');
+  c.width = Math.max(1, dw); c.height = Math.max(1, dh);
+  const x = c.getContext('2d');
+  x.drawImage(hutImg, 0, 0, c.width, c.height);
+  x.globalCompositeOperation = 'destination-in';
+  const fx = x.createLinearGradient(0, 0, c.width, 0);
+  fx.addColorStop(0, 'rgba(0,0,0,0)'); fx.addColorStop(0.06, '#000'); fx.addColorStop(0.94, '#000'); fx.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = fx; x.fillRect(0, 0, c.width, c.height);
+  const fy = x.createLinearGradient(0, 0, 0, c.height);
+  fy.addColorStop(0, 'rgba(0,0,0,0)'); fy.addColorStop(0.05, '#000'); fy.addColorStop(0.84, '#000'); fy.addColorStop(1, 'rgba(0,0,0,0)');
+  x.fillStyle = fy; x.fillRect(0, 0, c.width, c.height);
+  featherCache.set(key, c);
+  return c;
 }
 
 function hexToRgb(h) {
@@ -611,7 +630,13 @@ const POS = { tl:['t','l'], tc:['t','c'], tr:['t','r'], ml:['m','l'], mc:['m','c
 function measureBlocks(ctx, base, scale, maxWidth) {
   const blocks = [];
 
-  if (S.title.trim()) {
+  if (S.useLogo && logoImg.complete && logoImg.naturalWidth) {
+    // The logo stands in for the title: as wide as a title would run, its
+    // height from the artwork's own proportions.
+    const width = Math.min(maxWidth, base * 0.62) * (S.titleScale / 100) * scale;
+    const height = width * logoImg.naturalHeight / logoImg.naturalWidth;
+    blocks.push({ kind:'logo', size:height, ascent:0, lh:height, width, lines:[''] });
+  } else if (S.title.trim()) {
     const size = base * 0.17 * (S.titleScale / 100) * scale;
     ctx.font = `400 ${size}px ${FONT_DISPLAY}`;
     blocks.push({
@@ -688,6 +713,11 @@ function drawText(ctx, w, h) {
 
   for (const [i, block] of m.blocks.entries()) {
     if (i) top += m.gap;
+    if (block.kind === 'logo') {
+      ctx.drawImage(logoImg, anchor(block.width), top, block.width, block.size);
+      top += block.lh;
+      continue;
+    }
     const weight = 400;
     const face = block.kind === 'title' ? FONT_DISPLAY : FONT_BODY;
     ctx.font = `${weight} ${block.size}px ${face}`;
@@ -967,6 +997,7 @@ const toggle = (id, key, after) => {
   $(id).addEventListener('change', (e) => { S[key] = e.target.checked; if (after) after(); repaint(); });
 };
 toggle('swEmber', 'ember');
+toggle('swLogo', 'useLogo');
 toggle('swName', 'showName');
 toggle('swCredit', 'showCredit');
 toggle('swGrain', 'showGrain');
@@ -991,28 +1022,22 @@ drop.addEventListener('dragleave', () => drop.classList.remove('over'));
 drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('over'); useFile(e.dataTransfer.files[0]); });
 $('dropClear').onclick = () => { S.image = null; dropPreview.style.display = 'none'; dropLabel.textContent = 'Drop an image, or click to choose'; repaint(); };
 
-// If the designer's files are already sitting in this folder, use one
-// without being asked. Missing files fail quietly, which is the point.
-for (const name of ['dare-wordmark.png', 'hut.jpg', 'hut.png']) {
-  const probe = new Image();
-  probe.onload = () => {
-    if (S.image) return;
-    S.image = probe;
-    dropPreview.src = probe.src; dropPreview.style.display = 'block';
-    dropLabel.textContent = `${name} · found in this folder`;
-    repaint();
-  };
-  probe.src = '/' + name;
-}
+// The logo and the hut are loaded from beside this page, by relative
+// path, so the tool works wherever the site is served from, including
+// under a sub-path. If either is missing the tool falls back quietly.
+hutImg.onload = () => { featherCache.clear(); repaint(); };
+logoImg.onload = repaint;
+hutImg.src = 'hut.webp';
+logoImg.src = 'dare-logo.png';
 
 // --- Presets ---
 const PRESETS = {
-  announce: { title:'DARÉ', sub:'A sonic installation by Shumba Maasai', body:'', footL:'London', footR:'October 2026', pos:'tl', titleScale:100 },
-  rules:    { title:'Shoes off.\nPhones outside.\nEnter the Daré.', sub:'', body:'', footL:'', footR:'October 2026', pos:'ml', titleScale:52 },
-  artist:   { title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ is his first installation.', footL:'', footR:'October 2026', pos:'bl', titleScale:46 },
-  date:     { title:'October 2026', sub:'Daré · London', body:'', footL:'', footR:SITE, pos:'mc', titleScale:64 },
-  quote:    { title:'A sonic refuge.', sub:'A gathering of memory, feeling and imagination', body:'', footL:'', footR:SITE, pos:'ml', titleScale:60 },
-  clear:    { title:'', sub:'', body:'', footL:'', footR:'', pos:'bl', titleScale:100 },
+  announce: { useLogo:true,  title:'DARÉ', sub:'A sonic installation by Shumba Maasai', body:'', footL:'', footR:'October 2026', pos:'tc', titleScale:100 },
+  rules:    { useLogo:false, title:'Shoes off.\nPhones outside.\nEnter the Daré.', sub:'', body:'', footL:'', footR:'October 2026', pos:'ml', titleScale:52 },
+  artist:   { useLogo:false, title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ is his first installation.', footL:'', footR:'October 2026', pos:'bl', titleScale:46 },
+  date:     { useLogo:true,  title:'DARÉ', sub:'October 2026', body:'', footL:'', footR:SITE, pos:'tc', titleScale:80 },
+  quote:    { useLogo:false, title:'A sonic refuge.', sub:'A gathering of memory, feeling and imagination', body:'', footL:'', footR:SITE, pos:'ml', titleScale:60 },
+  clear:    { useLogo:false, title:'', sub:'', body:'', footL:'', footR:'', pos:'bl', titleScale:100 },
 };
 chipGroup($('presets'), 'preset', (name) => {
   Object.assign(S, PRESETS[name]);
@@ -1020,6 +1045,7 @@ chipGroup($('presets'), 'preset', (name) => {
   $('inFootL').value = S.footL; $('inFootR').value = S.footR;
   $('titleScale').value = S.titleScale; $('titleScaleVal').textContent = S.titleScale + '%';
   document.querySelectorAll('[data-pos]').forEach(c => c.classList.toggle('active', c.dataset.pos === S.pos));
+  $('swLogo').checked = S.useLogo;
 });
 
 fontsReady().then(repaint);

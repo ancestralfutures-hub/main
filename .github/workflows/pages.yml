@@ -1,0 +1,66 @@
+# Builds the site as static files and publishes it to GitHub Pages on every
+# push to main. It can also be run by hand from the Actions tab.
+#
+# One-time setup, in the repository on github.com:
+#   Settings > Pages > Build and deployment > Source: GitHub Actions
+#
+# The base path comes from GitHub itself. Served from the free address
+# (ancestralfutures-hub.github.io/main) it is "/main"; once a custom domain
+# is set under Settings > Pages it is empty, so the next deploy serves the
+# site from the domain's root without anyone editing a file.
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a newer push waits rather than racing an older one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Read the Pages settings
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          PAGES_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Upload the site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish
+        id: deployment
+        uses: actions/deploy-pages@v4

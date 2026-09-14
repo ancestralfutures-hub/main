@@ -47,8 +47,6 @@
   --size-caption: 11.5px;
 
   --size-h2: clamp(1rem, 1.3vw, 1.25rem);
-  /* The title: as wide as the screen will let it. */
-  --size-title: clamp(5.5rem, 25vw, 21rem);
   /* The rules and the sign-up line: a step down. */
   --size-rule: clamp(1.75rem, 5vw, 4rem);
 
@@ -221,17 +219,6 @@
   color: var(--green);
 }
 
-/* The title. Regular like everything else, tight, and as wide as the
-   screen allows. Size does the work that weight would otherwise do. */
-.title {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: var(--size-title);
-  line-height: 0.88;
-  letter-spacing: -0.02em;
-  color: var(--green);
-}
-
 /* The rules and the two short lines: a step up, one line each. */
 .rule-line {
   font-family: var(--font-display);
@@ -345,87 +332,111 @@
 }
 
 /* ------------------------------------------------------------------ */
-/* The ember                                                           */
+/* The opening screen                                                  */
 /* ------------------------------------------------------------------ */
 
-/* Behind the opening screen: a fire seen through the thatch of a hut,
-   low in the dark. Three blurred blooms make the glow; the hut is a wide
-   arc masked by vertical strands so the light comes through in streaks. */
-.ember {
+/* Set as the poster is: the logo high, the hut in the middle of the dark,
+   the month at the foot, all on the centre line. Both images are sized
+   from the screen's height as well as its width, so on a laptop the three
+   fit without scrolling and on a phone they simply stack. */
+.hero {
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-inline: var(--space-xs);
+  padding-block: calc(var(--header-height) + var(--space-xs)) calc(var(--header-height) + var(--space-sm));
+  text-align: center;
+}
+
+.hero-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+/* 2.771 is the logo's width over its height. */
+.hero-logo {
+  width: min(80vw, calc(22svh * 2.771), 640px);
+}
+
+.hero-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ------------------------------------------------------------------ */
+/* The hut                                                             */
+/* ------------------------------------------------------------------ */
+
+/* 1.718 is the photograph's width over its height. */
+.hut {
+  position: relative;
+  flex: none;
+  width: min(94vw, calc(46svh * 1.718), 920px);
+  aspect-ratio: 2000 / 1164;
+}
+
+/* The picture. Its sky has been pushed to pure black, and screen drops
+   black out entirely while adding every lighter tone as light, so the sky
+   vanishes and the stars show through the dark thatch. It is held a touch
+   under full strength on top of that, and its crop edges are feathered so
+   no rectangle can ever show against the page. The eave tips sit at 9%
+   and 91% of its width and its base at 86% of its height, all inside the
+   part the fade leaves solid. */
+.hut-img {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(to bottom, transparent, #000 4%, #000 86%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
+    linear-gradient(to bottom, transparent, #000 4%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+
+/* The glow behind it, centred on the eaves, which are where the fire
+   shows. Radial gradients rather than rounded boxes, so the system keeps
+   its zero radii. They come before the picture in the markup, so they
+   paint beneath it. */
+.hut-glow,
+.hut-glow-core {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
+  left: 50%;
+  translate: -50% -50%;
   pointer-events: none;
 }
 
-.ember-bloom {
-  position: absolute;
-  left: 50%;
-  width: 70vmin;
-  height: 40vmin;
-  transform: translateX(-50%);
-  filter: blur(40px);
-  will-change: transform, opacity;
-}
-
-.ember-bloom-1 {
-  bottom: 18%;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--ember) 70%, transparent), transparent 72%);
-}
-
-.ember-bloom-2 {
-  bottom: 22%;
-  width: 34vmin;
-  height: 30vmin;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--ember-glow) 85%, transparent), transparent 70%);
-}
-
-.ember-bloom-3 {
-  bottom: 12%;
-  width: 110vmin;
-  height: 36vmin;
-  background: radial-gradient(closest-side, color-mix(in srgb, var(--ember-deep) 70%, transparent), transparent 72%);
-  filter: blur(60px);
-}
-
-/* The hut: an arc of light, its top edge the roofline, broken into
-   strands by a mask of thin vertical bands at varying strengths. */
-.ember-hut {
-  position: absolute;
-  left: 50%;
-  bottom: 24%;
-  width: min(64vw, 520px);
-  height: min(22vw, 190px);
-  transform: translateX(-50%);
+.hut-glow {
+  top: 58%;
+  width: 94%;
+  height: 88%;
   background: radial-gradient(
-    ellipse 60% 100% at 50% 100%,
-    color-mix(in srgb, var(--ember-glow) 92%, transparent),
-    color-mix(in srgb, var(--ember) 80%, transparent) 40%,
-    transparent 78%
+    closest-side,
+    color-mix(in srgb, var(--ember) 52%, transparent),
+    color-mix(in srgb, var(--ember-deep) 28%, transparent) 55%,
+    transparent 100%
   );
-  -webkit-mask-image: repeating-linear-gradient(
-    90deg,
-    rgb(0 0 0 / 0.95) 0 3px,
-    rgb(0 0 0 / 0.35) 3px 5px,
-    rgb(0 0 0 / 0.8) 5px 9px,
-    rgb(0 0 0 / 0.15) 9px 11px
-  );
-  mask-image: repeating-linear-gradient(
-    90deg,
-    rgb(0 0 0 / 0.95) 0 3px,
-    rgb(0 0 0 / 0.35) 3px 5px,
-    rgb(0 0 0 / 0.8) 5px 9px,
-    rgb(0 0 0 / 0.15) 9px 11px
-  );
-  opacity: 0.9;
-  filter: blur(1.5px);
+  filter: blur(34px);
 }
 
-/* Content above the glow. */
-.ember-over {
-  position: relative;
-  z-index: 1;
+.hut-glow-core {
+  top: 57%;
+  width: 64%;
+  height: 34%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--ember-glow) 58%, transparent),
+    transparent 100%
+  );
+  filter: blur(22px);
 }
 
 /* ------------------------------------------------------------------ */
@@ -553,53 +564,57 @@
     }
   }
 
-  /* The fire breathes: each bloom swells and settles at its own pace. */
-  .ember-bloom-1 {
-    animation: breathe 7s ease-in-out infinite;
-  }
-  .ember-bloom-2 {
-    animation: breathe 4.6s ease-in-out infinite;
-    animation-delay: -2s;
-  }
-  .ember-bloom-3 {
-    animation: breathe 9s ease-in-out infinite;
-    animation-delay: -4s;
-  }
-  .ember-hut {
-    animation: flicker 5.2s ease-in-out infinite;
+  /* The glow behind the hut. The wide one breathes: a slow swell and a
+     slow settle. The hot one at the eaves trembles on a shorter, uneven
+     cycle, as firelight does. Scale and opacity only, so the compositor
+     does the work and nothing is repainted. */
+  .hut-glow {
+    animation: hut-breathe 7s ease-in-out infinite;
+    will-change: scale, opacity;
   }
 
-  /* Held still while its screen is out of view. Ember sets the attribute. */
-  .ember[data-still] .ember-bloom,
-  .ember[data-still] .ember-hut {
-    animation-play-state: paused;
+  .hut-glow-core {
+    animation: hut-tremble 3.1s ease-in-out infinite;
+    will-change: scale, opacity;
   }
 
-  @keyframes breathe {
+  @keyframes hut-breathe {
     0%,
     100% {
-      transform: translateX(-50%) scale(1);
-      opacity: 0.85;
+      scale: 0.94;
+      opacity: 0.72;
     }
     50% {
-      transform: translateX(-50%) scale(1.12);
+      scale: 1.08;
       opacity: 1;
     }
   }
 
-  @keyframes flicker {
+  @keyframes hut-tremble {
     0%,
     100% {
-      opacity: 0.9;
+      scale: 1;
+      opacity: 0.85;
     }
-    30% {
+    18% {
+      scale: 1.035;
+      opacity: 1;
+    }
+    31% {
+      scale: 0.985;
+      opacity: 0.8;
+    }
+    52% {
+      scale: 1.045;
+      opacity: 0.95;
+    }
+    68% {
+      scale: 1.01;
       opacity: 0.78;
     }
-    55% {
-      opacity: 0.96;
-    }
-    80% {
-      opacity: 0.84;
+    84% {
+      scale: 1.03;
+      opacity: 0.92;
     }
   }
 

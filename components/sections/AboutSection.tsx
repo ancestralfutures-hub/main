@@ -7,9 +7,9 @@ import { aboutContent } from "@/lib/content";
 */
 export default function AboutSection() {
   return (
-    <section id="dare" aria-labelledby="dare-heading" className="section-full px-xs md:px-md">
+    <section id="about" aria-labelledby="about-heading" className="section-full px-xs md:px-md">
       <div data-reveal className="grid gap-md md:grid-cols-4">
-        <h2 id="dare-heading">{aboutContent.title}</h2>
+        <h2 id="about-heading">{aboutContent.title}</h2>
         <div className="space-y-md md:col-span-2 max-w-[52ch]">
           {aboutContent.paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>

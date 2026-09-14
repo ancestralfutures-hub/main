@@ -9,12 +9,8 @@
   },
   "navigation": [
     {
-      "name": "The Daré",
-      "href": "#dare"
-    },
-    {
-      "name": "Artist",
-      "href": "#artist"
+      "name": "About",
+      "href": "#about"
     },
     {
       "name": "Sign up",
