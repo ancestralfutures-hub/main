@@ -288,13 +288,13 @@
 /* ------------------------------------------------------------------ */
 
 /* The logo, the line beneath it, the hut, the month and the button, one
-   above the other, filling exactly the height of the screen.
+   above the other, filling exactly the height of the screen. The sum allows
+   the line two lines, as it takes on a phone.
 
    The hut takes whatever height the rest leaves. That is worked out here
    rather than with a container query, because a container query would
    wrap the hut in its own compositing group, and the screen blend that
-   makes its sky disappear only works against the page itself. The sum
-   allows the line beneath the logo two lines, as it takes on a phone. */
+   makes its sky disappear only works against the page itself. */
 .hero {
   --gap: clamp(6px, 1.3dvh, 16px);
   --line: calc(var(--type-size) * var(--type-leading));
