@@ -1,8 +1,7 @@
 # The typeface
 
-Everything on the site is set in **Halyard Pro Regular**, one face at one
-weight, from the display title down to the caption under the sign-up
-field.
+Everything on the site is set in **Halyard Pro SemiBold**, one face at one
+size and one weight, from the name at the top to the sign-up field.
 
 Halyard is licensed from [Darden Studio](https://www.dardenstudio.com) and
 is not bundled with this repository, so the site currently renders in the
@@ -21,21 +20,21 @@ first and fall through:
 ## When the licence is bought
 
 1. Put the web files in this folder, for example
-   `HalyardText-Regular.woff2` and `HalyardDisplay-Regular.woff2`.
+   `HalyardText-SemiBold.woff2` and `HalyardDisplay-SemiBold.woff2`.
 2. Add the declarations to the top of `app/globals.css`, above `:root`:
 
    ```css
    @font-face {
      font-family: "Halyard Text";
-     src: url("/fonts/HalyardText-Regular.woff2") format("woff2");
-     font-weight: 400;
+     src: url("/fonts/HalyardText-SemiBold.woff2") format("woff2");
+     font-weight: 600;
      font-style: normal;
      font-display: swap;
    }
    @font-face {
      font-family: "Halyard Display";
-     src: url("/fonts/HalyardDisplay-Regular.woff2") format("woff2");
-     font-weight: 400;
+     src: url("/fonts/HalyardDisplay-SemiBold.woff2") format("woff2");
+     font-weight: 600;
      font-style: normal;
      font-display: swap;
    }

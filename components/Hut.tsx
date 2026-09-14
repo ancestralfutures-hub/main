@@ -34,7 +34,7 @@ export default function Hut() {
       <img
         src={hutLarge.src}
         srcSet={`${hutSmall.src} ${hutSmall.width}w, ${hutLarge.src} ${hutLarge.width}w`}
-        sizes="(max-width: 640px) 94vw, min(920px, 80vw)"
+        sizes="(max-width: 640px) 92vw, 760px"
         width={hutLarge.width}
         height={hutLarge.height}
         alt="A thatched hut at night, lit from inside, under the stars"

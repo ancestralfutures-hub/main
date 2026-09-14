@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <!-- Figtree stands in for Halyard Pro, which is licensed and not bundled.
      Installed Halyard is used first when present. See /fonts/README.md. -->
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600&display=swap" rel="stylesheet">
 <style>
 /*
   A tool for whoever is making the posts, not a page of the site. It draws
@@ -21,8 +21,9 @@
   /asset-generator.html, and it is kept out of the sitemap and robots.
 */
 :root {
-  --ground:#0b0d0c; --green:#3f8f55; --green-deep:#245a3a; --bone:#e6e2d6;
-  --moss:#b8c3b5; --dusk:#6f8b74; --hairline:#2a3a2f;
+  /* The logo's two colours: cream for words, orange for what is active. */
+  --ground:#0b0d0c; --accent:#f43e00; --accent-deep:#8a2c08; --bone:#f9f5cd;
+  --text:#f9f5cd; --muted:#908f78; --hairline:#49493e;
   --ember:#d4602b; --ember-glow:#f0904f; --ember-deep:#7a2f12;
   --caption:11.5px; --pad:14.4px; --pad-md:28.8px;
   --display:'Halyard Display','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif;
@@ -30,19 +31,19 @@
 }
 * { box-sizing:border-box; }
 body {
-  margin:0; background:var(--ground); color:var(--moss);
+  margin:0; background:var(--ground); color:var(--text);
   font-family:var(--body); font-size:13px; line-height:1.45;
 }
-h1,h2,h3 { margin:0; font-family:var(--display); font-weight:400; color:var(--green); }
+h1,h2,h3 { margin:0; font-family:var(--display); font-weight:600; color:var(--accent); }
 button { font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer; }
 input,textarea,select { font:inherit; color:var(--bone); background:transparent; border:0; border-bottom:1px solid var(--hairline); border-radius:0; width:100%; padding:.35em 0; outline:none; }
-input:focus,textarea:focus,select:focus { border-bottom-color:var(--green); }
+input:focus,textarea:focus,select:focus { border-bottom-color:var(--accent); }
 textarea { resize:vertical; }
 select { border:1px solid var(--hairline); padding:.4em; }
-::placeholder { color:var(--dusk); opacity:1; }
-:focus-visible { outline:1px solid var(--green); outline-offset:2px; }
+::placeholder { color:var(--muted); opacity:1; }
+:focus-visible { outline:1px solid var(--accent); outline-offset:2px; }
 
-.caps { font-size:var(--caption); letter-spacing:.28em; text-transform:uppercase; color:var(--green); }
+.caps { font-size:var(--caption); letter-spacing:.28em; text-transform:uppercase; color:var(--accent); }
 
 /* --- Shell --- */
 .top { position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between;
@@ -57,29 +58,29 @@ select { border:1px solid var(--hairline); padding:.4em; }
 .group > h3 { font-size:var(--caption); letter-spacing:.28em; text-transform:uppercase; margin-bottom:var(--pad); }
 .field { margin-bottom:var(--pad); }
 .field:last-child { margin-bottom:0; }
-.field-label { display:flex; justify-content:space-between; gap:8px; font-size:var(--caption); color:var(--dusk); margin-bottom:4px; }
+.field-label { display:flex; justify-content:space-between; gap:8px; font-size:var(--caption); color:var(--muted); margin-bottom:4px; }
 
 /* --- Chips --- */
 .chips { display:flex; flex-wrap:wrap; gap:6px; }
-.chip { border:1px solid var(--hairline); padding:5px 10px; font-size:var(--caption); color:var(--moss); transition:all .25s; }
-.chip:hover { border-color:var(--green-deep); color:var(--bone); }
-.chip.active { border-color:var(--green); color:var(--green); }
-.chip--quiet { color:var(--dusk); }
+.chip { border:1px solid var(--hairline); padding:5px 10px; font-size:var(--caption); color:var(--text); transition:all .25s; }
+.chip:hover { border-color:var(--accent-deep); color:var(--bone); }
+.chip.active { border-color:var(--accent); color:var(--accent); }
+.chip--quiet { color:var(--muted); }
 
 /* --- 3x3 position grid --- */
 .pos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:4px; max-width:140px; }
-.pos-cell { border:1px solid var(--hairline); padding:6px 0; font-size:10px; letter-spacing:.08em; color:var(--dusk); }
-.pos-cell.active { border-color:var(--green); color:var(--green); }
+.pos-cell { border:1px solid var(--hairline); padding:6px 0; font-size:10px; letter-spacing:.08em; color:var(--muted); }
+.pos-cell.active { border-color:var(--accent); color:var(--accent); }
 
 /* --- Switches & ranges --- */
 .switch-row { display:flex; align-items:center; justify-content:space-between; padding:5px 0; font-size:var(--caption); }
 .switch { position:relative; width:32px; height:18px; appearance:none; background:var(--hairline); cursor:pointer; transition:background .3s; flex:none; }
-.switch:checked { background:var(--green-deep); }
+.switch:checked { background:var(--accent-deep); }
 .switch::before { content:""; position:absolute; top:2px; left:2px; width:14px; height:14px; background:var(--bone); transition:transform .3s; }
 .switch:checked::before { transform:translateX(14px); }
 .range { appearance:none; height:1px; background:var(--hairline); padding:0; border:0; }
-.range::-webkit-slider-thumb { appearance:none; width:12px; height:12px; background:var(--green); cursor:pointer; }
-.range::-moz-range-thumb { width:12px; height:12px; border:0; background:var(--green); cursor:pointer; }
+.range::-webkit-slider-thumb { appearance:none; width:12px; height:12px; background:var(--accent); cursor:pointer; }
+.range::-moz-range-thumb { width:12px; height:12px; border:0; background:var(--accent); cursor:pointer; }
 
 /* --- Swatches --- */
 .swatches { display:flex; gap:6px; flex-wrap:wrap; }
@@ -87,18 +88,18 @@ select { border:1px solid var(--hairline); padding:.4em; }
 .swatch.active { border-color:var(--bone); }
 
 /* --- Upload --- */
-.drop { border:1px dashed var(--hairline); padding:var(--pad); text-align:center; font-size:var(--caption); color:var(--dusk); cursor:pointer; transition:border-color .25s; }
-.drop:hover, .drop.over { border-color:var(--green); }
+.drop { border:1px dashed var(--hairline); padding:var(--pad); text-align:center; font-size:var(--caption); color:var(--muted); cursor:pointer; transition:border-color .25s; }
+.drop:hover, .drop.over { border-color:var(--accent); }
 .drop img { max-width:100%; max-height:150px; margin:0 auto 8px; display:none; }
 
 /* --- Previews --- */
 .previews { display:flex; flex-wrap:wrap; gap:var(--pad-md); align-content:start; }
 .preview { }
-.preview-label { font-size:var(--caption); color:var(--dusk); margin-bottom:6px; letter-spacing:.06em; }
+.preview-label { font-size:var(--caption); color:var(--muted); margin-bottom:6px; letter-spacing:.06em; }
 .frame { position:relative; overflow:hidden; background:var(--ground); border:1px solid var(--hairline); }
 .frame canvas { display:block; width:100%; height:100%; }
 .frame-actions { display:flex; gap:10px; margin-top:6px; font-size:var(--caption); }
-.frame-actions button { color:var(--green); text-decoration:underline; text-underline-offset:3px; }
+.frame-actions button { color:var(--accent); text-decoration:underline; text-underline-offset:3px; }
 .frame-actions button:hover { color:var(--bone); }
 
 /* Safe-zone guides, drawn over the preview only. */
@@ -107,12 +108,12 @@ select { border:1px solid var(--hairline); padding:.4em; }
 .safe i { position:absolute; left:0; right:0; height:13%; background:rgba(240,144,79,.16); border-block:1px dashed rgba(240,144,79,.5); }
 .safe i.t { top:0; } .safe i.b { bottom:0; }
 
-.note { font-size:var(--caption); color:var(--dusk); line-height:1.5; }
+.note { font-size:var(--caption); color:var(--muted); line-height:1.5; }
 .bar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-.btn { border:1px solid var(--green-deep); color:var(--green); padding:7px 14px; font-size:var(--caption); letter-spacing:.1em; text-transform:uppercase; transition:all .25s; }
-.btn:hover { border-color:var(--green); color:var(--bone); }
+.btn { border:1px solid var(--accent-deep); color:var(--accent); padding:7px 14px; font-size:var(--caption); letter-spacing:.1em; text-transform:uppercase; transition:all .25s; }
+.btn:hover { border-color:var(--accent); color:var(--bone); }
 .btn[disabled] { opacity:.45; cursor:default; }
-.progress { font-size:var(--caption); color:var(--dusk); }
+.progress { font-size:var(--caption); color:var(--muted); }
 </style>
 </head>
 <body>
@@ -120,7 +121,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
 <header class="top">
   <div>
     <h1 style="font-size:16px;letter-spacing:-.01em;">DARÉ</h1>
-    <p class="caps" style="color:var(--dusk);">Asset generator</p>
+    <p class="caps" style="color:var(--muted);">Asset generator</p>
   </div>
   <div class="top-right">
     <span class="progress" id="status">Ready</span>
@@ -256,20 +257,18 @@ select { border:1px solid var(--hairline); padding:.4em; }
       <div class="field">
         <div class="field-label"><span>Ground</span></div>
         <div class="swatches" id="groundSwatches">
-          <button class="swatch active" data-ground="sky" style="background:linear-gradient(#141c17,#0b0d0c);" title="The night sky"></button>
+          <button class="swatch active" data-ground="sky" style="background:linear-gradient(#16130f,#0b0d0c);" title="The night sky"></button>
           <button class="swatch" data-ground="#0b0d0c" style="background:#0b0d0c;" title="Flat black"></button>
-          <button class="swatch" data-ground="#245a3a" style="background:#245a3a;" title="Deep green"></button>
-          <button class="swatch" data-ground="#3f8f55" style="background:#3f8f55;" title="Green"></button>
-          <button class="swatch" data-ground="#e6e2d6" style="background:#e6e2d6;" title="Bone"></button>
+          <button class="swatch" data-ground="#f43e00" style="background:#f43e00;" title="Orange"></button>
+          <button class="swatch" data-ground="#f9f5cd" style="background:#f9f5cd;" title="Cream"></button>
         </div>
       </div>
       <div class="field">
         <div class="field-label"><span>Type</span></div>
         <div class="swatches" id="textSwatches">
-          <button class="swatch active" data-text="#3f8f55" style="background:#3f8f55;"></button>
-          <button class="swatch" data-text="#e6e2d6" style="background:#e6e2d6;"></button>
-          <button class="swatch" data-text="#d4602b" style="background:#d4602b;"></button>
-          <button class="swatch" data-text="#0b0d0c" style="background:#0b0d0c;"></button>
+          <button class="swatch active" data-text="#f9f5cd" style="background:#f9f5cd;" title="Cream"></button>
+          <button class="swatch" data-text="#f43e00" style="background:#f43e00;" title="Orange"></button>
+          <button class="swatch" data-text="#0b0d0c" style="background:#0b0d0c;" title="Dark"></button>
         </div>
       </div>
       <div class="field">
@@ -282,7 +281,6 @@ select { border:1px solid var(--hairline); padding:.4em; }
       <h3>Elements</h3>
       <div class="switch-row"><span>The logo instead of the title</span><input type="checkbox" class="switch" id="swLogo" checked></div>
       <div class="switch-row"><span>The name, top left</span><input type="checkbox" class="switch" id="swName" checked></div>
-      <div class="switch-row"><span>Presented-by line</span><input type="checkbox" class="switch" id="swCredit"></div>
       <div class="switch-row"><span>Grain</span><input type="checkbox" class="switch" id="swGrain" checked></div>
       <div class="switch-row"><span>Motion in the preview</span><input type="checkbox" class="switch" id="swMotion" checked></div>
       <div class="switch-row"><span>Safe areas</span><input type="checkbox" class="switch" id="swSafe"></div>
@@ -318,8 +316,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
 // ===========================================================
 
 const PALETTE = {
-  ground:'#0b0d0c', lift:'#141c17', green:'#3f8f55', greenDeep:'#245a3a',
-  bone:'#e6e2d6', moss:'#b8c3b5', dusk:'#6f8b74',
+  ground:'#0b0d0c', lift:'#16130f', cream:'#f9f5cd', orange:'#f43e00', muted:'#908f78',
   ember:'#d4602b', emberGlow:'#f0904f', emberDeep:'#7a2f12',
 };
 const FONT_DISPLAY = "'Halyard Display','Halyard Pro','Figtree','Helvetica Neue',Arial,sans-serif";
@@ -358,16 +355,15 @@ const S = {
   footL:'', footR:'October 2026',
   titleScale:100, pos:'tc',
   image:null, imgFit:'cover', imgScale:100, imgPos:'center center', imgOpacity:100, wash:0,
-  ground:'sky', text:PALETTE.green,
+  ground:'sky', text:PALETTE.cream,
   stars:100, glow:100, ember:true, emberScale:100, emberY:76,
-  useLogo:true, showName:true, showCredit:false, showGrain:true, motion:true, showSafe:false,
+  useLogo:true, showName:true, showGrain:true, motion:true, showSafe:false,
   fileFmt:'png', seconds:8,
 };
 
 const hutImg = new Image();
 const logoImg = new Image();
 
-const CREDIT = 'Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe in London';
 const SITE = 'ancestralfutures.com';
 
 // ===========================================================
@@ -423,8 +419,8 @@ function drawSky(ctx, w, h, t) {
   if (S.glow > 0) {
     const g = ctx.createRadialGradient(w * 0.5, h * 0.34, 0, w * 0.5, h * 0.34, Math.max(w, h) * 0.62);
     const a = Math.min(1, S.glow / 100);
-    g.addColorStop(0, `rgba(20,28,23,${a})`);
-    g.addColorStop(1, 'rgba(20,28,23,0)');
+    g.addColorStop(0, `rgba(22,19,15,${a})`);
+    g.addColorStop(1, 'rgba(22,19,15,0)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, w, h);
   }
@@ -638,7 +634,7 @@ function measureBlocks(ctx, base, scale, maxWidth) {
     blocks.push({ kind:'logo', size:height, ascent:0, lh:height, width, lines:[''] });
   } else if (S.title.trim()) {
     const size = base * 0.17 * (S.titleScale / 100) * scale;
-    ctx.font = `400 ${size}px ${FONT_DISPLAY}`;
+    ctx.font = `600 ${size}px ${FONT_DISPLAY}`;
     blocks.push({
       kind:'title', size, ascent:size * 0.76, lh:size * 0.94,
       lines: wrapLines(ctx, S.title.trim().toUpperCase(), maxWidth),
@@ -646,7 +642,7 @@ function measureBlocks(ctx, base, scale, maxWidth) {
   }
   if (S.sub.trim()) {
     const size = Math.max(8, base * 0.021 * scale);
-    ctx.font = `400 ${size}px ${FONT_BODY}`;
+    ctx.font = `600 ${size}px ${FONT_BODY}`;
     const track = size * 0.28;
     blocks.push({
       kind:'sub', size, ascent:size * 0.78, lh:size * 1.7, track,
@@ -655,7 +651,7 @@ function measureBlocks(ctx, base, scale, maxWidth) {
   }
   if (S.body.trim()) {
     const size = Math.max(9, base * 0.026 * scale);
-    ctx.font = `400 ${size}px ${FONT_BODY}`;
+    ctx.font = `600 ${size}px ${FONT_BODY}`;
     blocks.push({
       kind:'body', size, ascent:size * 0.78, lh:size * 1.5,
       lines: wrapLines(ctx, S.body.trim(), Math.min(maxWidth, base * 0.62)),
@@ -668,15 +664,6 @@ function measureBlocks(ctx, base, scale, maxWidth) {
   return { blocks, height, gap };
 }
 
-// The presented-by line, wrapped, so the room it needs can be set aside
-// before anything above it is placed.
-function creditLines(ctx, w, base) {
-  const size = Math.max(7, base * 0.015);
-  const track = size * 0.2;
-  ctx.font = `400 ${size}px ${FONT_BODY}`;
-  return { size, track, lines: wrapTracked(ctx, CREDIT.toUpperCase(), w - base * 0.13, track), lh: size * 1.6 };
-}
-
 function drawText(ctx, w, h) {
   const base = baseOf(w, h);
   const pad = base * 0.065;
@@ -686,9 +673,7 @@ function drawText(ctx, w, h) {
   // What the bottom of the frame has already spoken for.
   const footSize = Math.max(8, base * 0.021);
   const hasFoot = Boolean(S.footL.trim() || S.footR.trim());
-  const credit = S.showCredit ? creditLines(ctx, w, base) : null;
-  let bottomRoom = pad + (hasFoot ? footSize * 2.2 : 0);
-  if (credit) bottomRoom += credit.lines.length * credit.lh + footSize * 0.8;
+  const bottomRoom = pad + (hasFoot ? footSize * 2.2 : 0);
   const topRoom = S.showName ? base * 0.1 : pad;
   const available = Math.max(base * 0.1, h - topRoom - bottomRoom);
 
@@ -718,7 +703,7 @@ function drawText(ctx, w, h) {
       top += block.lh;
       continue;
     }
-    const weight = 400;
+    const weight = 600;
     const face = block.kind === 'title' ? FONT_DISPLAY : FONT_BODY;
     ctx.font = `${weight} ${block.size}px ${face}`;
     for (const line of block.lines) {
@@ -732,24 +717,16 @@ function drawText(ctx, w, h) {
     }
   }
 
-  // The credit, then the foot row, both pinned to the bottom.
-  let y = h - pad;
+  // The foot row, pinned to the bottom.
+  const y = h - pad;
   if (hasFoot) {
-    ctx.font = `400 ${footSize}px ${FONT_BODY}`;
+    ctx.font = `600 ${footSize}px ${FONT_BODY}`;
     const track = footSize * 0.28;
     if (S.footL.trim()) fillTracked(ctx, S.footL.trim().toUpperCase(), pad, y, track);
     if (S.footR.trim()) {
       const t = S.footR.trim().toUpperCase();
       fillTracked(ctx, t, w - pad - trackedWidth(ctx, t, track), y, track);
     }
-    y -= footSize * 2.2;
-  }
-  if (credit) {
-    ctx.font = `400 ${credit.size}px ${FONT_BODY}`;
-    ctx.globalAlpha = 0.8;
-    let cy = y - (credit.lines.length - 1) * credit.lh;
-    for (const line of credit.lines) { fillTracked(ctx, line, pad, cy, credit.track); cy += credit.lh; }
-    ctx.globalAlpha = 1;
   }
 }
 
@@ -762,7 +739,7 @@ function drawChrome(ctx, w, h) {
   ctx.fillStyle = S.text;
   ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left';
-  ctx.font = `400 ${size}px ${FONT_DISPLAY}`;
+  ctx.font = `600 ${size}px ${FONT_DISPLAY}`;
   fillTracked(ctx, 'ANCESTRAL FUTURES', pad, pad + size, size * 0.28);
 }
 
@@ -999,7 +976,6 @@ const toggle = (id, key, after) => {
 toggle('swEmber', 'ember');
 toggle('swLogo', 'useLogo');
 toggle('swName', 'showName');
-toggle('swCredit', 'showCredit');
 toggle('swGrain', 'showGrain');
 toggle('swMotion', 'motion', () => { if (!S.motion) frozen = (performance.now() - start) / 1000; });
 toggle('swSafe', 'showSafe', () => {

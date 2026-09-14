@@ -6,20 +6,21 @@ import { signupContent } from "@/lib/content";
 type Status = "idle" | "sending" | "sent" | "error" | "unset";
 
 /*
-  One field and a button, posting straight to a sign-up form hosted by
-  Brevo. The site is static files on GitHub Pages, so there is no server
-  of its own to hold an API key, and a key must never be sent to the
-  browser. Brevo's hosted form needs no key: it is public by design and
-  only ever adds an address to the list it was made for.
+  One field joined to one button, posting straight to a sign-up form hosted
+  by Brevo, which adds the address to the "subscribers" list. The site is
+  static files on GitHub Pages, so there is no server of its own to hold an
+  API key, and a key must never be sent to the browser. Brevo's hosted form
+  needs no key: it is public by design and only ever adds an address to the
+  list it was made for.
 
   The form's address lives in content/home.json as signup.form.action.
   Until it is set, submitting says sign-up is opening soon.
 
   The request is sent once, with mode "no-cors". Brevo's reply cannot be
-  read across origins, so success is taken as the request going out;
-  what the browser does report, a dropped connection, shows as an error.
-  Sending it once, rather than retrying when the reply is unreadable,
-  means nobody is ever sent two confirmation emails.
+  read across origins, so success is taken as the request going out; what
+  the browser does report, a dropped connection, shows as an error. Sending
+  it once, rather than retrying when the reply is unreadable, means nobody
+  is ever sent two confirmation emails.
 */
 export default function SignupForm() {
   const [email, setEmail] = useState("");
@@ -60,21 +61,24 @@ export default function SignupForm() {
     status === "sent" ? form.success : status === "error" ? form.error : status === "unset" ? form.notReady : "";
 
   return (
-    <form onSubmit={handleSubmit} aria-label={form.label}>
-      <div className="flex items-end gap-md">
-        <label className="block grow">
-          <span className="eyebrow block">{form.label}</span>
-          <input
-            type="email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            autoComplete="email"
-            placeholder={form.placeholder}
-          />
+    <form onSubmit={handleSubmit} className="signup">
+      <div className="signup-row">
+        <label htmlFor="signup-email" className="sr-only">
+          {form.label}
         </label>
-        <button type="submit" className="cta shrink-0 pb-[0.3em]" disabled={status === "sending"}>
+        <input
+          id="signup-email"
+          type="email"
+          name="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoComplete="email"
+          placeholder={form.placeholder}
+          className="signup-input"
+          data-autofocus
+        />
+        <button type="submit" className="signup-button" disabled={status === "sending"}>
           {status === "sending" ? form.sending : form.submit}
         </button>
       </div>
@@ -92,11 +96,9 @@ export default function SignupForm() {
         />
       </label>
 
-      {message && (
-        <p role={status === "error" ? "alert" : "status"} className="mt-sm text-caption text-bone">
-          {message}
-        </p>
-      )}
+      <p role={status === "error" ? "alert" : "status"} className="min-h-[1.5em]">
+        {message}
+      </p>
     </form>
   );
 }
