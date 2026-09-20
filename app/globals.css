@@ -392,18 +392,26 @@
   mask-composite: intersect;
 }
 
-/* The turnable hut, on /hut, in the same box as the photograph.
+/* The turnable hut, on /hut.
 
-   The canvas is drawn on transparency, so unlike the photograph it needs
-   no screen blend to lose its sky, and nothing here has to avoid starting
-   a stacking context. It is lifted over the two glows so they read as the
-   fire behind it, and it takes the pointer, which the rest of the screen
-   does not. Touching it turns it rather than scrolling the page. */
+   The canvas is the whole window, not the hut's slot in the column, so
+   that coming closer makes the hut bigger instead of uncovering a
+   rectangle. components/Hut3D.tsx measures the slot and puts the hut into
+   it, which is why the page looks the same at rest.
+
+   Being drawn on transparency it needs no screen blend to lose its sky,
+   unlike the photograph, and nothing around it has to avoid starting a
+   stacking context.
+
+   At z-index 1 it covers the logo and the two lines, which are not
+   interactive and are meant to be grown over, and passes under the stars
+   in front (5), the button (6), the drawers (60) and the bars (70), all
+   of which stay where they are and stay usable. Dragging it turns the hut
+   rather than scrolling the page, which nothing here does anyway. */
 .hut-stage {
-  position: relative;
+  position: fixed;
+  inset: 0;
   z-index: 1;
-  width: 100%;
-  height: 100%;
   cursor: grab;
   touch-action: none;
   opacity: 0;
@@ -449,6 +457,71 @@
    quiet. Where motion is allowed it goes altogether, below. */
 .hut-note[data-state="ready"] {
   opacity: 0.5;
+}
+
+/* Coming closer to the model.
+
+   How far in the viewer has come, 0 at rest and 1 at the nearest the
+   controls allow. Hut3D.tsx writes it on the <html> as they move; it is
+   declared here so the rules below hold at rest, on the page with the
+   photograph, and in the moment before the model has loaded.
+
+   The words do not move aside. They keep their places and recede — dim,
+   soft and a little smaller — while the hut grows over them, and they
+   come back the moment the viewer pulls out. :has() keeps all of it off
+   the page with the photograph, which has no stage in it. */
+:root {
+  --hut-zoom: 0;
+}
+
+.hero:has(.hut-stage) .hero-logo,
+.hero:has(.hut-stage) .eyebrow,
+.hero:has(.hut-stage) .hero-cta,
+.hero:has(.hut-stage) .hut-fire {
+  opacity: calc(1 - var(--hut-zoom));
+  scale: calc(1 - var(--hut-zoom) * 0.12);
+  filter: blur(calc(var(--hut-zoom) * 5px));
+  transition:
+    opacity 0.25s linear,
+    scale 0.25s linear,
+    filter 0.25s linear;
+}
+
+/* The button is the one thing on the screen the hut cannot grow over.
+   Everything else recedes behind the canvas; the button has to stay above
+   it to go on being pressable at rest, which means at the first touch of
+   the thatch it would be a solid orange rectangle laid across the hut. So
+   it leaves three times as fast, and is gone before the hut reaches it. */
+.hero:has(.hut-stage) .hero-cta {
+  opacity: calc(1 - var(--hut-zoom) * 3);
+}
+
+/* And once it has gone, it stops taking the pointer: a button nobody can
+   see should not be pressable, and by then the pointer is the hut's. */
+.hero:has(.hut-stage)[data-immersed] .hero-cta {
+  pointer-events: none;
+}
+
+/* The stars in front are the sky, and they are in front of the hut too.
+   Once it has grown past the words there is no sky left on the screen and
+   they read as specks of dust on a mud wall, so they go with the words.
+   The far sky, behind everything, stays where it is. */
+body:has(.hut-stage) .sky-front {
+  opacity: calc(0.95 * (1 - var(--hut-zoom)));
+}
+
+/* The two glows wrapped as one thing to fade, on the model's page only.
+
+   It is given the same box as .hut rather than left as a bare inline
+   span, because the rule above puts a filter on it, and a filter makes an
+   element the containing block for anything absolutely positioned inside
+   it. Left inline it would have collapsed to nothing and taken the glows'
+   placement with it. */
+.hut-fire {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
 }
 
 /* The glow behind it, centred on the eaves, which are where the fire

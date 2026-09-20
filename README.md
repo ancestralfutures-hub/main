@@ -34,11 +34,18 @@ The artist section and the three rules are built but not shown, in
 
 ## The hut in three dimensions
 
-`/hut` is the opening screen with the hut as a model you can turn and come
-closer to, instead of the photograph. It is off the navigation, out of the
-sitemap and marked not to be indexed: nothing links to it, so the address
-is the only way in. It is there to be looked at before deciding whether it
-belongs on the front page.
+`/hut` is the opening screen with the hut as a model instead of the
+photograph. Drag to turn it; scroll to come closer, as far as the doorway.
+It is off the navigation, out of the sitemap and marked not to be indexed:
+nothing links to it, so the address is the only way in. It is there to be
+looked at before deciding whether it belongs on the front page.
+
+The canvas is the whole window rather than the hut's slot in the column,
+so there is no rectangle to uncover: coming closer simply makes the hut
+bigger, and the logo, the two lines and the button recede behind it and
+come back when you pull out. `Hut3D.tsx` measures the slot and puts the
+hut into it, which is why the screen looks the same as the front page at
+rest.
 
 Both pages are the same `HeroSection`; only what goes in the hut's place
 differs. `assets/hut3d/README.md` records where the model came from and how

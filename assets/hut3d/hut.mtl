@@ -8,18 +8,18 @@ Kd 1.000 1.000 1.000
 Ks 0.000 0.000 0.000
 d 1.0
 illum 1
-map_Kd mud.jpg
+map_Kd mud-grey.jpg
 
 newmtl aiStandardSurface2SG
 Kd 1.000 1.000 1.000
 Ks 0.000 0.000 0.000
 d 1.0
 illum 1
-map_Kd grass.jpg
+map_Kd grass-grey.jpg
 
 newmtl aiStandardSurface3SG
 Kd 1.000 1.000 1.000
 Ks 0.000 0.000 0.000
 d 1.0
 illum 1
-map_Kd tree.jpg
+map_Kd tree-grey.jpg

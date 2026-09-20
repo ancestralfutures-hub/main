@@ -49,6 +49,14 @@ npm install obj2gltf @gltf-transform/cli
 # The thatch texture is named by hut.mtl without its long prefix.
 cp 68434190-dry-grass-used-for-make-wall-or-roof.jpg grass.jpg
 
+# 0. Take the colour out of all three. components/Hut3D.tsx multiplies
+#    each one by a colour off the page's palette, so what is wanted from
+#    these files is the grain and nothing else — see "Why greyscale".
+GREY="/System/Library/ColorSync/Profiles/Generic Gray Gamma 2.2 Profile.icc"
+for f in mud grass tree; do
+  sips -s format jpeg --matchTo "$GREY" "$f.jpg" --out "$f-grey.jpg"
+done
+
 # 1. Thin and compact. One blade of thatch in three, which is the whole
 #    of the saving; the walls and the door frame are kept entire.
 python3 thin-obj.py Hut_OBJ.obj hut-web.obj 3
@@ -71,6 +79,23 @@ npx gltf-transform meshopt step.glb ../../public/hut.glb
 Step 4 writes `EXT_meshopt_compression`, so `components/Hut3D.tsx` hands
 three.js the meshopt decoder before it reads the file. Changing that step
 means changing the loader to match.
+
+### Why greyscale
+
+Rendered with their own colours these photographs make an accurate hut,
+which is the one thing a page of black, cream and orange cannot use: it
+reads as somebody's 3D model set down on a poster. Carried as greyscale
+and multiplied by one colour per part in `Hut3D.tsx`, the grain of the mud
+and the turn of every blade survive, and the greens and greys that belong
+to no part of this page do not.
+
+Dropping the maps altogether was tried first. The thatch held up, being
+seventeen thousand modelled blades, but the walls went to flat plastic
+cylinders: on a round wall lit by a single fire there is nothing to look
+at but the shading, and shading alone was not enough.
+
+The tints are in `Hut3D.tsx`, keyed on the shader names, and are the one
+place to change how the hut is coloured. Nothing needs rebuilding for it.
 
 ### What `thin-obj.py` does
 
