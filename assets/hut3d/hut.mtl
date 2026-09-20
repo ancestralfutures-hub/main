@@ -1,0 +1,25 @@
+# The original scene shipped without its .mtl, only the four Arnold shader
+# names the faces are grouped under. These map each to the texture that
+# came with it. Ks is left at zero: mud and dry thatch have no highlight,
+# and a specular sheen on a hundred thousand grass tubes only reads as noise.
+
+newmtl aiStandardSurface1SG
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 1
+map_Kd mud.jpg
+
+newmtl aiStandardSurface2SG
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 1
+map_Kd grass.jpg
+
+newmtl aiStandardSurface3SG
+Kd 1.000 1.000 1.000
+Ks 0.000 0.000 0.000
+d 1.0
+illum 1
+map_Kd tree.jpg

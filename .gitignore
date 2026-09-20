@@ -42,3 +42,13 @@ next-env.d.ts
 
 # Original artwork photos (web copies live in public/placements)
 source-photos/
+
+# The 3D hut as it came out of the renderer: 400MB of it, and the OBJ
+# alone is half again over the 100MB a file may be on GitHub, so a push
+# carrying it would be refused. The web copy is public/hut.glb, at 4.4MB.
+# Keep the originals wherever the artwork is kept; assets/hut3d/README.md
+# is the recipe for making the web copy again.
+assets/hut3d/*
+!assets/hut3d/README.md
+!assets/hut3d/thin-obj.py
+!assets/hut3d/hut.mtl

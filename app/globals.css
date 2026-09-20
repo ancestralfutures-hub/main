@@ -392,6 +392,65 @@
   mask-composite: intersect;
 }
 
+/* The turnable hut, on /hut, in the same box as the photograph.
+
+   The canvas is drawn on transparency, so unlike the photograph it needs
+   no screen blend to lose its sky, and nothing here has to avoid starting
+   a stacking context. It is lifted over the two glows so they read as the
+   fire behind it, and it takes the pointer, which the rest of the screen
+   does not. Touching it turns it rather than scrolling the page. */
+.hut-stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  opacity: 0;
+  transition: opacity 0.9s var(--ease);
+}
+
+.hut-stage[data-state="ready"] {
+  opacity: 1;
+}
+
+.hut-stage:active {
+  cursor: grabbing;
+}
+
+.hut-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* What to do with the hut, or why it is not there.
+
+   In the band of empty sky the camera leaves under the hut, and above the
+   tenth of the box that overlaps the month. Nothing is drawn there while
+   the model is on its way, and once it arrives the hut's base stops just
+   short of it. */
+.hut-note {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  z-index: 2;
+  translate: -50% 0;
+  width: max-content;
+  max-width: 90%;
+  color: var(--muted);
+  font-size: calc(var(--type-size) * 0.72);
+  letter-spacing: var(--caps-tracking);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+/* Once it is turning, the line is a hint rather than a label, and held
+   quiet. Where motion is allowed it goes altogether, below. */
+.hut-note[data-state="ready"] {
+  opacity: 0.5;
+}
+
 /* The glow behind it, centred on the eaves, which are where the fire
    shows. Radial gradients rather than rounded boxes, so the system keeps
    its zero radii. They come before the picture in the markup, so they
@@ -753,6 +812,23 @@
     }
     to {
       transform: translateY(-2000px);
+    }
+  }
+
+  /* The line under the turnable hut says what can be done with it, waits
+     long enough to be read, and then leaves the screen as it found it.
+     Where motion is not wanted it simply stays. */
+  .hut-note[data-state="ready"] {
+    animation: hut-hint 8s var(--ease) forwards;
+  }
+
+  @keyframes hut-hint {
+    0%,
+    60% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
     }
   }
 

@@ -32,6 +32,19 @@ npm run dev
 The artist section and the three rules are built but not shown, in
 `components/sections`.
 
+## The hut in three dimensions
+
+`/hut` is the opening screen with the hut as a model you can turn and come
+closer to, instead of the photograph. It is off the navigation, out of the
+sitemap and marked not to be indexed: nothing links to it, so the address
+is the only way in. It is there to be looked at before deciding whether it
+belongs on the front page.
+
+Both pages are the same `HeroSection`; only what goes in the hut's place
+differs. `assets/hut3d/README.md` records where the model came from and how
+the 4.4MB `public/hut.glb` was cut out of the 400MB the renderer produced —
+and why those 400MB are not in this repository.
+
 ## Publishing
 
 Every push to `main` builds and publishes the site, through

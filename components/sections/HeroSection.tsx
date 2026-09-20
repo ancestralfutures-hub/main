@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { ReactNode } from "react";
 import logo from "@/assets/dare-logo.webp";
 import Hut from "@/components/Hut";
 import { heroContent, signupContent } from "@/lib/content";
@@ -9,19 +10,23 @@ import { heroContent, signupContent } from "@/lib/content";
   sign-up drawer. It fills the height of the screen exactly and never
   scrolls; About and Sign up open over it.
 
+  The hut is a prop only so that /hut can put the turnable model in the
+  same slot without a second copy of everything around it. Every page but
+  that one takes the photograph, which is the default.
+
   No reveal here. The logo and the hut are the two largest things the page
   paints, and fading them in would only hold back the moment it counts as
   loaded. The logo is imported rather than referenced by path, so the base
   path the site is served under is applied to it automatically.
 */
-export default function HeroSection() {
+export default function HeroSection({ hut = <Hut /> }: { hut?: ReactNode }) {
   return (
     <section id="top" className="hero">
       <h1 className="hero-logo">
         <Image src={logo} alt={heroContent.title} loading="eager" />
       </h1>
       <p className="eyebrow">{heroContent.subtitle}</p>
-      <Hut />
+      {hut}
       <p className="eyebrow">{heroContent.when}</p>
       <a href="#signup" className="hero-cta">
         {signupContent.title}
