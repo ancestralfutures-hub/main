@@ -99,5 +99,5 @@ control in all three of those cases.
 
 Eventbrite refuses to open the checkout on an origin it does not know:
 `parent=http://localhost` is answered with a 403, so **the modal cannot be
-tested from `npm run dev`** — the button falls back to the link, which is
+tested from `npm run dev`**: the button falls back to the link, which is
 the fallback working as intended. Both live origins are accepted.

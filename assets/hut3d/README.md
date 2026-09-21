@@ -12,7 +12,7 @@
 
 What follows is how the model was made, and how to make it again if the
 original changes. Where it says the page loads `public/hut.glb`, that file
-is no longer built — step 4 below is what would produce it.
+is no longer built: step 4 below is what would produce it.
 
 ## What arrived
 
@@ -40,14 +40,14 @@ here maps each to the texture that came with it:
 | Group | Shader | Texture |
 |---|---|---|
 | `Wall` | `aiStandardSurface1SG` | `mud.jpg` |
-| `pPlane1` | `aiShadowMatte1SG` | none — see below |
+| `pPlane1` | `aiShadowMatte1SG` | none, see below |
 | `Roof` ×2 | `aiStandardSurface2SG` | the dry grass |
 | `Door_frame` ×3 | `aiStandardSurface3SG` | `tree.jpg` |
 
 And almost all of it is thatch: two roof groups of about 8,715 blades
 each, every blade a five-sided tube of some 83 triangles, and every blade
 its own smoothing group (`s 1` … `s 8715`). That last detail is what makes
-thinning possible — see below.
+thinning possible. See below.
 
 ## How the web copy was made
 
@@ -62,7 +62,7 @@ cp 68434190-dry-grass-used-for-make-wall-or-roof.jpg grass.jpg
 
 # 0. Take the colour out of all three. components/Hut3D.tsx multiplies
 #    each one by a colour off the page's palette, so what is wanted from
-#    these files is the grain and nothing else — see "Why greyscale".
+#    these files is the grain and nothing else. See "Why greyscale".
 GREY="/System/Library/ColorSync/Profiles/Generic Gray Gamma 2.2 Profile.icc"
 for f in mud grass tree; do
   sips -s format jpeg --matchTo "$GREY" "$f.jpg" --out "$f-grey.jpg"

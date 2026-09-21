@@ -24,8 +24,8 @@ declare global {
   Eventbrite's own snippet is a <button> beside a <noscript> copy of the
   link. This is a link and nothing else, which is better in every case
   that matters. Without JavaScript it goes to Eventbrite. With JavaScript
-  but no widget — blocked, or simply not there yet, since the script is
-  fetched after the page is interactive — it still goes to Eventbrite. It
+  but no widget (blocked, or simply not there yet, since the script is
+  fetched after the page is interactive), it still goes to Eventbrite. It
   is only once the widget has actually been built that the click is
   stopped from following the link, and by then there is a modal to open
   instead. A <button> would have been a dead control in all of those
