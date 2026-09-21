@@ -2,18 +2,18 @@ import Image from "next/image";
 import logo from "@/assets/dare-logo.webp";
 import Hut from "@/components/Hut";
 import TicketsButton from "@/components/TicketsButton";
-import { heroContent, signupContent, ticketsContent } from "@/lib/content";
+import { heroContent, ticketsContent } from "@/lib/content";
 
 /*
   The opening screen, and the only screen: the logo, the line beneath it,
-  the hut glowing in the dark, the month, and the two things to do. It
+  the hut glowing in the dark, the month, and the one thing to do. It
   fills the height of the screen exactly and never scrolls; About and Sign
   up open over it.
 
-  Tickets are the ask now that they are on sale, so that is the solid
-  orange one; sign up is the same shape, outlined, and is in the bar along
-  the bottom as well. They sit on one line, so the row is exactly the one
-  button-height the hut's room is worked out against.
+  One button, and it is tickets, now that they are on sale. Sign up is a
+  word away in the bar along the bottom, next to About, and putting it
+  here as well only said the same thing twice on a screen that has room
+  for very little.
 
   No reveal here. The logo and the hut are the two largest things the page
   paints, and fading them in would only hold back the moment it counts as
@@ -29,17 +29,12 @@ export default function HeroSection() {
       <p className="eyebrow">{heroContent.subtitle}</p>
       <Hut />
       <p className="eyebrow">{heroContent.when}</p>
-      <div className="hero-actions">
-        <TicketsButton
-          eventId={ticketsContent.eventId}
-          url={ticketsContent.url}
-          label={ticketsContent.title}
-          className="hero-cta"
-        />
-        <a href="#signup" className="hero-cta hero-cta-quiet">
-          {signupContent.title}
-        </a>
-      </div>
+      <TicketsButton
+        eventId={ticketsContent.eventId}
+        url={ticketsContent.url}
+        label={ticketsContent.title}
+        className="hero-cta"
+      />
     </section>
   );
 }
