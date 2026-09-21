@@ -45,9 +45,10 @@ source-photos/
 
 # The 3D hut as it came out of the renderer: 400MB of it, and the OBJ
 # alone is half again over the 100MB a file may be on GitHub, so a push
-# carrying it would be refused. The web copy is public/hut.glb, at 4.4MB.
-# Keep the originals wherever the artwork is kept; assets/hut3d/README.md
-# is the recipe for making the web copy again.
+# carrying it would be refused. The page that used it has been taken out
+# again and the site shows the photograph; assets/hut3d/README.md says so,
+# and keeps the recipe for cutting a 4.4MB model out of these files should
+# it ever be wanted. Keep the originals wherever the artwork is kept.
 assets/hut3d/*
 !assets/hut3d/README.md
 !assets/hut3d/thin-obj.py

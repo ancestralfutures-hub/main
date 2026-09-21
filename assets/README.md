@@ -12,10 +12,7 @@ designer's: `Dare Logo-02.png` (5625 × 4500) and `hut lit up.jpg`
 | `hut-1000.webp` | The hut for phones, 1000 wide |
 
 `public/` also carries `dare-logo.png` (2400 wide) and `hut.webp` (the same
-as `hut-1800.webp`) for the asset generator, which loads them by path, and
-`hut.glb`, the hut as a model, which `/hut` loads by path. The model was
-not made here: `hut3d/README.md` says where it came from and how the 4.4MB
-copy was cut out of the 400MB the renderer produced.
+as `hut-1800.webp`) for the asset generator, which loads them by path.
 
 ## How the hut was made
 

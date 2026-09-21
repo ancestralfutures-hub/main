@@ -328,8 +328,21 @@
   height: auto;
 }
 
-/* The button that opens the sign-up drawer: the one solid shape on the
-   screen. Lifted above the stars that pass in front of the logo. */
+/* The two things to do, side by side on one line. One line and not two:
+   the hut's room above is worked out against a single button-height, and
+   a row that wrapped would push the hut off the bottom of the screen. */
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+}
+
+/* Book tickets: the one solid shape on the screen. Lifted above the stars
+   that pass in front of the logo.
+
+   The side padding gives way before the row does, so that two buttons
+   still sit on one line on the narrowest phone. */
 .hero-cta {
   position: relative;
   z-index: 6;
@@ -337,19 +350,37 @@
   align-items: center;
   justify-content: center;
   height: var(--button-height);
-  padding-inline: 2.6em;
+  padding-inline: clamp(1.1em, 4.4vw, 2.6em);
   background: var(--orange);
   color: var(--ground);
   letter-spacing: var(--caps-tracking);
   text-transform: uppercase;
+  white-space: nowrap;
   transition:
     background-color 0.3s var(--ease),
-    color 0.3s var(--ease);
+    color 0.3s var(--ease),
+    box-shadow 0.3s var(--ease);
 }
 
 .hero-cta:hover {
   background: var(--cream);
   color: var(--ground);
+}
+
+/* Sign up: the same shape, drawn rather than filled, so that the two do
+   not compete and the orange still means one thing. An inset shadow and
+   not a border, so the height stays exactly the button's and the system
+   keeps its zero radii. */
+.hero-cta-quiet {
+  background: transparent;
+  color: var(--cream);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cream) 34%, transparent);
+}
+
+.hero-cta-quiet:hover {
+  background: var(--cream);
+  color: var(--ground);
+  box-shadow: inset 0 0 0 1px var(--cream);
 }
 
 /* ------------------------------------------------------------------ */
@@ -390,138 +421,6 @@
     linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
     linear-gradient(to bottom, transparent, #000 4%, #000 86%, transparent);
   mask-composite: intersect;
-}
-
-/* The turnable hut, on /hut.
-
-   The canvas is the whole window, not the hut's slot in the column, so
-   that coming closer makes the hut bigger instead of uncovering a
-   rectangle. components/Hut3D.tsx measures the slot and puts the hut into
-   it, which is why the page looks the same at rest.
-
-   Being drawn on transparency it needs no screen blend to lose its sky,
-   unlike the photograph, and nothing around it has to avoid starting a
-   stacking context.
-
-   At z-index 1 it covers the logo and the two lines, which are not
-   interactive and are meant to be grown over, and passes under the stars
-   in front (5), the button (6), the drawers (60) and the bars (70), all
-   of which stay where they are and stay usable. Dragging it turns the hut
-   rather than scrolling the page, which nothing here does anyway. */
-.hut-stage {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  cursor: grab;
-  touch-action: none;
-  opacity: 0;
-  transition: opacity 0.9s var(--ease);
-}
-
-.hut-stage[data-state="ready"] {
-  opacity: 1;
-}
-
-.hut-stage:active {
-  cursor: grabbing;
-}
-
-.hut-stage canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-/* What to do with the hut, or why it is not there.
-
-   In the band of empty sky the camera leaves under the hut, and above the
-   tenth of the box that overlaps the month. Nothing is drawn there while
-   the model is on its way, and once it arrives the hut's base stops just
-   short of it. */
-.hut-note {
-  position: absolute;
-  bottom: 10%;
-  left: 50%;
-  z-index: 2;
-  translate: -50% 0;
-  width: max-content;
-  max-width: 90%;
-  color: var(--muted);
-  font-size: calc(var(--type-size) * 0.72);
-  letter-spacing: var(--caps-tracking);
-  text-transform: uppercase;
-  pointer-events: none;
-}
-
-/* Once it is turning, the line is a hint rather than a label, and held
-   quiet. Where motion is allowed it goes altogether, below. */
-.hut-note[data-state="ready"] {
-  opacity: 0.5;
-}
-
-/* Coming closer to the model.
-
-   How far in the viewer has come, 0 at rest and 1 at the nearest the
-   controls allow. Hut3D.tsx writes it on the <html> as they move; it is
-   declared here so the rules below hold at rest, on the page with the
-   photograph, and in the moment before the model has loaded.
-
-   The words do not move aside. They keep their places and recede — dim,
-   soft and a little smaller — while the hut grows over them, and they
-   come back the moment the viewer pulls out. :has() keeps all of it off
-   the page with the photograph, which has no stage in it. */
-:root {
-  --hut-zoom: 0;
-}
-
-.hero:has(.hut-stage) .hero-logo,
-.hero:has(.hut-stage) .eyebrow,
-.hero:has(.hut-stage) .hero-cta,
-.hero:has(.hut-stage) .hut-fire {
-  opacity: calc(1 - var(--hut-zoom));
-  scale: calc(1 - var(--hut-zoom) * 0.12);
-  filter: blur(calc(var(--hut-zoom) * 5px));
-  transition:
-    opacity 0.25s linear,
-    scale 0.25s linear,
-    filter 0.25s linear;
-}
-
-/* The button is the one thing on the screen the hut cannot grow over.
-   Everything else recedes behind the canvas; the button has to stay above
-   it to go on being pressable at rest, which means at the first touch of
-   the thatch it would be a solid orange rectangle laid across the hut. So
-   it leaves three times as fast, and is gone before the hut reaches it. */
-.hero:has(.hut-stage) .hero-cta {
-  opacity: calc(1 - var(--hut-zoom) * 3);
-}
-
-/* And once it has gone, it stops taking the pointer: a button nobody can
-   see should not be pressable, and by then the pointer is the hut's. */
-.hero:has(.hut-stage)[data-immersed] .hero-cta {
-  pointer-events: none;
-}
-
-/* The stars in front are the sky, and they are in front of the hut too.
-   Once it has grown past the words there is no sky left on the screen and
-   they read as specks of dust on a mud wall, so they go with the words.
-   The far sky, behind everything, stays where it is. */
-body:has(.hut-stage) .sky-front {
-  opacity: calc(0.95 * (1 - var(--hut-zoom)));
-}
-
-/* The two glows wrapped as one thing to fade, on the model's page only.
-
-   It is given the same box as .hut rather than left as a bare inline
-   span, because the rule above puts a filter on it, and a filter makes an
-   element the containing block for anything absolutely positioned inside
-   it. Left inline it would have collapsed to nothing and taken the glows'
-   placement with it. */
-.hut-fire {
-  position: absolute;
-  inset: 0;
-  display: block;
-  pointer-events: none;
 }
 
 /* The glow behind it, centred on the eaves, which are where the fire
@@ -885,23 +784,6 @@ body:has(.hut-stage) .sky-front {
     }
     to {
       transform: translateY(-2000px);
-    }
-  }
-
-  /* The line under the turnable hut says what can be done with it, waits
-     long enough to be read, and then leaves the screen as it found it.
-     Where motion is not wanted it simply stays. */
-  .hut-note[data-state="ready"] {
-    animation: hut-hint 8s var(--ease) forwards;
-  }
-
-  @keyframes hut-hint {
-    0%,
-    60% {
-      opacity: 0.5;
-    }
-    100% {
-      opacity: 0;
     }
   }
 

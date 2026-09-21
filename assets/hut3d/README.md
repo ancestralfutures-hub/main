@@ -1,7 +1,18 @@
 # The hut, in three dimensions
 
-`public/hut.glb` is the model the page at `/hut` loads. This is how it was
-made, and how to make it again if the original changes.
+> **Not in use.** The page this was built for, `/hut`, was tried and taken
+> out again; the site shows the designer's photograph, as it always has.
+> Nothing here is loaded by anything. It is kept because the hard part was
+> getting 400MB of renderer output down to a 4.4MB model, and that is
+> worth not having to work out twice.
+>
+> The page itself, `app/hut/page.tsx` and `components/Hut3D.tsx`, is in the
+> history: `git show 6b53c52` is the last version of it, and `git revert`
+> of the commit that removed it brings the whole thing back.
+
+What follows is how the model was made, and how to make it again if the
+original changes. Where it says the page loads `public/hut.glb`, that file
+is no longer built — step 4 below is what would produce it.
 
 ## What arrived
 

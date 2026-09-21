@@ -20,6 +20,11 @@
     "title": "The way in",
     "lines": ["Shoes off.", "Phones outside.", "Enter the Daré."]
   },
+  "tickets": {
+    "title": "Book tickets",
+    "eventId": "2000644063249",
+    "url": "https://www.eventbrite.co.uk/e/ancestral-futures-presents-dare-a-sonic-portrait-by-shumba-maasai-tickets-2000644063249"
+  },
   "signup": {
     "title": "Sign up",
     "lede": "Sign up below for first access to announcements, tickets and future experiences of Daré.",

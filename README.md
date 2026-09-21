@@ -32,26 +32,6 @@ npm run dev
 The artist section and the three rules are built but not shown, in
 `components/sections`.
 
-## The hut in three dimensions
-
-`/hut` is the opening screen with the hut as a model instead of the
-photograph. Drag to turn it; scroll to come closer, as far as the doorway.
-It is off the navigation, out of the sitemap and marked not to be indexed:
-nothing links to it, so the address is the only way in. It is there to be
-looked at before deciding whether it belongs on the front page.
-
-The canvas is the whole window rather than the hut's slot in the column,
-so there is no rectangle to uncover: coming closer simply makes the hut
-bigger, and the logo, the two lines and the button recede behind it and
-come back when you pull out. `Hut3D.tsx` measures the slot and puts the
-hut into it, which is why the screen looks the same as the front page at
-rest.
-
-Both pages are the same `HeroSection`; only what goes in the hut's place
-differs. `assets/hut3d/README.md` records where the model came from and how
-the 4.4MB `public/hut.glb` was cut out of the 400MB the renderer produced —
-and why those 400MB are not in this repository.
-
 ## Publishing
 
 Every push to `main` builds and publishes the site, through
@@ -102,3 +82,22 @@ It posts instead to a sign-up form hosted by Brevo, which needs no key.
 4. Put it in `content/home.json` as `signup.form.action`, and push.
 
 Until then the form says sign-up is opening soon.
+
+## Tickets (Eventbrite)
+
+**Book tickets** opens Eventbrite's checkout over the page, without
+leaving it. The event is in `content/home.json` under `tickets`: change
+`eventId` and `url` together and nothing else needs touching.
+
+`components/TicketsButton.tsx` renders it as a plain link to the Eventbrite
+page and upgrades it. Only once Eventbrite's widget script has loaded and
+the modal has actually been built does a click stop following the link, so
+with JavaScript off, with the script blocked, or in the moment before it
+arrives, the button still takes you to Eventbrite. Eventbrite's own snippet
+uses a `<button>` with a `<noscript>` link beside it, which is a dead
+control in all three of those cases.
+
+Eventbrite refuses to open the checkout on an origin it does not know:
+`parent=http://localhost` is answered with a 403, so **the modal cannot be
+tested from `npm run dev`** — the button falls back to the link, which is
+the fallback working as intended. Both live origins are accepted.
