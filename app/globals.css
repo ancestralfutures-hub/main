@@ -287,20 +287,31 @@
 /* The opening screen                                                  */
 /* ------------------------------------------------------------------ */
 
-/* The logo, the line beneath it, the hut, the month and the button, one
-   above the other, filling exactly the height of the screen. The sum allows
-   the line two lines, as it takes on a phone.
+/* The logo, the line beneath it, the hut, where and when, the button and
+   the credits, one above the other, filling exactly the height of the
+   screen.
 
-   The hut takes whatever height the rest leaves. That is worked out here
-   rather than with a container query, because a container query would
-   wrap the hut in its own compositing group, and the screen blend that
-   makes its sky disappear only works against the page itself. */
+   The hut takes whatever height the rest leaves, so the rest has to be
+   counted. --rows is how many lines of body type to set aside: the line
+   under the logo, which takes two on a phone, and the two lines of venue
+   and dates, of which the venue also takes two once the screen is narrow
+   enough. --fine-rows is the same for the credits, which are smaller.
+   Both are raised at the bottom of this file where the screen gets narrow
+   enough for those lines to wrap.
+
+   Counted here rather than with a container query, because a container
+   query would wrap the hut in its own compositing group, and the screen
+   blend that makes its sky disappear only works against the page itself. */
 .hero {
   --gap: clamp(6px, 1.3dvh, 16px);
   --line: calc(var(--type-size) * var(--type-leading));
+  --fine: calc(var(--type-size) * 0.72 * 1.5);
+  --rows: 4;
+  --fine-rows: 2;
   --logo-h: min(15dvh, calc(72vw / 2.771), 188px);
   --hut-room: calc(
-    100dvh - 2 * var(--header-height) - var(--logo-h) - 3 * var(--line) - var(--button-height) - 5 * var(--gap) - 10px
+    100dvh - 2 * var(--header-height) - var(--logo-h) - var(--rows) * var(--line) - var(--fine-rows) *
+      var(--fine) - var(--button-height) - 6 * var(--gap) - 10px
   );
   /* The photograph's top tenth is sky and its bottom eighth is ground
      fading out, so it is allowed to reach a fifth taller than its room and
@@ -326,6 +337,32 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Where and when, on two lines held tight to each other so they read as
+   one block rather than as two of the column's items. */
+.hero-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* The partner and the funder, as the poster carries them along its bottom
+   edge. The one place on the page that steps off the single type size:
+   at full size an acknowledgement would weigh the same as the invitation,
+   and on a phone it would push the hut off the screen. Each line is its
+   own span so they break where they are written to break. */
+.hero-credits {
+  max-width: 44em;
+  color: var(--muted);
+  font-size: calc(var(--type-size) * 0.72);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-wrap: balance;
+}
+
+.hero-credits span {
+  display: block;
 }
 
 /* Book tickets: the one solid shape on the screen, and the only thing on
@@ -614,6 +651,13 @@
 /* On a phone the button goes beneath the field, so an email address has
    the whole width to be typed into and read back. */
 @media (max-width: 480px) {
+  /* Narrow enough that the venue takes a second line and the credits take
+     a third, so the hut is given that much less room to fill. */
+  .hero {
+    --rows: 5;
+    --fine-rows: 3;
+  }
+
   .signup-row {
     flex-direction: column;
   }

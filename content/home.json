@@ -2,8 +2,13 @@
   "hero": {
     "title": "DARÉ",
     "subtitle": "A sonic portrait by Shumba Maasai",
-    "when": "October 2026"
+    "where": "Zimbabwe House, 429 Strand, London",
+    "when": "15–22 October, 1pm–8pm"
   },
+  "credits": [
+    "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London.",
+    "Supported by Arts Council England."
+  ],
   "about": {
     "title": "About",
     "paragraphs": [

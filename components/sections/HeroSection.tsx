@@ -2,7 +2,7 @@ import Image from "next/image";
 import logo from "@/assets/dare-logo.webp";
 import Hut from "@/components/Hut";
 import TicketsButton from "@/components/TicketsButton";
-import { heroContent, ticketsContent } from "@/lib/content";
+import { creditsContent, heroContent, ticketsContent } from "@/lib/content";
 
 /*
   The opening screen, and the only screen: the logo, the line beneath it,
@@ -28,13 +28,24 @@ export default function HeroSection() {
       </h1>
       <p className="eyebrow">{heroContent.subtitle}</p>
       <Hut />
-      <p className="eyebrow">{heroContent.when}</p>
+      <div className="hero-details">
+        <p className="eyebrow">{heroContent.where}</p>
+        <p className="eyebrow">{heroContent.when}</p>
+      </div>
       <TicketsButton
         eventId={ticketsContent.eventId}
         url={ticketsContent.url}
         label={ticketsContent.title}
         className="hero-cta"
       />
+      {/* The funders and the partner, as the poster carries them along its
+          bottom edge. Small, because they are an acknowledgement and not a
+          line anyone came to read. */}
+      <p className="hero-credits">
+        {creditsContent.map((line) => (
+          <span key={line}>{line}</span>
+        ))}
+      </p>
     </section>
   );
 }
