@@ -20,5 +20,6 @@ export const aboutContent = home.about;
 export const artistContent = home.artist;
 export const rulesContent = home.rules;
 export const creditsContent = home.credits;
+export const eventContent = home.event;
 export const ticketsContent = home.tickets;
 export const signupContent = home.signup;

@@ -1,0 +1,106 @@
+<!doctype html>
+<!--
+  The card that social platforms show when the site is linked, drawn at
+  the size they want it: 1200 by 630. app/opengraph-image.png is a
+  screenshot of this file, and Next serves that automatically.
+
+  It is a page rather than an image so that it stays the site: the same
+  ground, the same gradient, the same logo and photograph, the same screen
+  blend that loses the hut's black sky, and Figtree standing in for
+  Halyard as everywhere else. Change the dates below and take the shot
+  again; do not retouch the PNG.
+
+  To regenerate, from the repository root:
+
+    npm i puppeteer
+    node -e "const p=require('puppeteer');(async()=>{const b=await p.launch();
+      const g=await b.newPage();await g.setViewport({width:1200,height:630});
+      await g.goto('file://'+process.cwd()+'/assets/social-card.html',{waitUntil:'networkidle0'});
+      await g.evaluateHandle('document.fonts.ready');
+      await g.screenshot({path:'app/opengraph-image.png'});await b.close();})()"
+
+  Then update app/opengraph-image.alt.txt to say the same thing in words.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground: #0b0d0c;
+    --cream: #f9f5cd;
+    --ember: #d4602b;
+    --ember-glow: #f0904f;
+    --ember-deep: #7a2f12;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background: radial-gradient(ellipse 90% 60% at 50% 34%, #16130f 0%, var(--ground) 72%);
+    background-color: var(--ground);
+    font-family: Figtree, "Helvetica Neue", Arial, sans-serif;
+    font-weight: 600;
+    color: var(--cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 34px 48px 30px;
+  }
+
+  .logo { width: 396px; height: auto; display: block; }
+
+  .hut { position: relative; width: 600px; height: 349px; flex: none; margin-block: -8px; }
+  .hut img {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    mix-blend-mode: screen;
+    opacity: 0.92;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent, #000 5%, #000 95%, transparent),
+      linear-gradient(to bottom, transparent, #000 4%, #000 86%, transparent);
+    -webkit-mask-composite: source-in;
+  }
+  .glow, .core {
+    position: absolute; left: 50%; translate: -50% -50%; pointer-events: none;
+  }
+  .glow {
+    top: 58%; width: 94%; height: 88%;
+    background: radial-gradient(closest-side,
+      color-mix(in srgb, var(--ember) 52%, transparent),
+      color-mix(in srgb, var(--ember-deep) 28%, transparent) 55%, transparent 100%);
+    filter: blur(30px);
+  }
+  .core {
+    top: 57%; width: 64%; height: 34%;
+    background: radial-gradient(closest-side,
+      color-mix(in srgb, var(--ember-glow) 58%, transparent), transparent 100%);
+    filter: blur(20px);
+  }
+
+  .line {
+    font-size: 23px;
+    line-height: 1.45;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+  .line + .line { margin-top: 2px; }
+</style>
+</head>
+<body>
+  <img class="logo" src="../public/dare-logo.png" alt="">
+  <div class="hut">
+    <span class="glow"></span>
+    <span class="core"></span>
+    <img src="../public/hut.webp" alt="">
+  </div>
+  <p class="line">Zimbabwe House, 429 Strand, London</p>
+  <p class="line">15&ndash;22 October 2026, 1pm&ndash;8pm</p>
+</body>
+</html>

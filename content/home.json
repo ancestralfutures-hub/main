@@ -5,6 +5,14 @@
     "where": "Zimbabwe House, 429 Strand, London",
     "when": "15–22 October, 1pm–8pm"
   },
+  "event": {
+    "venue": "Zimbabwe House",
+    "street": "429 Strand",
+    "city": "London",
+    "country": "GB",
+    "startDate": "2026-10-15T13:00:00+01:00",
+    "endDate": "2026-10-22T20:00:00+01:00"
+  },
   "credits": [
     "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London.",
     "Supported by Arts Council England."

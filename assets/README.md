@@ -14,6 +14,11 @@ designer's: `Dare Logo-02.png` (5625 × 4500) and `hut lit up.jpg`
 `public/` also carries `dare-logo.png` (2400 wide) and `hut.webp` (the same
 as `hut-1800.webp`) for the asset generator, which loads them by path.
 
+`social-card.html` is the card social platforms show when the site is
+linked. `app/opengraph-image.png` is a screenshot of it at 1200 by 630,
+and the file says how to take that shot again. It carries the venue and
+the dates, so it needs redoing whenever those change.
+
 ## How the hut was made
 
 The designer's photograph is an opaque picture on a black, grainy night
