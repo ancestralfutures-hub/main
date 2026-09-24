@@ -13,10 +13,7 @@
     "startDate": "2026-10-15T13:00:00+01:00",
     "endDate": "2026-10-22T20:00:00+01:00"
   },
-  "credits": [
-    "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London.",
-    "Supported by Arts Council England."
-  ],
+  "credits": ["Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London."],
   "about": {
     "title": "About",
     "paragraphs": [

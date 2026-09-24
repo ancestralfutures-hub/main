@@ -307,7 +307,7 @@
   --line: calc(var(--type-size) * var(--type-leading));
   --fine: calc(var(--type-size) * 0.72 * 1.5);
   --rows: 4;
-  --fine-rows: 2;
+  --fine-rows: 1;
   --logo-h: min(15dvh, calc(72vw / 2.771), 188px);
   --hut-room: calc(
     100dvh - 2 * var(--header-height) - var(--logo-h) - var(--rows) * var(--line) - var(--fine-rows) *
@@ -651,11 +651,11 @@
 /* On a phone the button goes beneath the field, so an email address has
    the whole width to be typed into and read back. */
 @media (max-width: 480px) {
-  /* Narrow enough that the venue takes a second line and the credits take
-     a third, so the hut is given that much less room to fill. */
+  /* Narrow enough that the venue takes a second line and the credit line
+     takes a second too, so the hut is given that much less room to fill. */
   .hero {
     --rows: 5;
-    --fine-rows: 3;
+    --fine-rows: 2;
   }
 
   .signup-row {
