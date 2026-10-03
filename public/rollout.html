@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DARÉ · Social rollout</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground:#0b0d0c; --lift:#16130f; --cream:#f9f5cd; --orange:#f43e00;
+    --muted:#908f78; --line:#24241e; --panel:#121410;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--ground); color:var(--cream);
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; font-weight:400;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--orange); }
+  header {
+    position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between;
+    padding:14px 24px; background:rgba(11,13,12,.94); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  header h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  header .meta { font-size:12px; color:var(--muted); letter-spacing:.06em; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; }
+  button {
+    font:inherit; font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--cream); background:transparent; border:1px solid #3d3c33;
+    padding:9px 16px; cursor:pointer; transition:background .2s,color .2s,border-color .2s;
+  }
+  button:hover { background:var(--cream); color:var(--ground); border-color:var(--cream); }
+  button.primary { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  button.primary:hover { background:var(--cream); border-color:var(--cream); }
+
+  .wrap { max-width:1320px; margin:0 auto; padding:34px 24px 120px; }
+  .intro { max-width:62ch; margin-bottom:40px; }
+  .intro h2 { font-size:30px; font-weight:800; letter-spacing:-.01em; margin-bottom:14px; }
+  .intro p { color:#bdbb9d; margin-bottom:12px; }
+  .intro .k { color:var(--cream); font-weight:600; }
+
+  .phase { margin:52px 0 20px; padding-top:22px; border-top:1px solid var(--line); }
+  .phase h3 { font-size:13px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--orange); }
+  .phase p { font-size:14px; color:var(--muted); margin-top:6px; max-width:60ch; }
+
+  .post {
+    display:grid; grid-template-columns:260px 1fr; gap:26px;
+    padding:26px 0; border-bottom:1px solid var(--line);
+  }
+  @media (max-width:860px) { .post { grid-template-columns:1fr; } }
+
+  .shot { position:relative; }
+  .shot canvas {
+    width:100%; height:auto; display:block; background:#000;
+    border:1px solid var(--line); cursor:pointer;
+  }
+  .shot .fmt {
+    position:absolute; top:7px; left:7px; font-size:10px; letter-spacing:.1em;
+    text-transform:uppercase; background:rgba(0,0,0,.72); color:var(--cream);
+    padding:3px 7px; pointer-events:none;
+  }
+
+  .info .when {
+    display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; margin-bottom:8px;
+  }
+  .info .date { font-size:13px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--orange); }
+  .info .dleft { font-size:12px; color:var(--muted); letter-spacing:.08em; text-transform:uppercase; }
+  .info h4 { font-size:21px; font-weight:800; margin-bottom:8px; }
+  .info .why { font-size:14px; color:var(--muted); margin-bottom:14px; max-width:62ch; }
+  .tags { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px; }
+  .tag { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:#cfcbb0;
+         border:1px solid #3d3c33; padding:3px 8px; }
+  .cap {
+    position:relative; background:var(--panel); border:1px solid var(--line);
+    padding:14px 16px; font-size:14px; color:#cfcbb0; white-space:pre-wrap;
+    margin-bottom:12px;
+  }
+  .cap b { color:var(--cream); font-weight:600; }
+  .acts { display:flex; gap:8px; flex-wrap:wrap; }
+  .sizes { font-size:12px; color:var(--muted); margin-top:10px; letter-spacing:.04em; }
+
+  #status {
+    position:fixed; left:50%; bottom:22px; translate:-50% 0; z-index:50;
+    background:var(--orange); color:var(--ground); font-size:13px; font-weight:600;
+    padding:11px 20px; opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #status.on { opacity:1; }
+  .loading { padding:60px 0; color:var(--muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>DARÉ · Social rollout</h1>
+    <div class="meta" id="headMeta">Zimbabwe House, 429 Strand, London · 15 to 22 October 2026</div>
+  </div>
+  <div class="bar">
+    <button id="dlAll" class="primary">Download every asset</button>
+    <button id="dlStories">Stories only</button>
+    <a href="/asset-generator.html"><button>Asset generator</button></a>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="intro">
+    <h2>Everything to post, in order, already drawn.</h2>
+    <p>
+      One run of posts from today to the last day of the Daré, and one after it closes.
+      Each is drawn here on a canvas, so what downloads is the full size file and not a
+      picture of this page. Press any preview to save it on its own, or take the lot
+      from the top of the page.
+    </p>
+    <p>
+      Every post carries a caption written to go with it. The countdown numbers are
+      worked out from the real dates, so they are right whatever day you open this.
+    </p>
+    <p class="k">Sizes are made for each platform: story and square for Instagram and
+      WhatsApp, landscape for X, LinkedIn and Facebook.</p>
+  </div>
+
+  <div id="feed" class="loading">Drawing the assets…</div>
+</div>
+
+<div id="status"></div>
+
+<script>
+// ===========================================================
+// DARÉ · SOCIAL ROLLOUT
+// The same night, palette, grain and artwork as the site and
+// the asset generator, drawn here into a fixed run of posts.
+// Nothing is a screenshot: every preview is a canvas, and the
+// file that downloads is that canvas at full size.
+// ===========================================================
+
+const P = {
+  ground:'#0b0d0c', lift:'#16130f', cream:'#f9f5cd', orange:'#f43e00',
+  muted:'#908f78', ember:'#d4602b', emberGlow:'#f0904f', emberDeep:'#7a2f12',
+};
+const FONT = "Figtree,'Helvetica Neue',Arial,sans-serif";
+const SITE = 'ancestralfutures.co.uk';
+const VENUE = 'Zimbabwe House, 429 Strand, London';
+const DATES = '15–22 October, 1pm–8pm';
+const OPENS = new Date(2026, 9, 15);   // 15 October 2026
+const CLOSES = new Date(2026, 9, 22);  // 22 October 2026
+
+// Four ways of colouring the same world. `ink` is what the type is set in,
+// `accent` is what a word or two is picked out in, `art` is the artwork.
+//
+// `dark` is the one that matters most: on a dark ground the photograph of
+// the hut can be laid on with lighten and its black sky falls away by
+// itself, and the fire has something to glow against. On a light ground
+// neither works, so those frames use the line drawing of the hut instead.
+const WAYS = {
+  night:  { bg:'sky',    ink:P.cream,   accent:P.orange,  art:P.cream,   dark:true,  stars:true,  ember:true,  grain:P.cream,   grainA:0.055 },
+  orange: { bg:P.orange, ink:'#17100a', accent:'#17100a', art:'#17100a', dark:false, stars:false, ember:false, grain:'#17100a', grainA:0.5 },
+  cream:  { bg:P.cream,  ink:'#17100a', accent:P.orange,  art:'#17100a', dark:false, stars:false, ember:false, grain:'#17100a', grainA:0.26 },
+  ink:    { bg:P.ground, ink:P.orange,  accent:P.cream,   art:P.orange,  dark:true,  stars:true,  ember:false, grain:P.orange,  grainA:0.12 },
+};
+
+const FORMATS = {
+  story:    { w:1080, h:1920, label:'Story 9:16' },
+  square:   { w:1080, h:1080, label:'Square 1:1' },
+  portrait: { w:1080, h:1350, label:'Portrait 4:5' },
+  wide:     { w:1600, h:900,  label:'Landscape 16:9' },
+};
+
+// ---------- artwork ----------
+const ART = {};
+function load(name, src) {
+  return new Promise((res) => {
+    const i = new Image();
+    i.onload = () => { ART[name] = i; res(); };
+    i.onerror = () => { ART[name] = null; res(); };
+    i.src = src;
+  });
+}
+
+// ---------- small helpers ----------
+const rnd = (seed) => () => {
+  seed = (seed + 0x6d2b79f5) | 0;
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+};
+
+function tracked(ctx, text, tr) {
+  let w = 0;
+  for (const ch of text) w += ctx.measureText(ch).width + tr;
+  return w - tr;
+}
+function fillTracked(ctx, text, x, y, tr) {
+  let cx = x;
+  for (const ch of text) { ctx.fillText(ch, cx, y); cx += ctx.measureText(ch).width + tr; }
+}
+function centreTracked(ctx, text, cx, y, tr) {
+  fillTracked(ctx, text, cx - tracked(ctx, text, tr) / 2, y, tr);
+}
+
+/* Spaced capitals centred inside a given width, shrinking until they fit.
+
+   Tracked capitals are the one thing in this system that reliably runs off
+   the edge: the tracking is a share of the size, so a long line grows twice
+   as fast as it looks like it should. Every centred line goes through here
+   so that no asset can be produced with its venue or its credit clipped. */
+function centreFit(ctx, text, cx, y, maxW, size, trRatio, weight) {
+  let s = size;
+  for (let i = 0; i < 24; i++) {
+    ctx.font = `${weight || 600} ${Math.round(s)}px ${FONT}`;
+    if (tracked(ctx, text, s * trRatio) <= maxW) break;
+    s *= 0.94;
+  }
+  centreTracked(ctx, text, cx, y, s * trRatio);
+  return s;
+}
+function wrap(ctx, text, max) {
+  const out = [];
+  for (const para of String(text).split('\n')) {
+    let line = '';
+    for (const word of para.split(/\s+/)) {
+      const t = line ? line + ' ' + word : word;
+      if (ctx.measureText(t).width > max && line) { out.push(line); line = word; }
+      else line = t;
+    }
+    out.push(line);
+  }
+  return out;
+}
+
+// Draws one of the black-on-white artworks in any colour, by using the
+// file's blackness as a stencil and filling through it.
+const stencil = document.createElement('canvas');
+function drawArt(ctx, img, x, y, w, h, colour, alpha) {
+  if (!img) return;
+  stencil.width = Math.max(1, Math.round(w));
+  stencil.height = Math.max(1, Math.round(h));
+  const s = stencil.getContext('2d');
+  s.clearRect(0, 0, stencil.width, stencil.height);
+  s.drawImage(img, 0, 0, stencil.width, stencil.height);
+  s.globalCompositeOperation = 'source-in';
+  s.fillStyle = colour;
+  s.fillRect(0, 0, stencil.width, stencil.height);
+  s.globalCompositeOperation = 'source-over';
+  ctx.save();
+  ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+  ctx.drawImage(stencil, x, y, w, h);
+  ctx.restore();
+}
+
+// ---------- the night ----------
+function paintGround(ctx, W, H, way) {
+  if (way.bg === 'sky') {
+    const g = ctx.createRadialGradient(W / 2, H * 0.34, 0, W / 2, H * 0.34, Math.max(W, H) * 0.78);
+    g.addColorStop(0, P.lift); g.addColorStop(0.72, P.ground); g.addColorStop(1, P.ground);
+    ctx.fillStyle = g;
+  } else ctx.fillStyle = way.bg;
+  ctx.fillRect(0, 0, W, H);
+}
+
+function paintStars(ctx, W, H, seed) {
+  const r = rnd(seed);
+  const n = Math.round((W * H) / 9000);
+  ctx.save();
+  for (let i = 0; i < n; i++) {
+    const x = r() * W, y = r() * H, s = r();
+    ctx.globalAlpha = 0.18 + s * 0.5;
+    ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8';
+    const d = s > 0.95 ? 3.1 : s > 0.75 ? 2 : 1.3;
+    ctx.fillRect(x, y, d, d);
+  }
+  ctx.restore();
+}
+
+// Measured off the width and not the height, so the fire is the same size
+// relative to the hut in a square as it is in a story. Off the height it
+// became a cloud that swallowed the whole of a tall frame.
+function paintEmber(ctx, W, H, cy, scale) {
+  const rw = W * 0.86 * scale, rh = W * 0.4 * scale;
+  ctx.save();
+  let g = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, Math.max(rw, rh) / 2);
+  g.addColorStop(0, 'rgba(212,96,43,.34)');
+  g.addColorStop(0.5, 'rgba(122,47,18,.15)');
+  g.addColorStop(1, 'rgba(122,47,18,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(W / 2, cy, rw / 2, rh / 2, 0, 0, 7); ctx.fill();
+  g = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, rw * 0.3);
+  g.addColorStop(0, 'rgba(240,144,79,.42)'); g.addColorStop(1, 'rgba(240,144,79,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(W / 2, cy, rw * 0.32, rh * 0.42, 0, 0, 7); ctx.fill();
+  ctx.restore();
+}
+
+/* The grain field: one image stretched over the whole frame, never tiled.
+
+   It is dense at the top and bottom and open through the middle, which is
+   exactly the poster's own edge texture, so stretching one copy across the
+   frame puts the speckle where the poster puts it and leaves the middle
+   clear for the words. Tiling it does the opposite: the dense bands land
+   everywhere and the frame goes flat. */
+function paintGrain(ctx, W, H, way) {
+  if (!ART.grain || !way.grainA) return;
+  drawArt(ctx, ART.grain, 0, 0, W, H, way.grain, way.grainA);
+}
+
+/* The hut, in whichever form the ground can carry.
+
+   The photograph is an opaque picture on a black sky, so on a dark ground
+   it goes on with lighten and the sky falls away by itself. On cream or
+   orange, lighten would keep the ground every time and the hut would
+   simply not appear, so those frames get the line drawing instead. */
+function paintHut(ctx, W, H, way, cx, cy, w, alpha) {
+  if (way.dark) {
+    if (!ART.hut) return;
+    const h = w * (ART.hut.height / ART.hut.width);
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighten';
+    ctx.globalAlpha = alpha === undefined ? 0.96 : alpha;
+    ctx.drawImage(ART.hut, cx - w / 2, cy - h / 2, w, h);
+    ctx.restore();
+  } else {
+    if (!ART.hutline) return;
+    const lw = w * 0.86;
+    const h = lw * (ART.hutline.height / ART.hutline.width);
+    drawArt(ctx, ART.hutline, cx - lw / 2, cy - h / 2, lw, h, way.art, alpha === undefined ? 0.9 : alpha);
+  }
+}
+
+// ---------- the pieces of furniture ----------
+function topName(ctx, W, H, way, pad) {
+  ctx.save();
+  ctx.fillStyle = way.ink;
+  ctx.globalAlpha = 0.72;
+  ctx.font = `600 ${Math.round(W * 0.0235)}px ${FONT}`;
+  ctx.textBaseline = 'top';
+  fillTracked(ctx, 'ANCESTRAL FUTURES', pad, pad, W * 0.0235 * 0.14);
+  ctx.restore();
+}
+
+function footer(ctx, W, H, way, lines, pad) {
+  ctx.save();
+  ctx.fillStyle = way.ink;
+  ctx.textBaseline = 'alphabetic';
+  const fs = Math.round(W * 0.0235);
+  ctx.font = `600 ${fs}px ${FONT}`;
+  let y = H - pad;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    ctx.globalAlpha = i === lines.length - 1 ? 0.6 : 0.92;
+    centreFit(ctx, lines[i].toUpperCase(), W / 2, y, W - pad * 2, fs, 0.14);
+    y -= fs * 1.75;
+  }
+  ctx.restore();
+}
+
+function wordmark(ctx, W, cx, y, width, colour) {
+  if (!ART.word) return 0;
+  const h = width * (ART.word.height / ART.word.width);
+  drawArt(ctx, ART.word, cx - width / 2, y, width, h, colour, 1);
+  return h;
+}
+
+// The two carved figures, bled off the left and right edges, as the poster
+// has them. They sit under everything else and are held well back.
+function figures(ctx, W, H, colour, alpha) {
+  const w = W * 0.27;
+  if (ART.figL) {
+    const h = w * (ART.figL.height / ART.figL.width);
+    drawArt(ctx, ART.figL, -w * 0.22, H - h * 0.92, w, h, colour, alpha);
+  }
+  if (ART.figR) {
+    const h = w * (ART.figR.height / ART.figR.width);
+    drawArt(ctx, ART.figR, W - w * 0.78, H - h * 0.92, w, h, colour, alpha);
+  }
+}
+
+// ===========================================================
+// THE LAYOUTS
+// Each one is handed a cleared canvas and the post's words.
+// ===========================================================
+const LAYOUTS = {};
+
+// A big number and the word under it. The whole frame is the countdown.
+LAYOUTS.countdown = (ctx, W, H, p, way) => {
+  const pad = W * 0.085;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 7);
+  paintGrain(ctx, W, H, way);
+  if (way.ember) paintEmber(ctx, W, H, H * 0.63, 1.05);
+  paintHut(ctx, W, H, way, W / 2, H * 0.64, W * 0.8);
+
+  topName(ctx, W, H, way, pad);
+  ctx.save();
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  const num = String(p.big);
+  const size = Math.round(W * (num.length > 1 ? 0.52 : 0.46));
+  ctx.font = `800 ${size}px ${FONT}`;
+  ctx.fillStyle = way.accent;
+  ctx.fillText(num, W / 2, H * 0.355);
+  const fs = Math.round(W * 0.038);
+  ctx.font = `600 ${fs}px ${FONT}`;
+  ctx.fillStyle = way.ink;
+  centreFit(ctx, p.small.toUpperCase(), W / 2, H * 0.355 + fs * 1.9, W * 0.82, fs, 0.16);
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], pad);
+};
+
+// The poster, rebuilt: orange ground, the figures at both edges, a black
+// window in the middle with the hut burning in it.
+LAYOUTS.poster = (ctx, W, H, p, way) => {
+  const INK = '#17100a';
+  ctx.fillStyle = P.orange; ctx.fillRect(0, 0, W, H);
+  paintGrain(ctx, W, H, WAYS.orange);
+  figures(ctx, W, H, INK, 0.85);
+
+  // Laid out in bands down the frame, so a square and a story both hold
+  // together: wordmark, the dark window, the credit, the details.
+  const wmW = W * 0.64;
+  const wmH = ART.word ? wmW * (ART.word.height / ART.word.width) : W * 0.26;
+  const wmY = H * 0.045;
+  const top = wmY + wmH + H * 0.028;
+  const bot = H * 0.805;
+
+  ctx.save();
+  ctx.fillStyle = '#0b0d0c';
+  ctx.fillRect(W * 0.13, top, W * 0.74, bot - top);
+  ctx.beginPath(); ctx.rect(W * 0.13, top, W * 0.74, bot - top); ctx.clip();
+  paintStars(ctx, W, H, 11);
+  paintHut(ctx, W, H, WAYS.night, W / 2, top + (bot - top) * 0.5, W * 0.7);
+  ctx.restore();
+
+  wordmark(ctx, W, W / 2, wmY, wmW, INK);
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = P.orange;
+  centreFit(ctx, 'A SONIC PORTRAIT BY SHUMBA MAASAI', W / 2, top + W * 0.035, W * 0.66, W * 0.0235, 0.42);
+
+  const rs = Math.round(W * 0.031);
+  ctx.font = `600 ${rs}px ${FONT}`;
+  let ry = bot - rs * 5;
+  for (const line of ['Shoes off.', 'No phones.', 'Enter the Daré.']) {
+    ctx.fillText(line.toUpperCase(), W * 0.44, ry); ry += rs * 1.45;
+  }
+  ctx.restore();
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  ctx.fillStyle = INK;
+  const cs = Math.round(W * 0.0168);
+  centreFit(ctx, 'PRESENTED BY ANCESTRAL FUTURES IN PARTNERSHIP WITH EMBASSY OF ZIMBABWE, LONDON', W / 2, bot + cs * 1.6, W * 0.76, cs, 0.06);
+
+  const ds = Math.round(W * 0.0225);
+  let y = bot + cs * 1.6 + ds * 2.8;
+  for (const l of [VENUE.toUpperCase(), DATES.toUpperCase(), SITE.toUpperCase()]) {
+    centreFit(ctx, l, W / 2, y, W * 0.86, ds, 0.1); y += ds * 1.5;
+  }
+  ctx.restore();
+};
+
+// The three rules, which are the most quotable thing the project has.
+LAYOUTS.rules = (ctx, W, H, p, way) => {
+  const pad = W * 0.1;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 3);
+  paintGrain(ctx, W, H, way);
+  if (ART.hutline) {
+    const w = W * 1.02, h = w * (ART.hutline.height / ART.hutline.width);
+    drawArt(ctx, ART.hutline, (W - w) / 2, H - h * 1.02, w, h, way.art, 0.17);
+  }
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  const fs = Math.round(W * 0.098);
+  ctx.font = `800 ${fs}px ${FONT}`;
+  const lines = ['Shoes off.', 'No phones.', 'Enter the Daré.'];
+  let y = H * 0.5 - fs * 1.2;
+  lines.forEach((l, i) => {
+    ctx.fillStyle = i === 2 ? way.accent : way.ink;
+    ctx.fillText(l, pad, y); y += fs * 1.22;
+  });
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES], W * 0.085);
+};
+
+// A paragraph: what the Daré actually is, for people meeting it cold.
+LAYOUTS.explain = (ctx, W, H, p, way) => {
+  const pad = W * 0.1;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 5);
+  paintGrain(ctx, W, H, way);
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  let y = H * 0.2;
+  const ts = Math.round(W * 0.075);
+  ctx.font = `800 ${ts}px ${FONT}`;
+  ctx.fillStyle = way.accent;
+  for (const l of wrap(ctx, p.title, W - pad * 2)) { ctx.fillText(l, pad, y); y += ts * 1.14; }
+  y += ts * 0.5;
+  const bs = Math.round(W * 0.038);
+  ctx.font = `400 ${bs}px ${FONT}`;
+  ctx.fillStyle = way.ink;
+  for (const l of wrap(ctx, p.body, W - pad * 2)) { ctx.fillText(l, pad, y); y += bs * 1.52; }
+  ctx.restore();
+
+  if (ART.hutline) {
+    const w = W * 0.52, h = w * (ART.hutline.height / ART.hutline.width);
+    drawArt(ctx, ART.hutline, W - w - pad, H - h - W * 0.1, w, h, way.art, 0.22);
+  }
+  footer(ctx, W, H, way, [SITE], W * 0.085);
+};
+
+// One line, said large. The quiet one in the run.
+LAYOUTS.line = (ctx, W, H, p, way) => {
+  const pad = W * 0.1;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 9);
+  paintGrain(ctx, W, H, way);
+  if (way.ember) paintEmber(ctx, W, H, H * 0.78, 0.9);
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'middle';
+  const fs = Math.round(W * 0.105);
+  ctx.font = `800 ${fs}px ${FONT}`;
+  const lines = wrap(ctx, p.title, W - pad * 2);
+  let y = H * 0.46 - ((lines.length - 1) * fs * 1.14) / 2;
+  for (const l of lines) { ctx.fillStyle = way.ink; ctx.fillText(l, pad, y); y += fs * 1.14; }
+  // Wrapped and measured, because the line under a quote is the one piece
+  // of text long enough to run off the edge of a square.
+  if (p.small) {
+    const ss = Math.round(W * 0.025);
+    const tr = ss * 0.12;
+    ctx.font = `600 ${ss}px ${FONT}`;
+    ctx.fillStyle = way.accent;
+    const words = p.small.toUpperCase().split(' ');
+    const rows = [];
+    let line = '';
+    for (const word of words) {
+      const t = line ? line + ' ' + word : word;
+      if (tracked(ctx, t, tr) > W - pad * 2 && line) { rows.push(line); line = word; }
+      else line = t;
+    }
+    rows.push(line);
+    let sy = y + ss * 1.4;
+    for (const r of rows) { fillTracked(ctx, r, pad, sy, tr); sy += ss * 1.6; }
+  }
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
+};
+
+// The hut as a drawing, nearly on its own. Used where the run needs air.
+LAYOUTS.hut = (ctx, W, H, p, way) => {
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 13);
+  paintGrain(ctx, W, H, way);
+  const w = W * 0.92, h = w * (ART.hutline ? ART.hutline.height / ART.hutline.width : 0.64);
+  drawArt(ctx, ART.hutline, (W - w) / 2, H * 0.52 - h / 2, w, h, way.art, 0.8);
+  wordmark(ctx, W, W / 2, H * 0.1, W * 0.52, way.ink);
+  ctx.save();
+  const fs = Math.round(W * 0.03);
+  ctx.font = `600 ${fs}px ${FONT}`;
+  ctx.fillStyle = way.accent;
+  ctx.textBaseline = 'top';
+  centreFit(ctx, p.small.toUpperCase(), W / 2, H * 0.72, W * 0.82, fs, 0.2);
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
+};
+
+// Where and when, said plainly, with the logo over it.
+LAYOUTS.detail = (ctx, W, H, p, way) => {
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 17);
+  paintGrain(ctx, W, H, way);
+  if (way.ember) paintEmber(ctx, W, H, H * 0.6, 1);
+  paintHut(ctx, W, H, way, W / 2, H * 0.56, W * 0.76);
+  const wh = wordmark(ctx, W, W / 2, H * 0.13, W * 0.64, way.ink);
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  const ss = Math.round(W * 0.027);
+  ctx.font = `600 ${ss}px ${FONT}`;
+  ctx.fillStyle = way.accent;
+  centreFit(ctx, 'A SONIC PORTRAIT BY SHUMBA MAASAI', W / 2, H * 0.13 + wh + ss * 1.2, W * 0.84, ss, 0.3);
+  const ds = Math.round(W * 0.042);
+  ctx.font = `600 ${ds}px ${FONT}`;
+  ctx.fillStyle = way.ink;
+  centreFit(ctx, VENUE.toUpperCase(), W / 2, H * 0.77, W * 0.84, ds, 0.1);
+  centreFit(ctx, DATES.toUpperCase(), W / 2, H * 0.77 + ds * 1.5, W * 0.84, ds, 0.1);
+  ctx.restore();
+  footer(ctx, W, H, way, [SITE], W * 0.085);
+};
+
+// Open now. The loudest one: the fire is up and the word is the frame.
+LAYOUTS.open = (ctx, W, H, p, way) => {
+  paintGround(ctx, W, H, way);
+  paintStars(ctx, W, H, 23);
+  paintEmber(ctx, W, H, H * 0.6, 1.35);
+  paintHut(ctx, W, H, way, W / 2, H * 0.62, W * 0.92);
+  paintGrain(ctx, W, H, WAYS.night);
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'middle';
+  const fs = Math.round(W * 0.15);
+  ctx.font = `800 ${fs}px ${FONT}`;
+  ctx.textAlign = 'center';
+  ctx.fillStyle = P.orange;
+  const lines = wrap(ctx, p.title, W * 0.88);
+  let y = H * 0.3 - ((lines.length - 1) * fs) / 2;
+  for (const l of lines) { ctx.fillText(l, W / 2, y); y += fs * 1.02; }
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
+};
+
+// ===========================================================
+// THE RUN
+// Dates are real, so the countdown is right whenever this is
+// opened, and a post that has already gone is marked as past.
+// ===========================================================
+const d = (m, day) => new Date(2026, m - 1, day);
+
+const PLAN = [
+  { phase:'Two weeks out', note:'Reach first. These are the posts that have to explain the thing to people who have never heard of it, and give them a reason to look twice.' },
+
+  { on:d(10,3), key:'what', layout:'explain', way:'cream', fmts:['portrait','square','wide'],
+    title:'What is a Daré?', body:'A Daré is a gathering. A place where knowledge is passed through sound, memory and presence rather than explanation. For eight days in October it takes the form of an installation at Zimbabwe House.',
+    head:'What a Daré is', why:'Start with the word itself. Most people scrolling have never seen it, and the whole run reads better once they have.',
+    caption:'A Daré is a gathering.\n\nA place where knowledge is passed through sound, memory and presence rather than explanation.\n\nFor eight days this October it takes the form of an installation at Zimbabwe House.\n\n15 to 22 October. Tickets at ancestralfutures.co.uk' },
+
+  { on:d(10,5), key:'poster', layout:'poster', way:'orange', fmts:['story','portrait','square'],
+    head:'The poster', why:'The key art on its own. Highest save and share rate of anything in the run, and it carries every detail without a caption.',
+    caption:'DARÉ\nA sonic portrait by Shumba Maasai\n\nZimbabwe House, 429 Strand, London\n15 to 22 October, 1pm to 8pm\n\nTickets at ancestralfutures.co.uk' },
+
+  { on:d(10,7), key:'rules', layout:'rules', way:'orange', fmts:['square','story','portrait'],
+    head:'The three rules', why:'The most quotable thing the project has. Reads as an invitation rather than a restriction, and people repeat it.',
+    caption:'Shoes off.\nNo phones.\nEnter the Daré.\n\nThree rules, and all of them are about being here properly.\n\n15 to 22 October. ancestralfutures.co.uk' },
+
+  { on:d(10,8), key:'week1', layout:'countdown', way:'night', fmts:['story','square'],
+    big:7, small:'days to go',
+    head:'One week to go', why:'The first countdown beat. A week out is when people who meant to book actually book.',
+    caption:'One week.\n\nZimbabwe House, 429 Strand, London\n15 to 22 October, 1pm to 8pm\n\nancestralfutures.co.uk' },
+
+  { phase:'The last week', note:'Frequency goes up and the posts get shorter. By now the job is reminding, not explaining.' },
+
+  { on:d(10,10), key:'artist', layout:'explain', way:'ink', fmts:['portrait','square','wide'],
+    title:'Shumba Maasai', body:'Zimbabwean born, London based. Working across music, sound and performance. Daré is his first installation, and it has been over a year in the making, much of it brought back from Zimbabwe.',
+    head:'The artist', why:'People come for a person as much as a concept. This is the one post that is about him rather than the work.',
+    caption:'Shumba Maasai. Zimbabwean born, London based, working across music, sound and performance.\n\nDaré is his first installation, over a year in the making and much of it brought back from Zimbabwe.\n\n15 to 22 October at Zimbabwe House. ancestralfutures.co.uk' },
+
+  { on:d(10,12), key:'refuge', layout:'line', way:'night', fmts:['story','square','wide'],
+    title:'A sonic refuge.', small:'a gathering of memory, feeling and imagination',
+    head:'A line on its own', why:'A breath in the run. Quiet, very shareable, and it sets the tone before the loud final days.',
+    caption:'A sonic refuge.\nA gathering of memory, feeling and imagination.\n\n15 to 22 October, Zimbabwe House.\nancestralfutures.co.uk' },
+
+  { on:d(10,13), key:'two', layout:'countdown', way:'night', fmts:['story','square'],
+    big:2, small:'days to go',
+    head:'Two days', why:'Short, urgent, no explaining. Stories only territory.',
+    caption:'Two days.\n\n15 to 22 October, 1pm to 8pm\nZimbabwe House, 429 Strand\n\nancestralfutures.co.uk' },
+
+  { on:d(10,14), key:'tomorrow', layout:'open', way:'night', fmts:['story','square'],
+    title:'Tomorrow',
+    head:'Tomorrow', why:'The last push before doors. Expect the biggest single day of ticket sales on the back of this one.',
+    caption:'Tomorrow.\n\nDoors 1pm. Shoes off. No phones.\n\nZimbabwe House, 429 Strand, London\nancestralfutures.co.uk' },
+
+  { phase:'Open', note:'Eight days of being open. Post from inside it now: the room, the sound, the people. These are the frames to carry that.' },
+
+  { on:d(10,15), key:'open', layout:'open', way:'night', fmts:['story','square','wide'],
+    title:'We are open',
+    head:'Opening day', why:'Doors. Pin this one and keep it at the top of the profile for the week.',
+    caption:'We are open.\n\n1pm to 8pm, every day until the 22nd.\nZimbabwe House, 429 Strand, London\n\nShoes off. No phones. Enter the Daré.\nancestralfutures.co.uk' },
+
+  { on:d(10,17), key:'hut', layout:'hut', way:'orange', fmts:['square','portrait'],
+    small:'open daily, 1pm to 8pm',
+    head:'Mid run reminder', why:'A quiet frame for the middle weekend, when the run needs presence more than noise. Good behind a photograph from the room.',
+    caption:'Open every day until the 22nd, 1pm to 8pm.\n\nZimbabwe House, 429 Strand, London.\nShoes off. No phones. Enter the Daré.' },
+
+  { on:d(10,19), key:'detail', layout:'detail', way:'night', fmts:['story','square','wide'],
+    head:'Where and when', why:'The practical one. Somebody always asks, and this is what you reply with.',
+    caption:'Still running.\n\nZimbabwe House, 429 Strand, London\nUntil 22 October, 1pm to 8pm\n\nancestralfutures.co.uk' },
+
+  { on:d(10,21), key:'two-left', layout:'countdown', way:'ink', fmts:['story','square'],
+    big:2, small:'days left',
+    head:'Two days left', why:'The countdown flips from anticipation to scarcity. This is the one that moves the last tickets.',
+    caption:'Two days left to enter the Daré.\n\nUntil 22 October, 1pm to 8pm\nZimbabwe House, 429 Strand\n\nancestralfutures.co.uk' },
+
+  { on:d(10,22), key:'last', layout:'open', way:'night', fmts:['story','square'],
+    title:'Last day',
+    head:'Last day', why:'Final call, posted in the morning so there is a whole day left to act on it.',
+    caption:'Last day.\n\nOpen until 8pm tonight.\nZimbabwe House, 429 Strand, London\n\nancestralfutures.co.uk' },
+
+  { phase:'After', note:'The run does not end at the door. This is what keeps the list warm for the next two cities.' },
+
+  { on:d(10,23), key:'thanks', layout:'line', way:'cream', fmts:['square','portrait','wide'],
+    title:'Thank you for coming.', small:'london · october 2026',
+    head:'Thank you', why:'Closes the loop, and it is the post that carries the announcement of the next city when it comes.',
+    caption:'Thank you to everyone who came and sat with us.\n\nDaré was eight days at Zimbabwe House, London.\n\nMore to be announced. It is going to be super special.\n\nSee you deya.' },
+];
+
+// ===========================================================
+// DRAWING, PREVIEWS AND FILES
+// ===========================================================
+function render(canvas, post, fmt) {
+  const f = FORMATS[fmt];
+  canvas.width = f.w; canvas.height = f.h;
+  const ctx = canvas.getContext('2d');
+  const way = WAYS[post.way];
+  ctx.clearRect(0, 0, f.w, f.h);
+  LAYOUTS[post.layout](ctx, f.w, f.h, post, way);
+}
+
+function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
+
+function toast(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg; s.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => s.classList.remove('on'), 2200);
+}
+
+function save(canvas, name) {
+  return new Promise((res) => canvas.toBlob((b) => {
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+    res();
+  }, 'image/png'));
+}
+
+const scratch = document.createElement('canvas');
+async function download(post, fmt) {
+  render(scratch, post, fmt);
+  await save(scratch, `DARE_${String(post.on.getDate()).padStart(2,'0')}Oct_${post.key}_${fmt}.png`);
+}
+
+async function downloadMany(list) {
+  let n = 0;
+  for (const [post, fmt] of list) {
+    await download(post, fmt); n++;
+    toast(`Saving ${n} of ${list.length}`);
+    await new Promise((r) => setTimeout(r, 220));
+  }
+  toast(`${n} files saved`);
+}
+
+const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function build() {
+  const feed = document.getElementById('feed');
+  feed.className = '';
+  feed.innerHTML = '';
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+
+  for (const row of PLAN) {
+    if (row.phase) {
+      const h = document.createElement('div');
+      h.className = 'phase';
+      h.innerHTML = `<h3>${row.phase}</h3><p>${row.note}</p>`;
+      feed.appendChild(h);
+      continue;
+    }
+
+    // The countdown numbers are worked out now, not written down, so the
+    // files are right whatever day this page is opened on.
+    const toOpen = daysBetween(today, OPENS);
+    const toClose = daysBetween(today, CLOSES);
+    if (row.layout === 'countdown') {
+      row.big = row.small === 'days left' ? Math.max(0, daysBetween(row.on, CLOSES)) : Math.max(0, daysBetween(row.on, OPENS));
+    }
+
+    const past = row.on < today;
+    const el = document.createElement('div');
+    el.className = 'post';
+    const first = row.fmts[0];
+    el.innerHTML = `
+      <div class="shot">
+        <canvas></canvas>
+        <span class="fmt">${FORMATS[first].label}</span>
+      </div>
+      <div class="info">
+        <div class="when">
+          <span class="date">${row.on.getDate()} ${MONTH[row.on.getMonth()]}</span>
+          <span class="dleft">${past ? 'gone by' : daysBetween(today, row.on) === 0 ? 'today' : 'in ' + daysBetween(today, row.on) + ' days'}</span>
+        </div>
+        <h4>${row.head}</h4>
+        <p class="why">${row.why}</p>
+        <div class="tags">${row.fmts.map((f) => `<span class="tag">${FORMATS[f].label}</span>`).join('')}</div>
+        <div class="cap">${row.caption.replace(/</g, '&lt;')}</div>
+        <div class="acts">
+          <button data-copy="1">Copy caption</button>
+          ${row.fmts.map((f) => `<button data-fmt="${f}">Save ${FORMATS[f].label.split(' ')[0]}</button>`).join('')}
+        </div>
+      </div>`;
+    feed.appendChild(el);
+
+    const canvas = el.querySelector('canvas');
+    render(canvas, row, first);
+    canvas.onclick = () => download(row, first);
+
+    el.querySelector('[data-copy]').onclick = () => {
+      navigator.clipboard.writeText(row.caption).then(() => toast('Caption copied'));
+    };
+    el.querySelectorAll('[data-fmt]').forEach((b) => {
+      b.onclick = () => download(row, b.dataset.fmt);
+    });
+  }
+
+  const posts = PLAN.filter((r) => !r.phase);
+  document.getElementById('dlAll').onclick = () =>
+    downloadMany(posts.flatMap((p) => p.fmts.map((f) => [p, f])));
+  document.getElementById('dlStories').onclick = () =>
+    downloadMany(posts.filter((p) => p.fmts.includes('story')).map((p) => [p, 'story']));
+
+  const left = daysBetween(today, OPENS);
+  document.getElementById('headMeta').textContent =
+    `${VENUE} · ${DATES} · ` + (left > 0 ? `${left} days to go` : left === 0 ? 'opens today' : 'running now');
+}
+
+// ---------- go ----------
+(async function () {
+  await Promise.all([
+    load('hut', '/hut.webp'),
+    load('word', '/art/wordmark.png'),
+    load('hutline', '/art/hut-line.png'),
+    load('grain', '/art/grain-field.png'),
+    load('figL', '/art/figure-left.png'),
+    load('figR', '/art/figure-right.png'),
+  ]);
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  build();
+})();
+</script>
+</body>
+</html>

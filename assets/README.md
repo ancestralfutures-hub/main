@@ -42,3 +42,20 @@ compress, and it came out at over 2MB against 270KB for this.
 Inside the hut's frame, the eaves sit at 57% of the height, the eave tips
 at 9% and 91% of the width, and the base at 86% of the height. The glow in
 `app/globals.css` and the feathered edge are placed from those numbers.
+
+## The artwork in `public/art/`
+
+The designer's black line and halftone art, prepared so a canvas can fill
+it with any colour: `wordmark.png` (DARÉ), `hut-line.png` (the hut drawn),
+`figure-left.png` and `figure-right.png` (the two carved figures from the
+poster's edges) and `grain-field.png` (the speckle that is dense at the top
+and bottom and open through the middle).
+
+Each is white with its shape carried in the alpha channel, so drawing it
+through a `source-in` fill tints it. The originals came as black art on a
+transparent ground, so the alpha has to be read from the file's own alpha
+and its darkness together: reading darkness alone turns every transparent
+pixel solid black. The hut drawing was scanned faintly, its strongest line
+only two thirds opaque, so its alpha is lifted until that line is solid.
+
+`/asset-generator.html` and `/rollout.html` both draw with these.

@@ -142,6 +142,11 @@ select { border:1px solid var(--hairline); padding:.4em; }
         <button class="chip" data-preset="artist">Artist</button>
         <button class="chip" data-preset="date">Save the date</button>
         <button class="chip" data-preset="quote">A line</button>
+        <button class="chip" data-preset="tickets">Tickets</button>
+        <button class="chip" data-preset="countdown">Countdown</button>
+        <button class="chip" data-preset="open">Open now</button>
+        <button class="chip" data-preset="venue">Where and when</button>
+        <button class="chip" data-preset="thanks">Thank you</button>
         <button class="chip chip--quiet" data-preset="clear">Clear</button>
       </div>
     </div>
@@ -166,7 +171,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
       </div>
       <div class="field">
         <div class="field-label"><span>Foot right</span></div>
-        <input id="inFootR" value="October 2026">
+        <input id="inFootR" value="15–22 October, 1pm–8pm">
       </div>
       <div class="field">
         <div class="field-label"><span>Title size</span><span id="titleScaleVal">100%</span></div>
@@ -352,7 +357,7 @@ const S = {
   title:'DARÉ',
   sub:'A sonic portrait by Shumba Maasai',
   body:'',
-  footL:'', footR:'October 2026',
+  footL:'', footR:'15–22 October, 1pm–8pm',
   titleScale:100, pos:'tc',
   image:null, imgFit:'cover', imgScale:100, imgPos:'center center', imgOpacity:100, wash:0,
   ground:'sky', text:PALETTE.cream,
@@ -365,6 +370,8 @@ const hutImg = new Image();
 const logoImg = new Image();
 
 const SITE = 'ancestralfutures.co.uk';
+const VENUE = 'Zimbabwe House, 429 Strand, London';
+const DATES = '15–22 October, 1pm–8pm';
 
 // ===========================================================
 // THE NIGHT SKY
@@ -717,15 +724,40 @@ function drawText(ctx, w, h) {
     }
   }
 
-  // The foot row, pinned to the bottom.
+  /* The foot row, pinned to the bottom.
+
+     One line to the left and one to the right, which collide in the middle
+     of a narrow frame as soon as either is longer than an address. Rather
+     than let them run through one another, the pair is shrunk until they
+     clear, and if they still will not the right hand one drops onto a line
+     of its own. A square has half the width of a banner to do this in. */
   const y = h - pad;
   if (hasFoot) {
-    ctx.font = `600 ${footSize}px ${FONT_BODY}`;
-    const track = footSize * 0.28;
-    if (S.footL.trim()) fillTracked(ctx, S.footL.trim().toUpperCase(), pad, y, track);
-    if (S.footR.trim()) {
-      const t = S.footR.trim().toUpperCase();
-      fillTracked(ctx, t, w - pad - trackedWidth(ctx, t, track), y, track);
+    const L = S.footL.trim().toUpperCase();
+    const R = S.footR.trim().toUpperCase();
+    let fs = footSize;
+    let track = fs * 0.28;
+    let stack = false;
+
+    if (L && R) {
+      const room = w - pad * 2 - footSize * 1.6;   // a gap they must leave
+      for (let i = 0; i < 20; i++) {
+        ctx.font = `600 ${fs}px ${FONT_BODY}`;
+        track = fs * 0.28;
+        if (trackedWidth(ctx, L, track) + trackedWidth(ctx, R, track) <= room) break;
+        fs *= 0.94;
+        if (fs < footSize * 0.62) { stack = true; break; }
+      }
+    }
+
+    ctx.font = `600 ${fs}px ${FONT_BODY}`;
+    track = fs * 0.28;
+    if (stack) {
+      if (R) fillTracked(ctx, R, pad, y, track);
+      if (L) fillTracked(ctx, L, pad, y - fs * 1.6, track);
+    } else {
+      if (L) fillTracked(ctx, L, pad, y, track);
+      if (R) fillTracked(ctx, R, w - pad - trackedWidth(ctx, R, track), y, track);
     }
   }
 }
@@ -1008,10 +1040,15 @@ logoImg.src = 'dare-logo.png';
 
 // --- Presets ---
 const PRESETS = {
-  announce: { useLogo:true,  title:'DARÉ', sub:'A sonic portrait by Shumba Maasai', body:'', footL:'', footR:'October 2026', pos:'tc', titleScale:100 },
-  rules:    { useLogo:false, title:'Shoes off.\nPhones outside.\nEnter the Daré.', sub:'', body:'', footL:'', footR:'October 2026', pos:'ml', titleScale:52 },
-  artist:   { useLogo:false, title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ is his first installation.', footL:'', footR:'October 2026', pos:'bl', titleScale:46 },
-  date:     { useLogo:true,  title:'DARÉ', sub:'October 2026', body:'', footL:'', footR:SITE, pos:'tc', titleScale:80 },
+  announce: { useLogo:true,  title:'DARÉ', sub:'A sonic portrait by Shumba Maasai', body:'', footL:VENUE, footR:DATES, pos:'tc', titleScale:100 },
+  rules:    { useLogo:false, title:'Shoes off.\nNo phones.\nEnter the Daré.', sub:'', body:'', footL:VENUE, footR:DATES, pos:'ml', titleScale:52 },
+  artist:   { useLogo:false, title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ is his first installation.', footL:'', footR:SITE, pos:'bl', titleScale:46 },
+  date:     { useLogo:true,  title:'DARÉ', sub:DATES, body:'', footL:VENUE, footR:SITE, pos:'tc', titleScale:80 },
+  tickets:  { useLogo:false, title:'Tickets are\nnow available.', sub:'', body:'', footL:VENUE, footR:DATES, pos:'ml', titleScale:62 },
+  countdown:{ useLogo:false, title:'7', sub:'days to go', body:'', footL:VENUE, footR:DATES, pos:'mc', titleScale:180 },
+  open:     { useLogo:false, title:'We are open', sub:'', body:'', footL:DATES, footR:SITE, pos:'mc', titleScale:74 },
+  venue:    { useLogo:true,  title:'DARÉ', sub:'Zimbabwe House, 429 Strand', body:'', footL:DATES, footR:SITE, pos:'tc', titleScale:80 },
+  thanks:   { useLogo:false, title:'Thank you\nfor coming.', sub:'', body:'', footL:'London', footR:'October 2026', pos:'ml', titleScale:60 },
   quote:    { useLogo:false, title:'A sonic refuge.', sub:'A gathering of memory, feeling and imagination', body:'', footL:'', footR:SITE, pos:'ml', titleScale:60 },
   clear:    { useLogo:false, title:'', sub:'', body:'', footL:'', footR:'', pos:'bl', titleScale:100 },
 };

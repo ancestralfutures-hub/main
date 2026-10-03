@@ -31,6 +31,15 @@ npm run dev
   `www.ancestralfutures.co.uk/#signup` goes straight to the form, from an
   Instagram bio for instance. Back, Escape and Close all shut them.
 - The asset generator for social posts is at `/asset-generator.html`.
+- The social rollout is at `/rollout.html`: the whole run of posts from now
+  to the last day, each one drawn on a canvas at full size with the caption
+  written beside it. The countdown numbers are worked out from the real
+  dates, so they are right whenever the page is opened. Both tools are kept
+  out of the sitemap and out of search.
+- The artwork those two draw with is in `public/art/`: the wordmark, the hut
+  drawing, the two carved figures and the grain field, each one carried as a
+  white stencil with the shape in its alpha so it can be filled in any
+  colour. `assets/README.md` says how they were made.
 
 The artist section and the three rules are built but not shown, in
 `components/sections`.
