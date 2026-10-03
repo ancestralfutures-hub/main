@@ -575,6 +575,78 @@ LAYOUTS.hut = (ctx, W, H, p, way) => {
   footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
 };
 
+/* A short list: a heading and three or four lines with a rule between
+   them. For the practical posts, the ones somebody screenshots and comes
+   back to, where a paragraph would not be read. */
+LAYOUTS.list = (ctx, W, H, p, way) => {
+  const pad = W * 0.1;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 29);
+  paintGrain(ctx, W, H, way);
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  const ts = Math.round(W * 0.072);
+  ctx.font = `800 ${ts}px ${FONT}`;
+  ctx.fillStyle = way.accent;
+  let y = H * 0.19;
+  for (const l of wrap(ctx, p.title, W - pad * 2)) { ctx.fillText(l, pad, y); y += ts * 1.12; }
+  y += ts * 0.55;
+
+  const is = Math.round(W * 0.042);
+  for (const item of p.items) {
+    ctx.strokeStyle = way.ink;
+    ctx.globalAlpha = 0.22;
+    ctx.beginPath(); ctx.moveTo(pad, y); ctx.lineTo(W - pad, y); ctx.lineWidth = Math.max(1, W * 0.0018); ctx.stroke();
+    ctx.globalAlpha = 1;
+    ctx.font = `600 ${is}px ${FONT}`;
+    ctx.fillStyle = way.ink;
+    let iy = y + is * 0.62;
+    for (const l of wrap(ctx, item, W - pad * 2)) { ctx.fillText(l, pad, iy); iy += is * 1.3; }
+    y = iy + is * 0.62;
+  }
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
+};
+
+/* One of the carved figures, large and bled off the edge, with a line
+   beside it. The figures carry the poster on their own and were doing
+   nothing but edging it here. */
+LAYOUTS.figure = (ctx, W, H, p, way) => {
+  const pad = W * 0.09;
+  paintGround(ctx, W, H, way);
+  if (way.stars) paintStars(ctx, W, H, 31);
+
+  const img = p.side === 'left' ? ART.figL : ART.figR;
+  if (img) {
+    const fh = H * 1.04;
+    const fw = fh * (img.width / img.height);
+    drawArt(ctx, img, p.side === 'left' ? -fw * 0.18 : W - fw * 0.82, H - fh, fw, fh, way.art, 0.78);
+  }
+  paintGrain(ctx, W, H, way);
+  topName(ctx, W, H, way, W * 0.085);
+
+  ctx.save();
+  ctx.textBaseline = 'top';
+  const ts = Math.round(W * 0.078);
+  ctx.font = `800 ${ts}px ${FONT}`;
+  ctx.fillStyle = way.ink;
+  const col = W * 0.56;
+  const x = p.side === 'left' ? W - col - pad : pad;
+  let y = H * 0.2;
+  for (const l of wrap(ctx, p.title, col)) { ctx.fillText(l, x, y); y += ts * 1.12; }
+  if (p.body) {
+    y += ts * 0.4;
+    const bs = Math.round(W * 0.035);
+    ctx.font = `400 ${bs}px ${FONT}`;
+    ctx.fillStyle = way.accent;
+    for (const l of wrap(ctx, p.body, col)) { ctx.fillText(l, x, y); y += bs * 1.5; }
+  }
+  ctx.restore();
+  footer(ctx, W, H, way, [VENUE, DATES, SITE], W * 0.085);
+};
+
 // Where and when, said plainly, with the logo over it.
 LAYOUTS.detail = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
@@ -640,14 +712,29 @@ const PLAN = [
     head:'The poster', why:'The key art on its own. Highest save and share rate of anything in the run, and it carries every detail without a caption.',
     caption:'DARÉ\nA sonic portrait by Shumba Maasai\n\nZimbabwe House, 429 Strand, London\n15 to 22 October, 1pm to 8pm\n\nTickets at ancestralfutures.co.uk' },
 
+  { on:d(10,4), key:'house', layout:'figure', way:'ink', side:'left', fmts:['portrait','story','square'],
+    title:'Why Zimbabwe House', body:'Daré is presented in partnership with the Embassy of Zimbabwe, London. For eight days in October it takes over their building on the Strand.',
+    head:'Why this building', why:'The venue is not a neutral room and the partnership is part of the work. Says something no other post in the run says.',
+    caption:'Zimbabwe House, 429 Strand.\n\nDaré is presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London, and for eight days in October it takes over their building on the Strand.\n\n15 to 22 October. ancestralfutures.co.uk' },
+
   { on:d(10,7), key:'rules', layout:'rules', way:'orange', fmts:['square','story','portrait'],
     head:'The three rules', why:'The most quotable thing the project has. Reads as an invitation rather than a restriction, and people repeat it.',
     caption:'Shoes off.\nNo phones.\nEnter the Daré.\n\nThree rules, and all of them are about being here properly.\n\n15 to 22 October. ancestralfutures.co.uk' },
+
+  { on:d(10,6), key:'began', layout:'explain', way:'cream', fmts:['portrait','square','wide'],
+    title:'How it began', body:'In August 2025 we gathered in east London for the pilot. One room, many collaborators, and a way of honouring our ancestors through the continuation of Daré. Everything since has come out of that night.',
+    head:'How it began', why:'Origin story. Gives the people who were at the pilot something to recognise, and everyone else a sense that this is not the first time.',
+    caption:'In August 2025 we gathered in east London for the pilot of Daré.\n\nOne room, many collaborators, and a way of honouring our ancestors through the continuation of Daré.\n\nEverything since has come out of that night. 15 to 22 October at Zimbabwe House.' },
 
   { on:d(10,8), key:'week1', layout:'countdown', way:'night', fmts:['story','square'],
     big:7, small:'days to go',
     head:'One week to go', why:'The first countdown beat. A week out is when people who meant to book actually book.',
     caption:'One week.\n\nZimbabwe House, 429 Strand, London\n15 to 22 October, 1pm to 8pm\n\nancestralfutures.co.uk' },
+
+  { on:d(10,9), key:'zimbabwe', layout:'figure', way:'orange', side:'right', fmts:['portrait','story','square'],
+    title:'Brought back from Zimbabwe', body:'In 2025 we took nine creative practitioners around Zimbabwe with Gyaan of the Centre of Knowledge and Equity. Shumba took them to his ancestral village. Much of what you will walk into came back with them.',
+    head:'The residency', why:'The deepest story the project has, and the one that explains why this is not just an installation about heritage but made out of it.',
+    caption:'In 2025 we took nine creative practitioners around Zimbabwe with Gyaan of the Centre of Knowledge and Equity.\n\nShumba took them to his ancestral village.\n\nMuch of what you will walk into came back with them.\n\n15 to 22 October, Zimbabwe House. ancestralfutures.co.uk' },
 
   { phase:'The last week', note:'Frequency goes up and the posts get shorter. By now the job is reminding, not explaining.' },
 
@@ -661,10 +748,20 @@ const PLAN = [
     head:'A line on its own', why:'A breath in the run. Quiet, very shareable, and it sets the tone before the loud final days.',
     caption:'A sonic refuge.\nA gathering of memory, feeling and imagination.\n\n15 to 22 October, Zimbabwe House.\nancestralfutures.co.uk' },
 
+  { on:d(10,11), key:'visit', layout:'list', way:'cream', fmts:['portrait','square','story'],
+    title:'Planning your visit', items:['Zimbabwe House, 429 Strand, London','Open every day, 15 to 22 October','1pm to 8pm','Shoes off. No phones.'],
+    head:'Plan your visit', why:'The post people screenshot and come back to. Answers the four questions that otherwise arrive one by one in the inbox.',
+    caption:'Planning your visit.\n\nZimbabwe House, 429 Strand, London\nOpen every day, 15 to 22 October\n1pm to 8pm\nShoes off. No phones.\n\nTickets at ancestralfutures.co.uk' },
+
   { on:d(10,13), key:'two', layout:'countdown', way:'night', fmts:['story','square'],
     big:2, small:'days to go',
     head:'Two days', why:'Short, urgent, no explaining. Stories only territory.',
     caption:'Two days.\n\n15 to 22 October, 1pm to 8pm\nZimbabwe House, 429 Strand\n\nancestralfutures.co.uk' },
+
+  { on:d(10,13), key:'shoes', layout:'explain', way:'orange', fmts:['square','portrait','story'],
+    title:'Why shoes off', body:'Because you are coming into a space, not a venue. Taking your shoes off is the first small thing that marks the difference, and leaving your phone is the second. Both are about being here properly.',
+    head:'Why the rules', why:'Turns a rule into an invitation. Pre-empts the one objection people have and makes it part of the draw instead.',
+    caption:'Shoes off. No phones.\n\nBecause you are coming into a space, not a venue. Both are about being here properly.\n\nEnter the Daré. 15 to 22 October.' },
 
   { on:d(10,14), key:'tomorrow', layout:'open', way:'night', fmts:['story','square'],
     title:'Tomorrow',
@@ -678,14 +775,28 @@ const PLAN = [
     head:'Opening day', why:'Doors. Pin this one and keep it at the top of the profile for the week.',
     caption:'We are open.\n\n1pm to 8pm, every day until the 22nd.\nZimbabwe House, 429 Strand, London\n\nShoes off. No phones. Enter the Daré.\nancestralfutures.co.uk' },
 
+  { on:d(10,16), key:'today', layout:'detail', way:'ink', fmts:['story','square'],
+    head:'Open today', why:'A frame to reuse each morning of the run. Change nothing, post it daily, and keep the top of the profile current.',
+    caption:'Open today, 1pm to 8pm.\n\nZimbabwe House, 429 Strand, London\nShoes off. No phones. Enter the Daré.' },
+
   { on:d(10,17), key:'hut', layout:'hut', way:'orange', fmts:['square','portrait'],
     small:'open daily, 1pm to 8pm',
     head:'Mid run reminder', why:'A quiet frame for the middle weekend, when the run needs presence more than noise. Good behind a photograph from the room.',
     caption:'Open every day until the 22nd, 1pm to 8pm.\n\nZimbabwe House, 429 Strand, London.\nShoes off. No phones. Enter the Daré.' },
 
+  { on:d(10,18), key:'weekend', layout:'line', way:'ink', fmts:['story','square','wide'],
+    title:'Open all weekend.', small:'saturday and sunday, 1pm to 8pm',
+    head:'This weekend', why:'Weekends are when most people can actually come. Worth saying plainly rather than assuming they have the dates.',
+    caption:'Open all weekend, 1pm to 8pm both days.\n\nZimbabwe House, 429 Strand, London.\nancestralfutures.co.uk' },
+
   { on:d(10,19), key:'detail', layout:'detail', way:'night', fmts:['story','square','wide'],
     head:'Where and when', why:'The practical one. Somebody always asks, and this is what you reply with.',
     caption:'Still running.\n\nZimbabwe House, 429 Strand, London\nUntil 22 October, 1pm to 8pm\n\nancestralfutures.co.uk' },
+
+  { on:d(10,20), key:'three-left', layout:'countdown', way:'night', fmts:['story','square'],
+    big:3, small:'days left',
+    head:'Three days left', why:'The first of the closing countdown. From here every post is about the run ending.',
+    caption:'Three days left.\n\nUntil 22 October, 1pm to 8pm\nZimbabwe House, 429 Strand\n\nancestralfutures.co.uk' },
 
   { on:d(10,21), key:'two-left', layout:'countdown', way:'ink', fmts:['story','square'],
     big:2, small:'days left',
@@ -703,6 +814,11 @@ const PLAN = [
     title:'Thank you for coming.', small:'london · october 2026',
     head:'Thank you', why:'Closes the loop, and it is the post that carries the announcement of the next city when it comes.',
     caption:'Thank you to everyone who came and sat with us.\n\nDaré was eight days at Zimbabwe House, London.\n\nMore to be announced. It is going to be super special.\n\nSee you deya.' },
+
+  { on:d(10,25), key:'next', layout:'figure', way:'orange', side:'left', fmts:['portrait','square','story'],
+    title:'More to be announced', body:'Daré travels to three cities as a sonic portrait, and takes another form through theatre. London was the first.',
+    head:'What comes next', why:'Keeps the list warm and turns an ending into an opening. Post it a few days after, once the thank you has done its work.',
+    caption:'London was the first.\n\nDaré travels to three cities as a sonic portrait, and takes another form through theatre.\n\nMore to be announced. It is going to be super special.\n\nSee you deya. ancestralfutures.co.uk' },
 ];
 
 // ===========================================================
@@ -753,13 +869,30 @@ async function downloadMany(list) {
 
 const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
+/* The run, put in date order inside each phase.
+
+   The plan above is written so that posts sit next to the ones they are
+   related to, which is how you think about them, not the order they go
+   out in. Sorting here means a post can be added anywhere in the list and
+   still land on the right day. */
+function ordered() {
+  const out = [];
+  let run = [];
+  const flush = () => { run.sort((a, b) => a.on - b.on); out.push(...run); run = []; };
+  for (const row of PLAN) {
+    if (row.phase) { flush(); out.push(row); } else run.push(row);
+  }
+  flush();
+  return out;
+}
+
 function build() {
   const feed = document.getElementById('feed');
   feed.className = '';
   feed.innerHTML = '';
   const today = new Date(); today.setHours(0, 0, 0, 0);
 
-  for (const row of PLAN) {
+  for (const row of ordered()) {
     if (row.phase) {
       const h = document.createElement('div');
       h.className = 'phase';
@@ -813,7 +946,7 @@ function build() {
     });
   }
 
-  const posts = PLAN.filter((r) => !r.phase);
+  const posts = ordered().filter((r) => !r.phase);
   document.getElementById('dlAll').onclick = () =>
     downloadMany(posts.flatMap((p) => p.fmts.map((f) => [p, f])));
   document.getElementById('dlStories').onclick = () =>
