@@ -36,6 +36,9 @@ npm run dev
   written beside it. The countdown numbers are worked out from the real
   dates, so they are right whenever the page is opened. Both tools are kept
   out of the sitemap and out of search.
+- `assets/signage-brief.md` is the brief for the exhibition signage: six
+  signs, three versions of each, and the one thing that governs all of it,
+  which is that the room is dark and nobody has a phone to read by.
 - The artwork those two draw with is in `public/art/`: the wordmark, the hut
   drawing, the two carved figures and the grain field, each one carried as a
   white stencil with the shape in its alpha so it can be filled in any
