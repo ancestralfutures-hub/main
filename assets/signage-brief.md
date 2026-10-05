@@ -1,98 +1,78 @@
-# Daré · exhibition signage
+# DARÉ · Exhibition signage
 
-**For** the graphic designer
-**From** Ancestral Futures
-**Venue** Zimbabwe House, 429 Strand, London
-**Open** 15 to 22 October 2026, 1pm to 8pm
-**Needed by** 13 October, printed and on site
+Brief for the graphic designer.
+Zimbabwe House, 429 Strand, London. 15 to 22 October 2026.
+Artwork needed by 13 October, printed and on site.
 
----
+`signage-brief.docx` is the same thing in Word, to send on.
 
 ## What we need
 
-Six signs. Three versions of each: **one pointing right, one pointing
-left, one with no arrow at all**. Eighteen artworks in total.
+Six signs. Three versions of each: one pointing right, one pointing left,
+one with no arrow. Eighteen artworks in total.
 
-| Sign | Reads |
-|---|---|
-| 1 | SHOES |
-| 2 | CLOAKROOM |
-| 3 | PHONES OFF |
-| 4 | SEATING |
-| 5 | TOILETS |
-| 6 | LIBRARY |
+**SHOES  ·  CLOAKROOM  ·  PHONES OFF  ·  SEATING  ·  TOILETS  ·  LIBRARY**
 
-The no-arrow version is the one that goes on the door or the thing
-itself. The arrows are for the corridor and the turns, so we can place
-them once we are in the building and know which way people actually walk.
+The no-arrow version goes on the door or the thing itself. The arrows are
+for corridors and turns, so we can place them once we know which way
+people actually walk.
 
-## The one thing that governs all of it
+## The room is dark
 
-**The room is dark and nobody has a phone.** Shoes off and phones away
-are the terms of entry, so there is no torch, no screen, and no bright
-light to read by. Everything follows from that:
+Shoes off and phones away are the terms of entry, so there is no screen
+and no torch to read by. Everything follows from that.
 
-- Light type on a dark ground, not the other way round. Orange on black
-  holds up in low light; black on orange goes muddy.
-- Matte stock only. Anything with a sheen will catch the low light and
-  become unreadable at exactly the angle people approach from.
-- Big. Assume someone is reading it from across a dim room, not from
-  arm's length.
-- No small print. One word, or two. Nothing explanatory.
+- Light type on a dark ground. Orange on black holds up in low light;
+  black on orange goes muddy.
+- Matte stock only. Any sheen and the sign disappears at exactly the angle
+  people approach from.
+- One or two words. No small print, and bigger than feels necessary.
 
 ## Look
 
-Take it from the poster, which is the only reference you need. Same
-orange, same near black, same halftone grain, same hard corners.
+Take it from the poster, which is the only reference you need.
 
-- **Orange** `#F43E00` · **Black** `#0B0D0C`
-- Type set the way the poster sets it: **uppercase, widely letterspaced**,
-  the same weight throughout. Not sentence case, not bold and light mixed.
-- The DARÉ wordmark appears **once per sign, small, at the foot**. These
-  are wayfinding, not posters; the mark is there to say the sign belongs
-  to us, not to announce anything.
-- The grain from the poster's top and bottom edges can carry across, held
-  well back. It should read as texture, not as a frame.
+- Orange `#F43E00`. Black `#0B0D0C`.
+- Uppercase, widely letterspaced, one weight throughout.
+- The DARÉ wordmark once per sign, small, at the foot. These are
+  wayfinding, not posters.
+- The halftone grain from the poster edges, held well back. Texture, not
+  a frame.
 
-### The arrow
+## The arrow
 
-Draw one arrow and mirror it. It should look like it came off the same
-drawing board as the wordmark rather than out of a font: slightly uneven,
-hand-cut, not a geometric triangle. Keep it the same weight as the
-letterforms so the two sit together.
+Draw one and mirror it. Hand-cut to match the letterforms rather than a
+geometric triangle, and the same weight as the type so the two sit
+together.
 
-Arrow to the left of the word when pointing left, to the right of the
-word when pointing right. Do not centre the word and float the arrow.
+It sits beside the word: to the left when pointing left, to the right when
+pointing right. Never centred above it.
 
-## Sizes
+## Size
 
-**A3 portrait, 297 × 420mm** as standard, 3mm bleed.
+A4 throughout. Portrait for the no-arrow signs, landscape for the arrow
+versions, where a word and an arrow want the width.
 
-Cap height for the word: **45mm minimum**. That reads comfortably at five
-metres in good light, which is about right for a dim room at two or three.
-Arrow roughly the height of two caps.
+Cap height 25mm minimum, which reads at about five metres. CLOAKROOM is
+the longest word, so let it set the size for all six and keep them
+consistent.
 
-Please also supply **A4 portrait** of each, for doors and tight corners
-where A3 will not sit.
+3mm bleed.
 
 ## Files
 
-- Print: PDF, CMYK, 3mm bleed, crop marks, outlined type
-- Screen: PNG at 2000px on the long edge, RGB, for the run-through and
-  for anyone who needs to check placement before print
-- Name them `dare-signage_[word]_[right|left|plain]_[a3|a4]`
+- Print: PDF, CMYK, 3mm bleed, crop marks, outlined type.
+- Screen: PNG, 2000px on the long edge, for checking placement before
+  print.
+- Name them `dare-signage_[word]_[right / left / plain]`.
+- Please supply the arrow as a vector on its own, so we can reuse it on
+  anything we have missed.
 
-Working files in whatever you work in, but please hand over the arrow as
-a vector on its own so we can reuse it on anything we have missed.
+## Two notes
 
-## Worth knowing
+Print two of each. Fixings and sightlines never survive contact with the
+actual building, and a spare is cheaper than a reprint on the 14th.
 
-- **SHOES** and **PHONES OFF** are not instructions we want to feel like
-  rules. The invitation on everything else reads *Shoes off. No phones.
-  Enter the Daré.* These two signs are the practical end of the same
-  sentence, so keep them in the same voice as the rest of the show.
-- **LIBRARY** is a place to sit and read rather than a reference desk, so
-  it can be the warmest of the six if any of them is.
-- Print two of each arrow version. Fixings and sightlines never survive
-  contact with the actual building, and a spare is cheaper than a
-  reprint on the 14th.
+SHOES and PHONES OFF are the practical end of "Shoes off. No phones.
+Enter the Daré." Keep them in that voice rather than making them read as
+rules.

@@ -158,9 +158,9 @@ const CLOSES = new Date(2026, 9, 22);  // 22 October 2026
 // itself, and the fire has something to glow against. On a light ground
 // neither works, so those frames use the line drawing of the hut instead.
 const WAYS = {
-  night:  { bg:'sky',    ink:P.cream,   accent:P.orange,  art:P.cream,   dark:true,  stars:true,  ember:true,  grain:P.cream,   grainA:0.055 },
-  orange: { bg:P.orange, ink:'#17100a', accent:'#17100a', art:'#17100a', dark:false, stars:false, ember:false, grain:'#17100a', grainA:0.5 },
-  ink:    { bg:P.ground, ink:P.orange,  accent:P.cream,   art:P.orange,  dark:true,  stars:true,  ember:false, grain:P.orange,  grainA:0.12 },
+  night:  { bg:'sky',    ink:P.cream,   accent:P.orange,  art:P.cream,   dark:true,  stars:true,   grain:P.cream,   grainA:0 },
+  orange: { bg:P.orange, ink:'#17100a', accent:'#17100a', art:'#17100a', dark:false, stars:false, grain:'#17100a', grainA:0.5 },
+  ink:    { bg:P.ground, ink:P.orange,  accent:P.cream,   art:P.orange,  dark:true,  stars:true,  grain:P.orange,  grainA:0 },
 };
 
 const FORMATS = {
@@ -264,36 +264,18 @@ function paintGround(ctx, W, H, way) {
 
 function paintStars(ctx, W, H, seed) {
   const r = rnd(seed);
-  const n = Math.round((W * H) / 9000);
+  const n = Math.round((W * H) / 16000);
   ctx.save();
   for (let i = 0; i < n; i++) {
     const x = r() * W, y = r() * H, s = r();
     ctx.globalAlpha = 0.18 + s * 0.5;
     ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8';
-    const d = s > 0.95 ? 3.1 : s > 0.75 ? 2 : 1.3;
+    const d = s > 0.96 ? 2.4 : s > 0.8 ? 1.6 : 1.1;
     ctx.fillRect(x, y, d, d);
   }
   ctx.restore();
 }
 
-// Measured off the width and not the height, so the fire is the same size
-// relative to the hut in a square as it is in a story. Off the height it
-// became a cloud that swallowed the whole of a tall frame.
-function paintEmber(ctx, W, H, cy, scale) {
-  const rw = W * 0.86 * scale, rh = W * 0.4 * scale;
-  ctx.save();
-  let g = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, Math.max(rw, rh) / 2);
-  g.addColorStop(0, 'rgba(212,96,43,.34)');
-  g.addColorStop(0.5, 'rgba(122,47,18,.15)');
-  g.addColorStop(1, 'rgba(122,47,18,0)');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.ellipse(W / 2, cy, rw / 2, rh / 2, 0, 0, 7); ctx.fill();
-  g = ctx.createRadialGradient(W / 2, cy, 0, W / 2, cy, rw * 0.3);
-  g.addColorStop(0, 'rgba(240,144,79,.42)'); g.addColorStop(1, 'rgba(240,144,79,0)');
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.ellipse(W / 2, cy, rw * 0.32, rh * 0.42, 0, 0, 7); ctx.fill();
-  ctx.restore();
-}
 
 /* The grain field: one image stretched over the whole frame, never tiled.
 
@@ -471,7 +453,6 @@ LAYOUTS.countdown = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 7);
   paintGrain(ctx, W, H, way);
-  if (way.ember) paintEmber(ctx, W, H, H * 0.64, 1);
   paintHut(ctx, W, H, way, W / 2, H * 0.64, W * 0.8);
   topName(ctx, W, H, way, pad);
   ctx.save();
@@ -587,7 +568,6 @@ LAYOUTS.line = (ctx, W, H, p, way) => {
     paintGround(ctx, W, H, way);
     if (way.stars) paintStars(ctx, W, H, 9);
     paintGrain(ctx, W, H, way);
-    if (way.ember) paintEmber(ctx, W, H, H * 0.8, 0.8);
   }
   const ink = onOrange ? INK : way.ink;
   const accent = onOrange ? '#0b0d0c' : way.accent;
@@ -626,7 +606,6 @@ LAYOUTS.detail = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 17);
   paintGrain(ctx, W, H, way);
-  if (way.ember) paintEmber(ctx, W, H, H * 0.58, 0.95);
   paintHut(ctx, W, H, way, W / 2, H * 0.56, W * 0.78);
   const wh = wordmark(ctx, W, W / 2, H * 0.13, W * 0.6, way.ink);
   ctx.fillStyle = way.accent;
@@ -642,7 +621,6 @@ LAYOUTS.detail = (ctx, W, H, p, way) => {
 LAYOUTS.open = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   paintStars(ctx, W, H, 23);
-  paintEmber(ctx, W, H, H * 0.62, 1.25);
   paintHut(ctx, W, H, way, W / 2, H * 0.62, W * 0.92);
   paintGrain(ctx, W, H, WAYS.night);
   topName(ctx, W, H, way, W * 0.085);
