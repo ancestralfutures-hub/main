@@ -36,6 +36,9 @@ npm run dev
   written beside it. The countdown numbers are worked out from the real
   dates, so they are right whenever the page is opened. Both tools are kept
   out of the sitemap and out of search.
+- `/emails/` composes every send in the plan from one template: edit the
+  subject, headline and Shumba's note, then copy the finished HTML straight
+  into Brevo. Each one carries a Book tickets button and a share row.
 - `assets/social-plan.md` is the run from today to the day after it closes:
   what goes out each morning and evening, the caption for every post, and
   an email for every day.

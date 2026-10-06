@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DARÉ · Email</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ground:#0b0d0c; --cream:#f9f5cd; --orange:#f43e00; --muted:#908f78; --line:#24241e; --panel:#121410; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--ground); color:var(--cream);
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  header {
+    position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between; padding:14px 24px;
+    background:rgba(11,13,12,.94); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+  }
+  header h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  header .meta { font-size:12px; color:var(--muted); }
+  button {
+    font:inherit; font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--cream); background:transparent; border:1px solid #3d3c33; padding:9px 15px; cursor:pointer;
+  }
+  button:hover { background:var(--cream); color:var(--ground); border-color:var(--cream); }
+  button.primary { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  button.quiet { border-color:var(--line); color:var(--muted); }
+
+  .wrap { max-width:1280px; margin:0 auto; padding:30px 24px 110px; }
+  .intro { max-width:64ch; color:#bdbb9d; margin-bottom:8px; }
+  .intro b { color:var(--cream); font-weight:600; }
+  .note { font-size:14px; color:var(--muted); margin:10px 0 34px; max-width:64ch; }
+
+  .send { display:grid; grid-template-columns:420px 1fr; gap:26px; padding:26px 0; border-top:1px solid var(--line); }
+  @media (max-width:900px) { .send { grid-template-columns:1fr; } }
+  .send iframe { width:100%; height:760px; border:1px solid var(--line); background:#0b0d0c; }
+
+  .when { display:flex; align-items:baseline; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+  .date { font-size:13px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--orange); }
+  .star { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--cream); border:1px solid #3d3c33; padding:2px 7px; }
+  h2 { font-size:20px; font-weight:800; margin-bottom:12px; }
+  label { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-top:12px; }
+  input, textarea {
+    display:block; width:100%; margin-top:5px; font:inherit; font-size:14px;
+    color:var(--cream); background:var(--panel); border:1px solid var(--line);
+    padding:9px 11px; border-radius:0; resize:vertical;
+  }
+  input:focus, textarea:focus { outline:none; border-color:var(--orange); }
+  .acts { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+  #status {
+    position:fixed; left:50%; bottom:22px; translate:-50% 0; z-index:50;
+    background:var(--orange); color:var(--ground); font-size:13px; font-weight:600;
+    padding:11px 20px; opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #status.on { opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>DARÉ · Email</h1>
+    <div class="meta" id="meta"></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;">
+    <button id="allHtml" class="primary">Download all as .html</button>
+    <a href="/rollout.html"><button>Social rollout</button></a>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="intro">
+    One template, filled in for every send in the plan. Edit any of it and the
+    preview redraws; <b>Copy HTML</b> puts the finished email on the clipboard
+    for pasting into Brevo under <b>Create campaign → Email → Code your own</b>.
+  </p>
+  <p class="note">
+    Every one carries the hero, the venue and dates, a Book tickets button and a
+    share row, so each email can be passed on by the person who gets it.
+    Starred are the six to send if you are not sending daily.
+  </p>
+  <div id="feed"></div>
+</div>
+
+<div id="status"></div>
+
+<script>
+// ===========================================================
+// DARÉ · EMAIL
+// One template, filled in per send. Nothing here is a separate
+// file, so a change to the template reaches every email at once.
+// ===========================================================
+
+const SITE = 'https://ancestralfutures.co.uk';
+const HERO = SITE + '/email-hero.png';
+const VENUE = 'Zimbabwe House, 429 Strand, London';
+const DATES = '15–22 October, 1pm–8pm';
+const TICKETS = SITE;
+
+const SHARE_TEXT = 'DARÉ, a sonic portrait by Shumba Maasai. Zimbabwe House, 429 Strand, London. 15 to 22 October. ' + SITE;
+const WHATSAPP = 'https://wa.me/?text=' + encodeURIComponent(SHARE_TEXT);
+const MAILTO = 'mailto:?subject=' + encodeURIComponent('DARÉ, a sonic portrait by Shumba Maasai') +
+               '&body=' + encodeURIComponent(SHARE_TEXT);
+
+const F = "'Halyard Text','Halyard Pro',Figtree,'Helvetica Neue',Helvetica,Arial,sans-serif";
+const FD = "'Halyard Display','Halyard Pro',Figtree,'Helvetica Neue',Helvetica,Arial,sans-serif";
+
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+// Paragraphs of the note, so a blank line in the box becomes a blank line
+// in the email rather than one long run of text.
+function noteBlocks(text) {
+  return String(text).split(/\n\s*\n/).filter((p) => p.trim()).map((p, i, all) => {
+    const last = i === all.length - 1;
+    const weight = last ? 600 : 400;
+    const colour = last ? '#f9f5cd' : '#bdbb9d';
+    return `<p style="margin:0 0 ${last ? 0 : 18}px 0; font-family:${F}; font-size:16px; line-height:28px; font-weight:${weight}; color:${colour}; text-align:left;">` +
+      esc(p.trim()).replace(/\n/g, '<br>') + `</p>`;
+  }).join('');
+}
+
+/* The whole email, built from one spec.
+
+   Tables and inline styles throughout, because that is all an email client
+   can be relied on to keep. The colours are restated under [data-ogsc] so
+   Outlook.com does not repaint a dark email as a light one, and the button
+   has VML behind it so Outlook colours it at all. */
+function emailHtml(s) {
+  return `<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>${esc(s.subject)}</title>
+<!--[if mso]>
+<xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml>
+<![endif]-->
+<style>
+  body, table, td, a { -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; }
+  table, td { mso-table-lspace:0pt; mso-table-rspace:0pt; }
+  img { -ms-interpolation-mode:bicubic; border:0; outline:none; text-decoration:none; display:block; }
+  a { text-decoration:none; }
+  [data-ogsc] .ground { background-color:#0b0d0c !important; }
+  [data-ogsc] .cream { color:#f9f5cd !important; }
+  [data-ogsc] .muted { color:#908f78 !important; }
+  [data-ogsc] .orange { color:#f43e00 !important; }
+  [data-ogsc] .btn { background-color:#f43e00 !important; }
+  [data-ogsc] .btn a { color:#0b0d0c !important; }
+  [data-ogsc] .ghost a { color:#f9f5cd !important; }
+  @media screen and (max-width:600px) {
+    .wrap { width:100% !important; }
+    .pad { padding-left:24px !important; padding-right:24px !important; }
+    .hero img { width:100% !important; height:auto !important; }
+    .h1 { font-size:26px !important; line-height:32px !important; }
+  }
+</style>
+</head>
+<body class="ground" style="margin:0; padding:0; width:100%; background-color:#0b0d0c;">
+
+<div style="display:none; font-size:1px; line-height:1px; max-height:0; max-width:0; opacity:0; overflow:hidden; mso-hide:all; color:#0b0d0c;">
+  ${esc(s.preheader)}
+  &#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;&#8203;&#847;&zwnj;&nbsp;
+</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" class="ground" style="background-color:#0b0d0c;">
+<tr><td align="center" style="padding:0;">
+<!--[if mso]><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"><tr><td><![endif]-->
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" class="wrap" style="width:600px; max-width:600px; background-color:#0b0d0c;">
+
+  <tr><td align="center" class="hero" style="padding:0; background-color:#0b0d0c;">
+    <a href="${TICKETS}" target="_blank"><img src="${HERO}" width="600" height="315"
+      alt="DAR&Eacute;, a sonic portrait by Shumba Maasai. A thatched hut lit from inside under a night sky."
+      style="display:block; width:600px; max-width:100%; height:auto; border:0;"></a>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:40px 48px 0 48px;" align="center">
+    <p class="cream h1" style="margin:0; font-family:${FD}; font-size:30px; line-height:38px; font-weight:600; color:#f9f5cd;">${esc(s.headline)}</p>
+  </td></tr>
+${s.sub ? `
+  <tr><td class="pad" style="padding:18px 48px 0 48px;" align="center">
+    <p class="muted" style="margin:0; font-family:${F}; font-size:17px; line-height:27px; font-weight:400; color:#908f78;">${esc(s.sub)}</p>
+  </td></tr>` : ''}
+
+  <tr><td class="pad" style="padding:36px 48px 0 48px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr><td height="1" style="height:1px; line-height:1px; font-size:0; background-color:#2a2a24;">&nbsp;</td></tr>
+    </table>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:28px 48px 0 48px;" align="center">
+    <p class="cream" style="margin:0; font-family:${F}; font-size:15px; line-height:26px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#f9f5cd;">${VENUE}</p>
+    <p class="cream" style="margin:6px 0 0 0; font-family:${F}; font-size:15px; line-height:26px; font-weight:600; letter-spacing:0.1em; text-transform:uppercase; color:#f9f5cd;">${DATES}</p>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:30px 48px 0 48px;" align="center">
+    <p class="orange" style="margin:0; font-family:${F}; font-size:14px; line-height:26px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#f43e00;">
+      Shoes off.<br>No phones.<br>Enter the Dar&eacute;.
+    </p>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:32px 48px 0 48px;" align="center">
+    <!--[if mso]>
+    <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+      href="${TICKETS}" style="height:52px; v-text-anchor:middle; width:260px;" arcsize="0%" stroke="f" fillcolor="#f43e00">
+      <w:anchorlock/>
+      <center style="color:#0b0d0c; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; font-size:15px; font-weight:bold; letter-spacing:2px;">BOOK TICKETS</center>
+    </v:roundrect>
+    <![endif]-->
+    <!--[if !mso]><!-- -->
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" class="btn" style="background-color:#f43e00;">
+      <tr><td align="center" style="padding:17px 44px; background-color:#f43e00;">
+        <a href="${TICKETS}" target="_blank" style="display:inline-block; font-family:${F}; font-size:15px; line-height:18px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#0b0d0c; text-decoration:none;">Book tickets</a>
+      </td></tr>
+    </table>
+    <!--<![endif]-->
+  </td></tr>
+
+  <tr><td class="pad" style="padding:40px 48px 0 48px;" align="center">
+    <p class="orange" style="margin:0 0 16px 0; font-family:${F}; font-size:13px; line-height:20px; font-weight:600; letter-spacing:0.14em; text-transform:uppercase; color:#f43e00;">Share it</p>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:0 auto;">
+      <tr>
+        <td class="ghost" align="center" style="border:1px solid #3d3c33; padding:13px 26px;">
+          <a href="${WHATSAPP}" target="_blank" style="font-family:${F}; font-size:13px; line-height:16px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#f9f5cd; text-decoration:none;">WhatsApp</a>
+        </td>
+        <td style="width:12px; font-size:0; line-height:0;">&nbsp;</td>
+        <td class="ghost" align="center" style="border:1px solid #3d3c33; padding:13px 26px;">
+          <a href="${MAILTO}" style="font-family:${F}; font-size:13px; line-height:16px; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:#f9f5cd; text-decoration:none;">Email</a>
+        </td>
+      </tr>
+    </table>
+    <p class="muted" style="margin:16px 0 0 0; font-family:${F}; font-size:13px; line-height:20px; font-weight:400; color:#908f78;">
+      Or send them this: <a href="${TICKETS}" target="_blank" style="color:#bdbb9d; text-decoration:underline;">ancestralfutures.co.uk</a>
+    </p>
+  </td></tr>
+${s.note ? `
+  <tr><td class="pad" style="padding:44px 48px 0 48px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr><td height="1" style="height:1px; line-height:1px; font-size:0; background-color:#2a2a24;">&nbsp;</td></tr>
+    </table>
+  </td></tr>
+  <tr><td class="pad" style="padding:32px 48px 0 48px;" align="left">${noteBlocks(s.note)}</td></tr>` : ''}
+
+  <tr><td class="pad" style="padding:40px 48px 0 48px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+      <tr><td height="1" style="height:1px; line-height:1px; font-size:0; background-color:#2a2a24;">&nbsp;</td></tr>
+    </table>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:24px 48px 0 48px;" align="center">
+    <p class="muted" style="margin:0; font-family:${F}; font-size:12px; line-height:20px; font-weight:400; color:#908f78;">
+      Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London.
+    </p>
+  </td></tr>
+
+  <tr><td class="pad" style="padding:28px 48px 48px 48px;" align="center">
+    <p class="muted" style="margin:0; font-family:${F}; font-size:11px; line-height:20px; font-weight:400; color:#908f78;">
+      <a href="{{ mirror }}" class="muted" style="color:#908f78; text-decoration:underline;">View in browser</a>
+      &nbsp;&middot;&nbsp;
+      <a href="{{ unsubscribe }}" class="muted" style="color:#908f78; text-decoration:underline;">Unsubscribe</a>
+    </p>
+    <p class="muted" style="margin:10px 0 0 0; font-family:${F}; font-size:11px; line-height:20px; font-weight:400; color:#908f78;">
+      Ancestral Futures &middot; <a href="${TICKETS}" class="muted" style="color:#908f78; text-decoration:underline;">ancestralfutures.co.uk</a>
+    </p>
+  </td></tr>
+
+</table>
+<!--[if mso]></td></tr></table><![endif]-->
+</td></tr>
+</table>
+</body>
+</html>`;
+}
+
+// ---------- the sends ----------
+const d = (day) => new Date(2026, 9, day);
+
+const SENDS = [
+  { on:d(6), key:'nine', star:true, subject:'Nine days', preheader:'Shoes off. No phones. Enter the Daré.',
+    headline:'Nine days.', sub:'Zimbabwe House, from the 15th.',
+    note:'Yes Yes People,\n\nShumba here. Nine days until we open the doors.\n\nA year in the making, and a lot of it I brought back from Zimbabwe. From the 15th it is at Zimbabwe House on the Strand, for eight days only.\n\nBig Love,\nShumba Maasai ++' },
+
+  { on:d(7), key:'what', subject:'What is a Daré', preheader:'A gathering.',
+    headline:'A Daré is a gathering.', sub:'Eight days of it, from the 15th.',
+    note:'A place where knowledge is passed through sound, memory and presence rather than explanation.' },
+
+  { on:d(8), key:'week', star:true, subject:'One week', preheader:'The build has started.',
+    headline:'One week.', sub:'We are in the building.',
+    note:'' },
+
+  { on:d(9), key:'shoes', subject:'Six days', preheader:'You are coming into a space, not a venue.',
+    headline:'Six days.', sub:'Shoes off, phones away.',
+    note:'Not rules so much as the terms of being here properly.' },
+
+  { on:d(10), key:'hut', subject:'Five days', preheader:'The hut is going up.',
+    headline:'Five days.', sub:'The hut goes up this weekend.', note:'' },
+
+  { on:d(11), key:'zim', subject:'Four days', preheader:'Much of it came back from Zimbabwe.',
+    headline:'Four days.', sub:'',
+    note:'In 2025 we took nine practitioners around Zimbabwe and I took them to my ancestral village.\n\nMuch of what you will walk into came back with us.' },
+
+  { on:d(12), key:'three', star:true, subject:'Three days', preheader:'The sound is going in.',
+    headline:'Three days.', sub:'The sound is going in this week.',
+    note:'Which is the part that makes it a sonic portrait rather than a room.' },
+
+  { on:d(13), key:'two', subject:'Two days', preheader:'Zimbabwe House, 429 Strand.',
+    headline:'Two days.', sub:'', note:'' },
+
+  { on:d(14), key:'tomorrow', star:true, subject:'Tomorrow', preheader:'Doors 1pm.',
+    headline:'Tomorrow.', sub:'Doors at 1pm. Shoes off. No phones.', note:'' },
+
+  { on:d(15), key:'open', star:true, subject:'We are open', preheader:'1pm to 8pm, every day until the 22nd.',
+    headline:'We are open.', sub:'1pm to 8pm, every day until the 22nd.',
+    note:'Come and sit with it.' },
+
+  { on:d(16), key:'day2', subject:'Day two', preheader:'Open until 8pm.',
+    headline:'Day two of eight.', sub:'Open until 8pm tonight.', note:'' },
+
+  { on:d(17), key:'weekend', subject:'Open all weekend', preheader:'Saturday and Sunday, 1pm to 8pm.',
+    headline:'Open all weekend.', sub:'Both days, 1pm to 8pm.', note:'' },
+
+  { on:d(18), key:'half', subject:'Four days left', preheader:'Half way.',
+    headline:'Four days left.', sub:'Half way through the run.', note:'' },
+
+  { on:d(19), key:'three-left', subject:'Three days left', preheader:'Until Thursday.',
+    headline:'Three days left.', sub:'', note:'' },
+
+  { on:d(20), key:'two-left', subject:'Two days left', preheader:'Zimbabwe House, 429 Strand.',
+    headline:'Two days left.', sub:'To enter the Daré.', note:'' },
+
+  { on:d(21), key:'one-left', subject:'Tomorrow is the last day', preheader:'Open until 8pm tomorrow.',
+    headline:'Tomorrow is the last day.', sub:'', note:'' },
+
+  { on:d(22), key:'last', star:true, subject:'Last day', preheader:'Open until 8pm tonight.',
+    headline:'Last day.', sub:'Open until 8pm tonight.',
+    note:'And then that is it for London.' },
+
+  { on:d(23), key:'thanks', star:true, subject:'Thank you', preheader:'See you deya.',
+    headline:'Thank you.', sub:'Daré was eight days at Zimbabwe House, London.',
+    note:'Thank you to everyone who came and sat with us.\n\nMore to be announced, and it is going to be super special.\n\nSee you deya.\nShumba ++' },
+];
+
+// ---------- page ----------
+const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function toast(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg; s.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => s.classList.remove('on'), 2000);
+}
+
+function saveFile(name, text) {
+  const b = new Blob([text], { type: 'text/html' });
+  const u = URL.createObjectURL(b);
+  const a = document.createElement('a');
+  a.href = u; a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(u), 4000);
+}
+
+const feed = document.getElementById('feed');
+
+SENDS.forEach((send) => {
+  const el = document.createElement('div');
+  el.className = 'send';
+  el.innerHTML = `
+    <div><iframe title="${send.subject}"></iframe></div>
+    <div>
+      <div class="when">
+        <span class="date">${send.on.getDate()} ${MONTH[send.on.getMonth()]}</span>
+        ${send.star ? '<span class="star">send this one</span>' : ''}
+      </div>
+      <h2>${send.subject}</h2>
+      <label>Subject<input data-f="subject" value="${send.subject.replace(/"/g, '&quot;')}"></label>
+      <label>Preheader<input data-f="preheader" value="${send.preheader.replace(/"/g, '&quot;')}"></label>
+      <label>Headline<input data-f="headline" value="${send.headline.replace(/"/g, '&quot;')}"></label>
+      <label>Line under it<input data-f="sub" value="${send.sub.replace(/"/g, '&quot;')}"></label>
+      <label>Note from Shumba, blank for none<textarea data-f="note" rows="6">${send.note.replace(/</g, '&lt;')}</textarea></label>
+      <div class="acts">
+        <button data-copy class="primary">Copy HTML</button>
+        <button data-dl>Download .html</button>
+        <button data-sub class="quiet">Copy subject</button>
+      </div>
+    </div>`;
+  feed.appendChild(el);
+
+  const frame = el.querySelector('iframe');
+  const draw = () => { frame.srcdoc = emailHtml(send); };
+  draw();
+
+  el.querySelectorAll('[data-f]').forEach((input) => {
+    input.oninput = () => { send[input.dataset.f] = input.value; draw(); };
+  });
+  el.querySelector('[data-copy]').onclick = () =>
+    navigator.clipboard.writeText(emailHtml(send)).then(() => toast('HTML copied, paste into Brevo'));
+  el.querySelector('[data-dl]').onclick = () =>
+    saveFile(`dare-email_${String(send.on.getDate()).padStart(2,'0')}Oct_${send.key}.html`, emailHtml(send));
+  el.querySelector('[data-sub]').onclick = () =>
+    navigator.clipboard.writeText(send.subject).then(() => toast('Subject copied'));
+});
+
+document.getElementById('allHtml').onclick = async () => {
+  for (const send of SENDS) {
+    saveFile(`dare-email_${String(send.on.getDate()).padStart(2,'0')}Oct_${send.key}.html`, emailHtml(send));
+    await new Promise((r) => setTimeout(r, 200));
+  }
+  toast(`${SENDS.length} files saved`);
+};
+
+document.getElementById('meta').textContent =
+  `${SENDS.length} sends · ${SENDS.filter((s) => s.star).length} starred · ${VENUE}`;
+</script>
+</body>
+</html>
