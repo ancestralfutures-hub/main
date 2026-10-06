@@ -1,20 +1,20 @@
 # Session cards · copy
 
-**What I have assumed:** a small card handed to each person as their
-session begins, because tickets are sold as timed entry. If you meant
-something else by session card, say so and this gets rewritten rather than
-edited: a programme card listing the sessions, or a prompt card to sit
-with inside, are different pieces of writing.
+In Shumba's voice, so the card reads as him talking to the person holding
+it rather than as house instructions. Same greeting, same sign-off, same
+warmth as the newsletters.
 
-**One blank to fill.** `[00]` is the session length. This repository does
-not know it and I have not guessed.
+**Assumed:** a small card handed over as a timed session begins, because
+that is how the tickets sell. Say the word if you meant a programme card
+or a prompt card and this gets rewritten.
+
+**One blank:** `[00]` is the session length. Not guessed.
 
 ---
 
-## Card one · the one handed at the door
+## Card one · handed at the door
 
-Shortest, and the one that does the most work. Front is the mark, back is
-everything someone needs.
+The short one, and the one that does the most work.
 
 **Front**
 
@@ -24,20 +24,24 @@ everything someone needs.
 
 **Back**
 
-> You are about to enter the Daré.
+> Yes Yes People,
 >
-> Shoes off. Phones in the cloakroom.
+> Welcome to the Daré. Shoes off, phone in the cloakroom, then come in and
+> find somewhere to sit.
 >
-> Find a seat, or the floor, and stay as long as you like.
-> There is nothing to do and nothing to miss.
+> There's nothing to do in here and nothing to miss. Stay as long as you
+> want.
 >
-> ancestralfutures.co.uk
+> Thank you for coming.
+>
+> Big Love,
+> Shumba Maasai ++
 
 ---
 
-## Card two · for anyone who wants to know what it is
+## Card two · what it is
 
-For the rack by the door, or for people who ask.
+For the rack by the door, or for anyone who asks.
 
 **Front**
 
@@ -45,22 +49,21 @@ For the rack by the door, or for people who ask.
 
 **Back**
 
-> A place where knowledge is passed through sound, memory and presence
-> rather than explanation.
+> A place where knowledge gets passed through sound, memory and presence
+> rather than through explanation.
 >
-> This one was over a year in the making, much of it brought back from
-> Zimbabwe.
+> This one has been over a year in the making, and a lot of it I brought
+> back from Zimbabwe.
 >
 > Shoes off. No phones. Enter the Daré.
 >
-> ancestralfutures.co.uk
+> Shumba ++
 
 ---
 
-## Card three · the rules, on their own
+## Card three · the rules on their own
 
-If the signage is carrying the practical side and the card only has to set
-the tone.
+If the signage is carrying the practical side.
 
 **Front**
 
@@ -70,10 +73,11 @@ the tone.
 
 **Back**
 
-> Not rules so much as the terms of being here properly.
+> Not rules really. Just how we do it in here.
 >
-> Daré, Zimbabwe House, London. October 2026.
-> ancestralfutures.co.uk
+> See you deya.
+>
+> Shumba ++
 
 ---
 
@@ -89,17 +93,20 @@ If there is only one card and it has to answer everything.
 
 **Back**
 
-> **Before you go in**
-> Shoes off. Phones in the cloakroom. Both are about being here properly.
+> Yes Yes People,
 >
-> **Inside**
-> Sit wherever you like. The session runs about [00] minutes. There is
+> Welcome. Shoes off, phone in the cloakroom. Both of those are just about
+> being here properly.
+>
+> Inside, sit wherever you like. It runs about [00] minutes. There's
 > nothing to do and nothing to miss.
 >
-> **After**
-> The library is open. Stay in it as long as you want to.
+> When you come out the library is there. Stay in it as long as you want.
 >
-> ancestralfutures.co.uk
+> Thank you for sitting with us.
+>
+> Big Love,
+> Shumba Maasai ++
 
 ---
 
@@ -107,25 +114,25 @@ If there is only one card and it has to answer everything.
 
 Short enough for a card edge, a seat back, or the cloakroom ticket.
 
-> There is nothing to do and nothing to miss.
+> There's nothing to do and nothing to miss.
 
-> Stay as long as you like.
+> Stay as long as you want.
 
-> A sonic refuge.
-
-> A gathering of memory, feeling and imagination.
+> Come as you are.
 
 > Enter the Daré.
+
+> See you deya.
 
 ---
 
 ## A note on the writing
 
-Everything above avoids telling anyone how to feel, which is the usual
-failure of a card like this. It says what to do with your shoes and your
-phone, says that you cannot get it wrong, and then gets out of the way.
+The thing that makes it his and not a venue's is that it never tells
+anyone how to feel. It says what to do with your shoes and your phone,
+says you cannot get it wrong, and then gets out of the way.
 
-**There is nothing to do and nothing to miss** is the line worth keeping
-whichever card you pick. People arriving at a sound installation alone,
-in the dark, with no phone, are mostly worried about doing it wrong. That
+**There's nothing to do and nothing to miss** is the line worth keeping
+whichever card you pick. People arriving at a sound installation alone, in
+the dark, with no phone, are mostly worried about doing it wrong. That
 sentence is the one that lets them sit down.
