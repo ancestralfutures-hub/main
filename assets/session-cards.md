@@ -1,20 +1,10 @@
 # Session cards · copy
 
-In Shumba's voice, so the card reads as him talking to the person holding
-it rather than as house instructions. Same greeting, same sign-off, same
-warmth as the newsletters.
-
-**Assumed:** a small card handed over as a timed session begins, because
-that is how the tickets sell. Say the word if you meant a programme card
-or a prompt card and this gets rewritten.
-
-**One blank:** `[00]` is the session length. Not guessed.
+Handed over as a session begins. `[00]` is the session length, not guessed.
 
 ---
 
-## Card one · handed at the door
-
-The short one, and the one that does the most work.
+## The card
 
 **Front**
 
@@ -24,24 +14,31 @@ The short one, and the one that does the most work.
 
 **Back**
 
-> Yes Yes People,
+> Shoes off. Phone in the cloakroom.
 >
-> Welcome to the Daré. Shoes off, phone in the cloakroom, then come in and
-> find somewhere to sit.
+> Sit anywhere. Stay as long as you like.
 >
-> There's nothing to do in here and nothing to miss. Stay as long as you
-> want.
->
-> Thank you for coming.
->
-> Big Love,
-> Shumba Maasai ++
+> Shumba
 
 ---
 
-## Card two · what it is
+## If it needs to say more
 
-For the rack by the door, or for anyone who asks.
+**Back**
+
+> Shoes off. Phone in the cloakroom.
+>
+> Sit anywhere you like. It runs about [00] minutes.
+>
+> The library is open afterwards.
+>
+> Shumba
+
+---
+
+## If there is a second card
+
+For the rack by the door.
 
 **Front**
 
@@ -49,90 +46,30 @@ For the rack by the door, or for anyone who asks.
 
 **Back**
 
-> A place where knowledge gets passed through sound, memory and presence
-> rather than through explanation.
->
-> This one has been over a year in the making, and a lot of it I brought
-> back from Zimbabwe.
+> Knowledge passed through sound, memory and presence rather than
+> explanation.
 >
 > Shoes off. No phones. Enter the Daré.
->
-> Shumba ++
 
 ---
 
-## Card three · the rules on their own
+## Lines
 
-If the signage is carrying the practical side.
+> Sit anywhere.
 
-**Front**
-
-> Shoes off.
-> No phones.
-> Enter the Daré.
-
-**Back**
-
-> Not rules really. Just how we do it in here.
->
-> See you deya.
->
-> Shumba ++
-
----
-
-## Card four · the longer one
-
-If there is only one card and it has to answer everything.
-
-**Front**
-
-> DARÉ
->
-> A sonic portrait by Shumba Maasai
-
-**Back**
-
-> Yes Yes People,
->
-> Welcome. Shoes off, phone in the cloakroom. Both of those are just about
-> being here properly.
->
-> Inside, sit wherever you like. It runs about [00] minutes. There's
-> nothing to do and nothing to miss.
->
-> When you come out the library is there. Stay in it as long as you want.
->
-> Thank you for sitting with us.
->
-> Big Love,
-> Shumba Maasai ++
-
----
-
-## Lines to use anywhere
-
-Short enough for a card edge, a seat back, or the cloakroom ticket.
-
-> There's nothing to do and nothing to miss.
-
-> Stay as long as you want.
-
-> Come as you are.
+> Stay as long as you like.
 
 > Enter the Daré.
 
-> See you deya.
-
 ---
 
-## A note on the writing
+## Why it is this short
 
-The thing that makes it his and not a venue's is that it never tells
-anyone how to feel. It says what to do with your shoes and your phone,
-says you cannot get it wrong, and then gets out of the way.
+A card handed to someone at a door is not a letter. The newsletter
+greeting and sign-off belong to people who already know him and asked to
+hear from him; on a card given to a stranger walking in they read as
+performed, and the warmth curdles.
 
-**There's nothing to do and nothing to miss** is the line worth keeping
-whichever card you pick. People arriving at a sound installation alone, in
-the dark, with no phone, are mostly worried about doing it wrong. That
-sentence is the one that lets them sit down.
+What carries over is the plainness: short sentences, no art language, and
+nothing telling anyone how they are supposed to feel about it. Signed
+Shumba and nothing after it.
