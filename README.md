@@ -36,6 +36,9 @@ npm run dev
   written beside it. The countdown numbers are worked out from the real
   dates, so they are right whenever the page is opened. Both tools are kept
   out of the sitemap and out of search.
+- `assets/social-plan.md` is the run from today to the day after it closes:
+  what goes out each morning and evening, the caption for every post, and
+  an email for every day.
 - `assets/qr/` holds the QR codes for the window vinyl, as SVG and as very
   large PNGs, with a README on how big to print them and the four things
   that stop one scanning. They were decoded back from the rendered files to

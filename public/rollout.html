@@ -81,6 +81,18 @@
     margin-bottom:12px;
   }
   .cap b { color:var(--cream); font-weight:600; }
+  .edit { display:grid; gap:10px; margin-bottom:14px; }
+  .edit label { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  .edit input, .edit textarea, textarea.cap {
+    display:block; width:100%; margin-top:5px; font:inherit; font-size:14px;
+    color:var(--cream); background:var(--panel); border:1px solid var(--line);
+    padding:9px 11px; border-radius:0; resize:vertical;
+  }
+  .edit input:focus, .edit textarea:focus, textarea.cap:focus { outline:none; border-color:var(--orange); }
+  .caplabel { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  textarea.cap { margin:5px 0 12px; }
+  .nofields { font-size:13px; color:var(--muted); }
+  button.quiet { border-color:var(--line); color:var(--muted); }
   .acts { display:flex; gap:8px; flex-wrap:wrap; }
   .sizes { font-size:12px; color:var(--muted); margin-top:10px; letter-spacing:.04em; }
 
@@ -91,6 +103,18 @@
   }
   #status.on { opacity:1; }
   .loading { padding:60px 0; color:var(--muted); }
+
+  .striph { font-size:13px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--orange); }
+  .stripnote { font-size:14px; color:var(--muted); margin:6px 0 16px; }
+  .strip { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:12px; margin-bottom:10px; }
+  .strip figure { border:1px solid var(--line); }
+  .strip canvas { width:100%; height:auto; display:block; cursor:pointer; }
+  .strip figcaption {
+    font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+    padding:6px 7px; display:flex; justify-content:space-between; gap:6px;
+  }
+  .strip a { color:var(--cream); text-decoration:none; border-bottom:1px solid #3d3c33; }
+  .strip a:hover { color:var(--orange); border-color:var(--orange); }
 </style>
 </head>
 <body>
@@ -124,6 +148,10 @@
     <p class="k">Sizes are made for each platform: story and square for Instagram and
       WhatsApp, landscape for X, LinkedIn and Facebook.</p>
   </div>
+
+  <h3 class="striph">Countdown · one for every morning</h3>
+  <p class="stripnote">Press any to save the story. Worked out from the real dates.</p>
+  <div id="strip" class="strip"></div>
 
   <div id="feed" class="loading">Drawing the assets…</div>
 </div>
@@ -842,6 +870,30 @@ function render(canvas, post, fmt) {
   LAYOUTS[post.layout](ctx, f.w, f.h, post, way);
 }
 
+/* The words each layout puts on the artwork, in the order they appear.
+   A post only gets inputs for the fields it actually has, so a countdown
+   offers a number and a label and nothing else. */
+const LABELS = { big:'Number', title:'Headline', small:'Line under it', body:'Paragraph' };
+
+function editorFor(row) {
+  const out = [];
+  for (const key of ['big', 'title', 'small', 'body']) {
+    if (row[key] === undefined) continue;
+    const long = key === 'body';
+    out.push(
+      `<label>${LABELS[key]}` +
+      (long
+        ? `<textarea data-field="${key}" rows="3">${String(row[key]).replace(/</g, '&lt;')}</textarea>`
+        : `<input data-field="${key}" value="${String(row[key]).replace(/"/g, '&quot;')}">`) +
+      `</label>`);
+  }
+  if (Array.isArray(row.items)) {
+    row.items.forEach((item, i) => out.push(
+      `<label>Line ${i + 1}<input data-field="items" data-index="${i}" value="${item.replace(/"/g, '&quot;')}"></label>`));
+  }
+  return out.length ? out.join('') : '<p class="nofields">This one is the poster. Its words are fixed.</p>';
+}
+
 function daysBetween(a, b) { return Math.round((b - a) / 86400000); }
 
 function toast(msg) {
@@ -935,17 +987,49 @@ function build() {
         <h4>${row.head}</h4>
         <p class="why">${row.why}</p>
         <div class="tags">${row.fmts.map((f) => `<span class="tag">${FORMATS[f].label}</span>`).join('')}</div>
-        <div class="cap">${row.caption.replace(/</g, '&lt;')}</div>
+        <div class="edit">${editorFor(row)}</div>
+        <label class="caplabel">Caption</label>
+        <textarea class="cap" rows="7">${row.caption.replace(/</g, '&lt;')}</textarea>
         <div class="acts">
           <button data-copy="1">Copy caption</button>
           ${row.fmts.map((f) => `<button data-fmt="${f}">Save ${FORMATS[f].label.split(' ')[0]}</button>`).join('')}
+          <button data-reset="1" class="quiet">Reset words</button>
         </div>
       </div>`;
     feed.appendChild(el);
 
+    const original = JSON.parse(JSON.stringify({ ...row, on: undefined }));
+    original.on = row.on;
+
     const canvas = el.querySelector('canvas');
     render(canvas, row, first);
     canvas.onclick = () => download(row, first);
+
+    const cap = el.querySelector('.cap');
+    cap.oninput = () => { row.caption = cap.value; };
+
+    // Every word on the artwork is an input, and typing in one redraws the
+    // canvas, so a post can be changed on the day without coming back here.
+    el.querySelectorAll('[data-field]').forEach((input) => {
+      input.oninput = () => {
+        const { field, index } = input.dataset;
+        if (index === undefined) row[field] = input.value;
+        else row[field][Number(index)] = input.value;
+        render(canvas, row, first);
+      };
+    });
+
+    el.querySelector('[data-reset]').onclick = () => {
+      Object.assign(row, JSON.parse(JSON.stringify(original)));
+      row.on = original.on;
+      el.querySelectorAll('[data-field]').forEach((input) => {
+        const { field, index } = input.dataset;
+        input.value = index === undefined ? row[field] : row[field][Number(index)];
+      });
+      cap.value = row.caption;
+      render(canvas, row, first);
+      toast('Words reset');
+    };
 
     el.querySelector('[data-copy]').onclick = () => {
       navigator.clipboard.writeText(row.caption).then(() => toast('Caption copied'));
@@ -966,6 +1050,38 @@ function build() {
     `${VENUE} · ${DATES} · ` + (left > 0 ? `${left} days to go` : left === 0 ? 'opens today' : 'running now');
 }
 
+/* One countdown for every day from today to closing.
+
+   The plan posts one each morning, so they all have to exist rather than
+   the handful the run below happens to use. Numbers come from the real
+   dates, so this is right whenever it is opened. */
+function buildStrip() {
+  const strip = document.getElementById('strip');
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const rows = [];
+  for (let day = new Date(today); day <= CLOSES; day.setDate(day.getDate() + 1)) {
+    const on = new Date(day);
+    const toOpen = daysBetween(on, OPENS);
+    const toClose = daysBetween(on, CLOSES);
+    if (toOpen > 1) rows.push({ on, key: `t${toOpen}`, layout: 'countdown', way: 'night', big: toOpen, small: 'days to go', fmts: ['story', 'square'] });
+    else if (toOpen === 1) rows.push({ on, key: 'tomorrow', layout: 'open', way: 'night', title: 'Tomorrow', fmts: ['story', 'square'] });
+    else if (toOpen === 0) rows.push({ on, key: 'open', layout: 'open', way: 'night', title: 'We are open', fmts: ['story', 'square'] });
+    else if (toClose === 0) rows.push({ on, key: 'last', layout: 'open', way: 'night', title: 'Last day', fmts: ['story', 'square'] });
+    else rows.push({ on, key: `l${toClose}`, layout: 'countdown', way: 'ink', big: toClose, small: 'days left', fmts: ['story', 'square'] });
+  }
+
+  strip.innerHTML = rows.map((r) =>
+    `<figure><canvas></canvas><figcaption><span>${r.on.getDate()} ${MONTH[r.on.getMonth()]}</span>` +
+    `<span><a href="#" data-sq>sq</a></span></figcaption></figure>`).join('');
+
+  [...strip.querySelectorAll('figure')].forEach((fig, i) => {
+    const row = rows[i];
+    render(fig.querySelector('canvas'), row, 'story');
+    fig.querySelector('canvas').onclick = () => download(row, 'story');
+    fig.querySelector('[data-sq]').onclick = (e) => { e.preventDefault(); download(row, 'square'); };
+  });
+}
+
 // ---------- go ----------
 (async function () {
   await Promise.all([
@@ -978,6 +1094,7 @@ function build() {
   ]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   build();
+  buildStrip();
 })();
 </script>
 </body>
