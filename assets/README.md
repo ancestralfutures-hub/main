@@ -48,8 +48,7 @@ at 9% and 91% of the width, and the base at 86% of the height. The glow in
 The designer's black line and halftone art, prepared so a canvas can fill
 it with any colour: `wordmark.png` (DARÉ), `hut-line.png` (the hut drawn),
 `figure-left.png` and `figure-right.png` (the two carved figures from the
-poster's edges) and `grain-field.png` (the speckle that is dense at the top
-and bottom and open through the middle).
+poster's edges).
 
 Each is white with its shape carried in the alpha channel, so drawing it
 through a `source-in` fill tints it. The originals came as black art on a

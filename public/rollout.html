@@ -93,6 +93,9 @@
   textarea.cap { margin:5px 0 12px; }
   .nofields { font-size:13px; color:var(--muted); }
   button.quiet { border-color:var(--line); color:var(--muted); }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin:5px 0 12px; }
+  .chips button { font-size:11px; padding:7px 12px; }
+  .chips button.on { background:var(--orange); border-color:var(--orange); color:var(--ground); }
   .acts { display:flex; gap:8px; flex-wrap:wrap; }
   .sizes { font-size:12px; color:var(--muted); margin-top:10px; letter-spacing:.04em; }
 
@@ -186,9 +189,9 @@ const CLOSES = new Date(2026, 9, 22);  // 22 October 2026
 // itself, and the fire has something to glow against. On a light ground
 // neither works, so those frames use the line drawing of the hut instead.
 const WAYS = {
-  night:  { bg:'sky',    ink:P.cream,   accent:P.orange,  art:P.cream,   dark:true,  stars:true,   grain:P.cream,   grainA:0 },
-  orange: { bg:P.orange, ink:'#17100a', accent:'#17100a', art:'#17100a', dark:false, stars:false, grain:'#17100a', grainA:0.5 },
-  ink:    { bg:P.ground, ink:P.orange,  accent:P.cream,   art:P.orange,  dark:true,  stars:true,  grain:P.orange,  grainA:0 },
+  night:  { bg:'sky',    ink:P.cream,   accent:P.orange,  art:P.cream,   dark:true,  stars:true },
+  orange: { bg:P.orange, ink:'#17100a', accent:'#17100a', art:'#17100a', dark:false, stars:false },
+  ink:    { bg:P.ground, ink:P.orange,  accent:P.cream,   art:P.orange,  dark:true,  stars:true },
 };
 
 const FORMATS = {
@@ -305,17 +308,6 @@ function paintStars(ctx, W, H, seed) {
 }
 
 
-/* The grain field: one image stretched over the whole frame, never tiled.
-
-   It is dense at the top and bottom and open through the middle, which is
-   exactly the poster's own edge texture, so stretching one copy across the
-   frame puts the speckle where the poster puts it and leaves the middle
-   clear for the words. Tiling it does the opposite: the dense bands land
-   everywhere and the frame goes flat. */
-function paintGrain(ctx, W, H, way) {
-  if (!ART.grain || !way.grainA) return;
-  drawArt(ctx, ART.grain, 0, 0, W, H, way.grain, way.grainA);
-}
 
 /* The hut, in whichever form the ground can carry.
 
@@ -407,7 +399,6 @@ function posterFrame(ctx, W, H, opts) {
   const o = opts || {};
   ctx.fillStyle = P.orange;
   ctx.fillRect(0, 0, W, H);
-  paintGrain(ctx, W, H, WAYS.orange);
   const wantsFigures = o.figures === undefined ? o.panel !== false : o.figures;
   if (wantsFigures) figures(ctx, W, H, INK, 0.7);
   if (o.panel === false) return null;
@@ -480,7 +471,6 @@ LAYOUTS.countdown = (ctx, W, H, p, way) => {
   }
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 7);
-  paintGrain(ctx, W, H, way);
   paintHut(ctx, W, H, way, W / 2, H * 0.64, W * 0.8);
   topName(ctx, W, H, way, pad);
   ctx.save();
@@ -547,7 +537,6 @@ LAYOUTS.rules = (ctx, W, H, p, way) => {
   }
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 3);
-  paintGrain(ctx, W, H, way);
   if (ART.hutline) {
     const w = W * 1.02, h = w * (ART.hutline.height / ART.hutline.width);
     drawArt(ctx, ART.hutline, (W - w) / 2, H - h * 1.02, w, h, way.art, 0.18);
@@ -569,7 +558,6 @@ LAYOUTS.explain = (ctx, W, H, p, way) => {
   else {
     paintGround(ctx, W, H, way);
     if (way.stars) paintStars(ctx, W, H, 5);
-    paintGrain(ctx, W, H, way);
   }
   const ink = onOrange ? INK : way.ink;
   const accent = onOrange ? '#0b0d0c' : way.accent;
@@ -595,7 +583,6 @@ LAYOUTS.line = (ctx, W, H, p, way) => {
   else {
     paintGround(ctx, W, H, way);
     if (way.stars) paintStars(ctx, W, H, 9);
-    paintGrain(ctx, W, H, way);
   }
   const ink = onOrange ? INK : way.ink;
   const accent = onOrange ? '#0b0d0c' : way.accent;
@@ -618,7 +605,6 @@ LAYOUTS.hut = (ctx, W, H, p, way) => {
   else {
     paintGround(ctx, W, H, way);
     if (way.stars) paintStars(ctx, W, H, 13);
-    paintGrain(ctx, W, H, way);
   }
   const art = onOrange ? INK : way.art;
   const w = W * 0.92, h = w * (ART.hutline ? ART.hutline.height / ART.hutline.width : 0.64);
@@ -633,7 +619,6 @@ LAYOUTS.hut = (ctx, W, H, p, way) => {
 LAYOUTS.detail = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 17);
-  paintGrain(ctx, W, H, way);
   paintHut(ctx, W, H, way, W / 2, H * 0.56, W * 0.78);
   const wh = wordmark(ctx, W, W / 2, H * 0.13, W * 0.6, way.ink);
   ctx.fillStyle = way.accent;
@@ -650,7 +635,6 @@ LAYOUTS.open = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   paintStars(ctx, W, H, 23);
   paintHut(ctx, W, H, way, W / 2, H * 0.62, W * 0.92);
-  paintGrain(ctx, W, H, WAYS.night);
   topName(ctx, W, H, way, W * 0.085);
   const fs = Math.round(W * 0.1);
   ctx.save();
@@ -681,7 +665,6 @@ LAYOUTS.list = (ctx, W, H, p, way) => {
   else {
     paintGround(ctx, W, H, way);
     if (way.stars) paintStars(ctx, W, H, 29);
-    paintGrain(ctx, W, H, way);
   }
   const ink = onOrange ? INK : way.ink;
   const accent = onOrange ? '#0b0d0c' : way.accent;
@@ -715,7 +698,6 @@ LAYOUTS.figure = (ctx, W, H, p, way) => {
     const fw = fh * (img.width / img.height);
     drawArt(ctx, img, p.side === 'left' ? -fw * 0.2 : W - fw * 0.8, H - fh, fw, fh, art, 0.74);
   }
-  paintGrain(ctx, W, H, onOrange ? WAYS.orange : way);
   topName(ctx, W, H, onOrange ? WAYS.orange : way, W * 0.085);
 
   const ink = onOrange ? INK : way.ink;
@@ -928,6 +910,8 @@ async function downloadMany(list) {
   toast(`${n} files saved`);
 }
 
+const WAY_NAMES = { night:'Night', orange:'Orange', ink:'Black' };
+
 const MONTH = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
 /* The run, put in date order inside each phase.
@@ -974,10 +958,11 @@ function build() {
     const el = document.createElement('div');
     el.className = 'post';
     const first = row.fmts[0];
+    let shape = first;
     el.innerHTML = `
       <div class="shot">
         <canvas></canvas>
-        <span class="fmt">${FORMATS[first].label}</span>
+        <span class="fmt"></span>
       </div>
       <div class="info">
         <div class="when">
@@ -986,13 +971,20 @@ function build() {
         </div>
         <h4>${row.head}</h4>
         <p class="why">${row.why}</p>
-        <div class="tags">${row.fmts.map((f) => `<span class="tag">${FORMATS[f].label}</span>`).join('')}</div>
+        <label class="caplabel">Colour</label>
+        <div class="chips" data-chips="way">
+          ${Object.keys(WAYS).map((k) => `<button data-way="${k}"${k === row.way ? ' class="on"' : ''}>${WAY_NAMES[k]}</button>`).join('')}
+        </div>
+        <label class="caplabel">Size</label>
+        <div class="chips" data-chips="fmt">
+          ${Object.keys(FORMATS).map((k) => `<button data-shape="${k}"${k === first ? ' class="on"' : ''}>${FORMATS[k].label}</button>`).join('')}
+        </div>
         <div class="edit">${editorFor(row)}</div>
         <label class="caplabel">Caption</label>
         <textarea class="cap" rows="7">${row.caption.replace(/</g, '&lt;')}</textarea>
         <div class="acts">
           <button data-copy="1">Copy caption</button>
-          ${row.fmts.map((f) => `<button data-fmt="${f}">Save ${FORMATS[f].label.split(' ')[0]}</button>`).join('')}
+          <button data-fmt="">Save this size</button>
           <button data-reset="1" class="quiet">Reset words</button>
         </div>
       </div>`;
@@ -1002,8 +994,25 @@ function build() {
     original.on = row.on;
 
     const canvas = el.querySelector('canvas');
-    render(canvas, row, first);
-    canvas.onclick = () => download(row, first);
+    const badge = el.querySelector('.fmt');
+    const redraw = () => { render(canvas, row, shape); badge.textContent = FORMATS[shape].label; };
+    redraw();
+    canvas.onclick = () => download(row, shape);
+
+    el.querySelectorAll('[data-way]').forEach((b) => {
+      b.onclick = () => {
+        row.way = b.dataset.way;
+        el.querySelectorAll('[data-way]').forEach((o) => o.classList.toggle('on', o === b));
+        redraw();
+      };
+    });
+    el.querySelectorAll('[data-shape]').forEach((b) => {
+      b.onclick = () => {
+        shape = b.dataset.shape;
+        el.querySelectorAll('[data-shape]').forEach((o) => o.classList.toggle('on', o === b));
+        redraw();
+      };
+    });
 
     const cap = el.querySelector('.cap');
     cap.oninput = () => { row.caption = cap.value; };
@@ -1015,7 +1024,7 @@ function build() {
         const { field, index } = input.dataset;
         if (index === undefined) row[field] = input.value;
         else row[field][Number(index)] = input.value;
-        render(canvas, row, first);
+        redraw();
       };
     });
 
@@ -1027,16 +1036,15 @@ function build() {
         input.value = index === undefined ? row[field] : row[field][Number(index)];
       });
       cap.value = row.caption;
-      render(canvas, row, first);
+      el.querySelectorAll('[data-way]').forEach((o) => o.classList.toggle('on', o.dataset.way === row.way));
+      redraw();
       toast('Words reset');
     };
 
     el.querySelector('[data-copy]').onclick = () => {
       navigator.clipboard.writeText(row.caption).then(() => toast('Caption copied'));
     };
-    el.querySelectorAll('[data-fmt]').forEach((b) => {
-      b.onclick = () => download(row, b.dataset.fmt);
-    });
+    el.querySelector('[data-fmt]').onclick = () => download(row, shape);
   }
 
   const posts = ordered().filter((r) => !r.phase);
@@ -1088,7 +1096,6 @@ function buildStrip() {
     load('hut', '/hut.webp'),
     load('word', '/art/wordmark.png'),
     load('hutline', '/art/hut-line.png'),
-    load('grain', '/art/grain-field.png'),
     load('figL', '/art/figure-left.png'),
     load('figR', '/art/figure-right.png'),
   ]);

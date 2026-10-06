@@ -286,7 +286,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
       <h3>Elements</h3>
       <div class="switch-row"><span>The logo instead of the title</span><input type="checkbox" class="switch" id="swLogo" checked></div>
       <div class="switch-row"><span>The name, top left</span><input type="checkbox" class="switch" id="swName" checked></div>
-      <div class="switch-row"><span>Grain</span><input type="checkbox" class="switch" id="swGrain" checked></div>
+      <div class="switch-row"><span>Grain</span><input type="checkbox" class="switch" id="swGrain"></div>
       <div class="switch-row"><span>Motion in the preview</span><input type="checkbox" class="switch" id="swMotion" checked></div>
       <div class="switch-row"><span>Safe areas</span><input type="checkbox" class="switch" id="swSafe"></div>
     </div>
@@ -362,7 +362,7 @@ const S = {
   image:null, imgFit:'cover', imgScale:100, imgPos:'center center', imgOpacity:100, wash:0,
   ground:'sky', text:PALETTE.cream,
   stars:100, glow:100, ember:true, emberScale:100, emberY:76,
-  useLogo:true, showName:true, showGrain:true, motion:true, showSafe:false,
+  useLogo:true, showName:true, showGrain:false, motion:true, showSafe:false,
   fileFmt:'png', seconds:8,
 };
 
