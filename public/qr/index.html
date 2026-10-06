@@ -13,114 +13,73 @@
   * { box-sizing:border-box; margin:0; padding:0; }
   body {
     background:var(--ground); color:var(--cream);
-    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; line-height:1.55;
-    -webkit-font-smoothing:antialiased; padding:40px 24px 90px;
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; line-height:1.5;
+    -webkit-font-smoothing:antialiased; padding:40px 24px 80px;
   }
   .wrap { max-width:1100px; margin:0 auto; }
   h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
-  .lede { max-width:62ch; margin:18px 0 8px; color:#bdbb9d; }
-  .lede b { color:var(--cream); font-weight:600; }
+  .sub { margin:10px 0 22px; color:var(--muted); font-size:15px; }
   .url {
-    display:inline-block; margin:14px 0 34px; padding:10px 16px;
-    border:1px solid var(--line); color:var(--orange); font-weight:600; letter-spacing:.04em;
+    display:inline-block; margin-bottom:34px; padding:9px 15px;
+    border:1px solid var(--line); color:var(--orange); font-weight:600;
   }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:26px; }
-  .card { border:1px solid var(--line); padding:18px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:22px; }
+  .card { border:1px solid var(--line); padding:16px; }
   .card img { display:block; width:100%; height:auto; border:1px solid var(--line); }
-  .card h2 { font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; margin:14px 0 4px; }
-  .card p { font-size:13px; color:var(--muted); margin-bottom:12px; }
+  .card h2 { font-size:12px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin:13px 0 3px; }
+  .card p { font-size:13px; color:var(--muted); margin-bottom:11px; }
   .card .best { color:var(--orange); }
-  .dl { display:flex; gap:8px; flex-wrap:wrap; }
+  .dl { display:flex; gap:6px; flex-wrap:wrap; }
   .dl a {
-    font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--cream); text-decoration:none; border:1px solid #3d3c33; padding:7px 10px;
+    font-size:11px; font-weight:600; letter-spacing:.07em; text-transform:uppercase;
+    color:var(--cream); text-decoration:none; border:1px solid #3d3c33; padding:6px 9px;
   }
   .dl a:hover { background:var(--cream); color:var(--ground); }
   .dl a.key { border-color:var(--orange); color:var(--orange); }
-  .specs { margin-top:48px; padding-top:26px; border-top:1px solid var(--line); max-width:70ch; }
-  .specs h3 { font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--orange); margin:22px 0 8px; }
-  .specs p, .specs li { color:#bdbb9d; font-size:15px; }
-  .specs ul { margin:0 0 0 18px; }
-  .specs li { margin-bottom:6px; }
-  table { border-collapse:collapse; margin-top:8px; }
-  td { padding:5px 24px 5px 0; font-size:15px; color:#bdbb9d; }
-  td:first-child { color:var(--cream); font-weight:600; }
+
+  .specs { margin-top:44px; padding-top:24px; border-top:1px solid var(--line); max-width:64ch; }
+  .specs dt { font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--orange); margin-top:20px; }
+  .specs dd { color:#bdbb9d; font-size:15px; margin-top:5px; }
+  .specs b { color:var(--cream); font-weight:600; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <h1>DARÉ · QR codes for the window vinyl</h1>
-  <p class="lede">
-    All of them point to the same address and nothing else, so they never need
-    reprinting if a page moves. Each one was <b>decoded back out of the rendered
-    file</b> to check it actually scans, including shrunk to 500px to stand in for
-    a phone camera at a distance.
-  </p>
+  <p class="sub">All six tested by decoding them back out of the rendered files.</p>
   <div class="url">https://ancestralfutures.co.uk</div>
 
   <div class="grid" id="grid"></div>
 
-  <div class="specs">
-    <h3>Use the SVG</h3>
-    <p>
-      Vinyl is cut and printed from vector, and a QR code is pure geometry, so it
-      should never go to a printer as pixels. The SVGs open at 300mm square and
-      scale from there with no loss. The PNGs are only for anyone who cannot take
-      a vector.
-    </p>
+  <dl class="specs">
+    <dt>Use the SVG</dt>
+    <dd>Vinyl prints from vector. Opens at 300mm, scales with no loss. The PNGs are a fallback.</dd>
 
-    <h3>How big</h3>
-    <p>The rule is width = scanning distance ÷ 10.</p>
-    <table>
-      <tr><td>1 metre</td><td>100mm</td></tr>
-      <tr><td>2 metres</td><td>200mm</td></tr>
-      <tr><td>3 metres</td><td>300mm</td></tr>
-    </table>
-    <p style="margin-top:10px;">
-      On a window people scan from the pavement, so <b>300mm square is the
-      minimum</b> and bigger is better. At 300mm each module is about 8mm.
-    </p>
+    <dt>Size</dt>
+    <dd>Width = scanning distance ÷ 10. On a window, <b>300mm minimum</b>.</dd>
 
-    <h3>Four things that break it</h3>
-    <ul>
-      <li><b>Cropping the quiet zone.</b> The clear border is part of the code. It
-        is four modules wide and already in these files. Do not trim to the
-        pattern.</li>
-      <li><b>Stretching it.</b> Scale proportionally, always.</li>
-      <li><b>Putting the logo on it.</b> Error correction is Q, so a quarter can be
-        lost. Spend that on glass and dirt, not decoration.</li>
-      <li><b>Low contrast.</b> Keep the dark part dark.</li>
-    </ul>
+    <dt>Do not</dt>
+    <dd>Crop the quiet zone · stretch it · put the logo on it · drop the contrast.</dd>
 
-    <h3>The transparent ones</h3>
-    <p>
-      A QR with no background takes the contrast of whatever is behind it, so on
-      clear glass with the street showing through it <b>will not scan</b>. It
-      needs a plain backing: a panel of cream or white vinyl under the black one,
-      or of black under the cream one. If there is no backing, use one of the
-      four above instead, where the background is part of the artwork.
-    </p>
+    <dt>The transparent ones</dt>
+    <dd>They take the contrast of what is behind them, so they need a plain backing. On clear glass they <b>will not scan</b>.</dd>
 
-    <h3>Through glass</h3>
-    <p>
-      Test the real thing in daylight, standing where a passer-by would stand.
-      Reflections are what kills a window code, so keep it below eye level rather
-      than up in the glare, and off any part of the glass that mirrors the
-      building opposite.
-    </p>
-  </div>
+    <dt>Before signing off</dt>
+    <dd>Scan it on the glass, in daylight, standing where a passer-by would. Reflections are what kill it.</dd>
+  </dl>
 </div>
 
 <script>
-  // Four colourways, in the order they should be reached for.
+  // Four colourways, then the two with no background, in the order they
+  // should be reached for.
   const WAYS = [
-    { file:'black-on-cream',  name:'Black on cream',  note:'Default. Highest contrast, scans from furthest.', best:true },
-    { file:'black-on-orange', name:'Black on orange', note:'On brand and still dark on light. Safe.' },
-    { file:'black-on-white',  name:'Black on white',  note:'For clear vinyl, where the glass is the light part.' },
-    { file:'cream-on-black',  name:'Cream on black',  note:'Inverted. Reads on newer phones only, so never use it on its own.' },
-    { file:'black-transparent', name:'Black, no background', note:'For cutting or printing over a light backing. Checkerboard below is the transparency.', chk:true },
-    { file:'cream-transparent', name:'Cream, no background', note:'For applying over a dark backing. Checkerboard below is the transparency.', chk:true },
+    { file:'black-on-cream',  name:'Black on cream',  note:'Default. Best contrast.', best:true },
+    { file:'black-on-orange', name:'Black on orange', note:'On brand. Safe.' },
+    { file:'black-on-white',  name:'Black on white',  note:'For clear vinyl.' },
+    { file:'cream-on-black',  name:'Cream on black',  note:'Inverted. Newer phones only.' },
+    { file:'black-transparent', name:'Black, no background', note:'Needs a light backing.', chk:true },
+    { file:'cream-transparent', name:'Cream, no background', note:'Needs a dark backing.', chk:true },
   ];
   document.getElementById('grid').innerHTML = WAYS.map((w) => `
     <div class="card">
