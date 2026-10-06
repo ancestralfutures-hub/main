@@ -1,5 +1,9 @@
 # The QR codes
 
+**Look at them at `/qr/` on the site.** `assets/` is never published, so
+these files only exist in the repository; `public/qr/` is the published copy
+and the page there shows all six with the specs beside them.
+
 All of them point to **https://ancestralfutures.co.uk** and nothing else,
 so they never need reprinting if a page moves.
 
@@ -24,6 +28,8 @@ SVG. 8000px is enough for a full window at print resolution.
 | `black-on-orange` | On brand and still dark-on-light. Safe |
 | `black-on-white` | For clear vinyl, where the glass is the light part |
 | `cream-on-black` | Inverted. See the warning below |
+| `black-transparent` | No background, for cutting over a light backing |
+| `cream-transparent` | No background, for applying over a dark backing |
 
 **On the inverted one.** Phone cameras from about 2017 onwards read a
 light code on a dark ground, but older phones and some scanning apps do
@@ -58,6 +64,14 @@ is about 8mm, which is comfortable.
 4. **Low contrast.** Keep the dark part dark. Orange on black looks right
    and scans badly.
 
+## The transparent ones
+
+A code with no background takes the contrast of whatever is behind it, so
+on clear glass with the street showing through it **will not scan**. It
+needs a plain backing: cream or white vinyl under the black one, black
+under the cream one. With no backing, use one of the four where the
+background is part of the artwork.
+
 ## Through glass
 
 Test the real thing in daylight before signing it off, standing where a
@@ -68,5 +82,7 @@ below eye level rather than up in the glare.
 ## Making them again
 
 `node qr.mjs` in the scratchpad, or any encoder set to **error correction
-Q** and **four-module quiet zone**. The code is version 3, 29 × 29
+Q** and **four-module quiet zone**. Give the SVG an explicit `width` and
+`height`: the encoder writes only a `viewBox`, so the file opens at 37
+pixels across and looks like nothing at all. The code is version 3, 29 × 29
 modules, 37 across including the quiet zone.

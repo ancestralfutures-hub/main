@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DARÉ · QR codes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --ground:#0b0d0c; --cream:#f9f5cd; --orange:#f43e00; --muted:#908f78; --line:#24241e; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--ground); color:var(--cream);
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; line-height:1.55;
+    -webkit-font-smoothing:antialiased; padding:40px 24px 90px;
+  }
+  .wrap { max-width:1100px; margin:0 auto; }
+  h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  .lede { max-width:62ch; margin:18px 0 8px; color:#bdbb9d; }
+  .lede b { color:var(--cream); font-weight:600; }
+  .url {
+    display:inline-block; margin:14px 0 34px; padding:10px 16px;
+    border:1px solid var(--line); color:var(--orange); font-weight:600; letter-spacing:.04em;
+  }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:26px; }
+  .card { border:1px solid var(--line); padding:18px; }
+  .card img { display:block; width:100%; height:auto; border:1px solid var(--line); }
+  .card h2 { font-size:12px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; margin:14px 0 4px; }
+  .card p { font-size:13px; color:var(--muted); margin-bottom:12px; }
+  .card .best { color:var(--orange); }
+  .dl { display:flex; gap:8px; flex-wrap:wrap; }
+  .dl a {
+    font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--cream); text-decoration:none; border:1px solid #3d3c33; padding:7px 10px;
+  }
+  .dl a:hover { background:var(--cream); color:var(--ground); }
+  .dl a.key { border-color:var(--orange); color:var(--orange); }
+  .specs { margin-top:48px; padding-top:26px; border-top:1px solid var(--line); max-width:70ch; }
+  .specs h3 { font-size:12px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--orange); margin:22px 0 8px; }
+  .specs p, .specs li { color:#bdbb9d; font-size:15px; }
+  .specs ul { margin:0 0 0 18px; }
+  .specs li { margin-bottom:6px; }
+  table { border-collapse:collapse; margin-top:8px; }
+  td { padding:5px 24px 5px 0; font-size:15px; color:#bdbb9d; }
+  td:first-child { color:var(--cream); font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>DARÉ · QR codes for the window vinyl</h1>
+  <p class="lede">
+    All of them point to the same address and nothing else, so they never need
+    reprinting if a page moves. Each one was <b>decoded back out of the rendered
+    file</b> to check it actually scans, including shrunk to 500px to stand in for
+    a phone camera at a distance.
+  </p>
+  <div class="url">https://ancestralfutures.co.uk</div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="specs">
+    <h3>Use the SVG</h3>
+    <p>
+      Vinyl is cut and printed from vector, and a QR code is pure geometry, so it
+      should never go to a printer as pixels. The SVGs open at 300mm square and
+      scale from there with no loss. The PNGs are only for anyone who cannot take
+      a vector.
+    </p>
+
+    <h3>How big</h3>
+    <p>The rule is width = scanning distance ÷ 10.</p>
+    <table>
+      <tr><td>1 metre</td><td>100mm</td></tr>
+      <tr><td>2 metres</td><td>200mm</td></tr>
+      <tr><td>3 metres</td><td>300mm</td></tr>
+    </table>
+    <p style="margin-top:10px;">
+      On a window people scan from the pavement, so <b>300mm square is the
+      minimum</b> and bigger is better. At 300mm each module is about 8mm.
+    </p>
+
+    <h3>Four things that break it</h3>
+    <ul>
+      <li><b>Cropping the quiet zone.</b> The clear border is part of the code. It
+        is four modules wide and already in these files. Do not trim to the
+        pattern.</li>
+      <li><b>Stretching it.</b> Scale proportionally, always.</li>
+      <li><b>Putting the logo on it.</b> Error correction is Q, so a quarter can be
+        lost. Spend that on glass and dirt, not decoration.</li>
+      <li><b>Low contrast.</b> Keep the dark part dark.</li>
+    </ul>
+
+    <h3>The transparent ones</h3>
+    <p>
+      A QR with no background takes the contrast of whatever is behind it, so on
+      clear glass with the street showing through it <b>will not scan</b>. It
+      needs a plain backing: a panel of cream or white vinyl under the black one,
+      or of black under the cream one. If there is no backing, use one of the
+      four above instead, where the background is part of the artwork.
+    </p>
+
+    <h3>Through glass</h3>
+    <p>
+      Test the real thing in daylight, standing where a passer-by would stand.
+      Reflections are what kills a window code, so keep it below eye level rather
+      than up in the glare, and off any part of the glass that mirrors the
+      building opposite.
+    </p>
+  </div>
+</div>
+
+<script>
+  // Four colourways, in the order they should be reached for.
+  const WAYS = [
+    { file:'black-on-cream',  name:'Black on cream',  note:'Default. Highest contrast, scans from furthest.', best:true },
+    { file:'black-on-orange', name:'Black on orange', note:'On brand and still dark on light. Safe.' },
+    { file:'black-on-white',  name:'Black on white',  note:'For clear vinyl, where the glass is the light part.' },
+    { file:'cream-on-black',  name:'Cream on black',  note:'Inverted. Reads on newer phones only, so never use it on its own.' },
+    { file:'black-transparent', name:'Black, no background', note:'For cutting or printing over a light backing. Checkerboard below is the transparency.', chk:true },
+    { file:'cream-transparent', name:'Cream, no background', note:'For applying over a dark backing. Checkerboard below is the transparency.', chk:true },
+  ];
+  document.getElementById('grid').innerHTML = WAYS.map((w) => `
+    <div class="card">
+      <img src="dare-qr_${w.file}.svg" alt="QR code to ancestralfutures.co.uk, ${w.name}"
+           style="${w.chk ? 'background:repeating-conic-gradient(#3a3a32 0% 25%,#22221c 0% 50%) 50%/18px 18px;' : ''}">
+      <h2>${w.name}</h2>
+      <p class="${w.best ? 'best' : ''}">${w.note}</p>
+      <div class="dl">
+        <a class="key" href="dare-qr_${w.file}.svg" download>SVG</a>
+        <a href="dare-qr_${w.file}_4000px.png" download>4000px</a>
+        <a href="dare-qr_${w.file}_8000px.png" download>8000px</a>
+      </div>
+    </div>`).join('');
+</script>
+</body>
+</html>

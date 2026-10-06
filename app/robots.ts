@@ -8,7 +8,7 @@ export const dynamic = "force-static";
 // posts, which are not pages of the site.
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/asset-generator.html", "/rollout.html"] },
+    rules: { userAgent: "*", allow: "/", disallow: ["/asset-generator.html", "/rollout.html", "/qr/"] },
     sitemap: absoluteUrl("/sitemap.xml"),
   };
 }
