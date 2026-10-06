@@ -24,8 +24,8 @@ Countdown assets for every day are on `/rollout.html`.
 
 | Date | Morning · 9am | Evening · 6pm |
 |---|---|---|
-| **Tue 6** | Carousel + personal message | — |
-| **Wed 7** | What is a Daré | — |
+| **Tue 6** | Carousel + personal message |  |
+| **Wed 7** | What is a Daré |  |
 | **Thu 8** | 7 days | BTS · the build starts |
 | **Fri 9** | 6 days | Video · what a Daré is |
 | **Sat 10** | 5 days | BTS · the hut taking shape |
@@ -41,7 +41,7 @@ Countdown assets for every day are on `/rollout.html`.
 | **Tue 20** | 2 days left | From inside |
 | **Wed 21** | 1 day left | From inside |
 | **Thu 22** | Last day | Closing |
-| **Fri 23** | Thank you | — |
+| **Fri 23** | Thank you |  |
 
 ---
 
