@@ -36,6 +36,12 @@ npm run dev
   written beside it. The countdown numbers are worked out from the real
   dates, so they are right whenever the page is opened. Both tools are kept
   out of the sitemap and out of search.
+- `assets/qr/` holds the QR codes for the window vinyl, as SVG and as very
+  large PNGs, with a README on how big to print them and the four things
+  that stop one scanning. They were decoded back from the rendered files to
+  check they work.
+- `assets/session-cards.md` is the copy for the cards handed out at each
+  session, in four versions.
 - `assets/signage-brief.md` is the brief for the exhibition signage: six
   signs, three versions of each, and the one thing that governs all of it,
   which is that the room is dark and nobody has a phone to read by.
