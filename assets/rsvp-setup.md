@@ -73,14 +73,20 @@ If the form is ever rebuilt, these are the settings that matter.
   The form has a honeypot field instead, which stops the bots that bother
   with a site this size.
 - **All four fields on the form.** See above. Off the form, off the record.
+- **None of them marked Required.** With Required on `GUEST`, Brevo refuses
+  everyone who comes alone. The page already insists on a name and an
+  address, and on both guest details once the box is ticked; Brevo's copy
+  of that rule can only get it wrong.
 
 Brevo has no API for building forms, so all of that is the UI.
 
 ## Two things that will waste an afternoon
 
-**Brevo answers `{"success": true}` when it has saved nothing.** A dropped
-field, a request it does not like: same answer, no error anywhere. The only
-way to know a change worked is to submit one and then look at the contact.
+**A success reply is not proof of a save.** A field that is not on the
+form is dropped with `success: true`. A required field left empty comes
+back as `success: false`, which the page now shows as not having gone
+through. The only way to know a change to the form worked is to submit
+one and then look at the contact.
 
 **It ignores anything that does not look like a browser.** Submitting with
 `curl` and its default user agent gets `{"success": true}` and is thrown
@@ -107,8 +113,10 @@ import the ones who say yes. Do not add them silently.
 - **No key in the browser.** The site is static files and Brevo's hosted
   form needs no key: it is public by design and can only ever add to the
   one list it was made for.
-- **Posted once.** The reply cannot be read across origins, so the request
-  is sent once rather than retried, and nobody is counted twice at the
-  door.
+- **The reply is read.** Brevo lets the site's origin read its answer, and
+  the page shows the thank-you only on an actual `success: true`. A
+  refusal, or a reply it cannot read, shows "did not go through" instead.
+  Brevo keys contacts on the address, so trying again never counts anyone
+  twice at the door.
 - **A honeypot field** that people never see and bots fill in. A filled
   one is answered as though it worked and sent nowhere.

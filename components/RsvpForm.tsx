@@ -15,10 +15,15 @@ type Status = "idle" | "sending" | "sent" | "error" | "unset";
   it is set, submitting says RSVP is opening shortly rather than failing
   silently, which is what a form posting into nothing does.
 
-  Sent once, with mode "no-cors". Brevo's reply cannot be read across
-  origins, so success is taken as the request going out. Sending it once
-  rather than retrying on an unreadable reply means nobody is ever counted
-  twice on a guest list.
+  Brevo's form host allows this site's origin to read its reply, and the
+  reply is the only thing that says whether anything was saved: a field the
+  form rejects comes back as success false, and a request it treats as a
+  bot comes back as success true with nothing written. So the reply is
+  read, and the thank-you shows only on an actual success. Anything else,
+  including a reply that cannot be read, is shown as not having gone
+  through, because on a door list a false "you're on it" is worse than a
+  false "try again". Brevo keys contacts on the address, so a retry never
+  counts anyone twice.
 */
 export default function RsvpForm() {
   const { form } = rsvpContent;
@@ -57,8 +62,13 @@ export default function RsvpForm() {
     body.set("locale", "en");
 
     try {
-      await fetch(form.action, { method: "POST", body, mode: "no-cors" });
-      setStatus("sent");
+      const reply = await fetch(form.action, {
+        method: "POST",
+        body,
+        headers: { accept: "application/json" },
+      });
+      const result = (await reply.json()) as { success?: boolean };
+      setStatus(result.success === true ? "sent" : "error");
     } catch {
       setStatus("error");
     }

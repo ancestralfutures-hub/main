@@ -60,7 +60,7 @@
       "submit": "Send RSVP",
       "sending": "Sending",
       "success": "Thank you. You're on the list, and we'll see you on the 15th.",
-      "error": "That did not go through. Please check your connection and try again.",
+      "error": "That did not go through. Please try again in a moment.",
       "notReady": "RSVP is opening shortly. Please check back."
     }
   },
