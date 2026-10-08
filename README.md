@@ -124,11 +124,11 @@ cannot hold an API key. It is wired up and working: replies land in
 Party replies in the newsletter list means everyone who RSVPs starts
 getting ticket email they never asked for.
 
-**One thing is still broken.** Brevo's hosted form silently drops any field
-that is not on the form, so only the email address is kept and the name,
-the guest and the party size are lost. The four fields have to be added in
-Brevo's own interface, which `assets/rsvp-setup.md` describes along with the
-settings the form has to keep.
+The page reads Brevo's reply and only says "you're on the list" when a
+contact was actually saved; anything else shows as not having gone
+through. `assets/rsvp-setup.md` has the settings the form has to keep,
+the two ways Brevo hides a broken form behind a working one, and how to
+be emailed when a reply comes in.
 
 The story asset that points at it is `assets/invite-story.png`, and it is
 editable on `/rollout.html` under Launch invitation.

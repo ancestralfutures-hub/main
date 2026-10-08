@@ -1,12 +1,13 @@
 # Wiring the RSVP to Brevo
 
-**The form is live and posting.** `rsvp.form.action` holds the Brevo form,
-submissions land in `Launch RSVP` and nothing reaches `subscribers`. Tested
-in a real browser against the built site, then the test contact deleted.
+**The form is live and working.** `rsvp.form.action` holds the Brevo form,
+a reply lands in `Launch RSVP` with all four fields filled, with or without
+a guest, and nothing reaches `subscribers`. Both paths were tested from a
+real browser against the built site on 8 October 2026, then the test
+contacts deleted, so the list starts empty.
 
-**One thing is still broken: only the email address is kept.** The name,
-the guest, the guest's address and the party size are all thrown away.
-Fixing it takes about two minutes and is step one below.
+**Being told when someone replies** is the one thing not set up. See the
+end of this note.
 
 ---
 
@@ -21,31 +22,15 @@ other is "I am coming on the 15th".
 
 ---
 
-## The step that is left
-
-**Contacts → Forms → the RSVP form → add the four fields**, then save and
-publish. They can all be optional: the page already decides what it will
-not submit without.
-
-Brevo's hosted form **drops any field that is not on the form**. It answers
-`{"success": true}` either way, so there is no error to notice, and the
-contact arrives with an email address and nothing else. Adding the fields
-is the whole fix. The form's address does not change, so nothing needs
-pushing afterwards.
-
-Then **send yourself one with a guest** and check the contact in list 4 has
-all four filled in.
-
----
-
-## Already done
+## What is in place
 
 Built in the Ancestral Futures account over the API and read back to check:
 
 - **A list called `Launch RSVP`, list id 4.** Separate from `subscribers`,
   which is list 3.
-- **The hosted form**, pointed at list 4 only, single opt-in, no captcha,
-  wired into `content/home.json`.
+- **The hosted form**, pointed at list 4 only, no confirmation email, no
+  captcha, all four fields on it and none of them required, wired into
+  `content/home.json`.
 - **The four attributes**, spelled the way the form posts them:
 
   | Attribute | Type | Holds |
@@ -120,3 +105,22 @@ import the ones who say yes. Do not add them silently.
   twice at the door.
 - **A honeypot field** that people never see and bots fill in. A filled
   one is answered as though it worked and sent nowhere.
+
+---
+
+## Being told when someone replies
+
+The form editor on this plan has no notification setting, so it is an
+automation, and automations have no API either.
+
+**Automations → Create an automation → start from scratch.**
+
+- Trigger: **a contact is added to a list**, list `Launch RSVP`.
+- Action: the one that **emails you**, not the contact. Brevo labels it a
+  notification. Put `hello@ancestralfutures.co.uk` or your own address in,
+  and the subject can carry the name: `New RSVP: {{ contact.NAME }}`.
+- Activate it.
+
+Then send one through the page and see whether it lands. If it does not,
+the list is still the record: **Contacts → Lists → Launch RSVP** shows
+everyone, and the four attribute columns are the door list.
