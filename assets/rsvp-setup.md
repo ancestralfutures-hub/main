@@ -1,9 +1,12 @@
 # Wiring the RSVP to Brevo
 
-**Where the RSVPs go right now: nowhere.** `rsvp.form.action` in
-`content/home.json` is empty, so the form never posts and says "RSVP is
-opening shortly" instead. Nothing is being collected and nothing is being
-lost. One step is left and it is the one that cannot be done from here.
+**The form is live and posting.** `rsvp.form.action` holds the Brevo form,
+submissions land in `Launch RSVP` and nothing reaches `subscribers`. Tested
+in a real browser against the built site, then the test contact deleted.
+
+**One thing is still broken: only the email address is kept.** The name,
+the guest, the guest's address and the party size are all thrown away.
+Fixing it takes about two minutes and is step one below.
 
 ---
 
@@ -18,12 +21,31 @@ other is "I am coming on the 15th".
 
 ---
 
+## The step that is left
+
+**Contacts → Forms → the RSVP form → add the four fields**, then save and
+publish. They can all be optional: the page already decides what it will
+not submit without.
+
+Brevo's hosted form **drops any field that is not on the form**. It answers
+`{"success": true}` either way, so there is no error to notice, and the
+contact arrives with an email address and nothing else. Adding the fields
+is the whole fix. The form's address does not change, so nothing needs
+pushing afterwards.
+
+Then **send yourself one with a guest** and check the contact in list 4 has
+all four filled in.
+
+---
+
 ## Already done
 
 Built in the Ancestral Futures account over the API and read back to check:
 
 - **A list called `Launch RSVP`, list id 4.** Separate from `subscribers`,
   which is list 3.
+- **The hosted form**, pointed at list 4 only, single opt-in, no captcha,
+  wired into `content/home.json`.
 - **The four attributes**, spelled the way the form posts them:
 
   | Attribute | Type | Holds |
@@ -38,31 +60,32 @@ Built in the Ancestral Futures account over the API and read back to check:
 
 ---
 
-## The step that is left
+## How the form has to stay set up
 
-Brevo has no API for building forms, so this one is the UI.
+If the form is ever rebuilt, these are the settings that matter.
 
-1. **Contacts → Forms → Create a subscription form.** Point it at
-   `Launch RSVP` and nothing else.
+- **Pointed at `Launch RSVP` and nothing else.**
+- **Double opt-in off.** This is a reply to an invitation, not a newsletter
+  sign-up. Asking someone to confirm a subscription they did not make will
+  lose you replies.
+- **reCAPTCHA off.** The page posts the form itself rather than embedding
+  Brevo's, so a captcha has no token to check and every submission fails.
+  The form has a honeypot field instead, which stops the bots that bother
+  with a site this size.
+- **All four fields on the form.** See above. Off the form, off the record.
 
-   - **Double opt-in off.** This is a reply to an invitation, not a
-     newsletter sign-up. Asking someone to confirm a subscription they did
-     not make will lose you replies.
-   - **reCAPTCHA off.** The page posts the form itself rather than
-     embedding Brevo's, so a captcha has no token to check and every
-     submission fails. The form has a honeypot field instead, which stops
-     the bots that bother with a site this size.
+Brevo has no API for building forms, so all of that is the UI.
 
-   The four attributes do not have to be fields on Brevo's own form. The
-   page posts them by name whether or not Brevo drew a box for them.
+## Two things that will waste an afternoon
 
-2. **Share → copy the form's address.** It looks like
-   `https://xxxxxxxx.sibforms.com/serve/MUIF...`
+**Brevo answers `{"success": true}` when it has saved nothing.** A dropped
+field, a request it does not like: same answer, no error anywhere. The only
+way to know a change worked is to submit one and then look at the contact.
 
-3. Put it in `content/home.json` as `rsvp.form.action`, and push.
-
-4. **Send yourself one**, with a guest, and check the contact in list 4 has
-   all four attributes filled.
+**It ignores anything that does not look like a browser.** Submitting with
+`curl` and its default user agent gets `{"success": true}` and is thrown
+away silently. Testing from the command line needs a real browser's user
+agent string, or it looks like it works and never does.
 
 ---
 

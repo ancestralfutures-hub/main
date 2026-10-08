@@ -119,16 +119,16 @@ and not indexed, because it is a private party on a public site, so the
 address is given out rather than found.
 
 It posts to a Brevo form the same way the sign-up does, since GitHub Pages
-cannot hold an API key. **The form's address is empty until you make it**,
-and until then submitting says RSVP is opening shortly rather than posting
-into nothing, so no replies are being collected yet.
+cannot hold an API key. It is wired up and working: replies land in
+`Launch RSVP`, list 4, deliberately **not** `subscribers`, which is list 3.
+Party replies in the newsletter list means everyone who RSVPs starts
+getting ticket email they never asked for.
 
-`assets/rsvp-setup.md` is the setup. The list and the four attributes are
-already built: `Launch RSVP` is list 4, deliberately **not** `subscribers`,
-which is list 3. Party replies in the newsletter list means everyone who
-RSVPs starts getting ticket email they never asked for. Only the hosted
-form is left, and it has to be made in Brevo's own interface because there
-is no API for it.
+**One thing is still broken.** Brevo's hosted form silently drops any field
+that is not on the form, so only the email address is kept and the name,
+the guest and the party size are lost. The four fields have to be added in
+Brevo's own interface, which `assets/rsvp-setup.md` describes along with the
+settings the form has to keep.
 
 The story asset that points at it is `assets/invite-story.png`, and it is
 editable on `/rollout.html` under Launch invitation.
