@@ -135,6 +135,10 @@ export default function RsvpForm() {
                 required
               />
             </label>
+            {/* The guest has not agreed to anything. Whoever is typing
+                their address is the one who has to be told what happens
+                to it, and here is the only place to say so. */}
+            <p className="rsvp-notice">{form.guestNotice}</p>
           </div>
         )}
       </div>

@@ -120,10 +120,13 @@ address is given out rather than found.
 
 It posts to a Brevo form the same way the sign-up does, since GitHub Pages
 cannot hold an API key. **The form's address is empty until you make it**,
-and until then submitting says RSVP is opening shortly rather than failing
-into nothing. Make the form in Brevo with attributes `NAME`, `GUEST`, `GUEST_EMAIL` and
-`PARTY_SIZE`, then put its address in `content/home.json` as
-`rsvp.form.action`.
+and until then submitting says RSVP is opening shortly rather than posting
+into nothing, so no replies are being collected yet.
+
+`assets/rsvp-setup.md` is the setup, and the one thing in it that matters
+is that the RSVP gets **its own list**, not `subscribers`. Party replies in
+the newsletter list means everyone who RSVPs starts getting ticket email
+they never asked for.
 
 The story asset that points at it is `assets/invite-story.png`, and it is
 editable on `/rollout.html` under Launch invitation.

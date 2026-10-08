@@ -56,6 +56,7 @@
       "guestToggle": "I'm bringing a guest",
       "guestName": "Your guest's name",
       "guestEmail": "Your guest's email",
+      "guestNotice": "We use your guest's address for the door list and the joining details, and nothing else.",
       "submit": "Send RSVP",
       "sending": "Sending",
       "success": "Thank you. You're on the list, and we'll see you on the 15th.",

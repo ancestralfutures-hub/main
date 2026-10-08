@@ -576,6 +576,12 @@ body:has(.rsvp-page) .bar-bottom {
   margin-top: var(--space-xs);
 }
 
+.rsvp-notice {
+  font-size: calc(var(--type-size) * 0.8);
+  line-height: 1.45;
+  color: var(--muted);
+}
+
 .rsvp-submit {
   width: 100%;
   margin-top: var(--space-xs);
