@@ -623,13 +623,32 @@ LAYOUTS.hut = (ctx, W, H, p, way) => {
    quiet is the point. Everything is centred on one axis and measured off
    the width, so it holds at any of the four sizes. */
 LAYOUTS.invite = (ctx, W, H, p, way) => {
-  paintGround(ctx, W, H, way);
-  paintStars(ctx, W, H, 41);
+  // The ground is the artist's own photograph of a night sky, scaled to
+  // cover and anchored to the top so the stars stay in and the empty
+  // black at the bottom is what gets cropped. If it has not loaded, the
+  // drawn sky stands in.
+  if (ART.stars) {
+    const img = ART.stars;
+    const k = Math.max(W / img.width, H / img.height);
+    const dw = img.width * k, dh = img.height * k;
+    ctx.fillStyle = '#0b0b0b';
+    ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(img, (W - dw) / 2, 0, dw, dh);
+  } else {
+    paintGround(ctx, W, H, way);
+    paintStars(ctx, W, H, 41);
+  }
 
+  // One colour, one size, one weight, for everything on it. The lines are
+  // told apart by where they sit and the two rules between them, not by
+  // being set differently.
   const mid = W / 2;
+  const size = Math.round(W * 0.04);
+  const tr = 0.12;
+  const gap = size * 1.75;
   const rule = (y, w) => {
     ctx.save();
-    ctx.strokeStyle = way.ink; ctx.globalAlpha = 0.26;
+    ctx.strokeStyle = way.accent; ctx.globalAlpha = 0.5;
     ctx.beginPath(); ctx.moveTo(mid - w / 2, y); ctx.lineTo(mid + w / 2, y);
     ctx.lineWidth = Math.max(1, W * 0.0016); ctx.stroke();
     ctx.restore();
@@ -637,11 +656,10 @@ LAYOUTS.invite = (ctx, W, H, p, way) => {
 
   // Spaced capitals, centred, wrapped on width. The invitation line is the
   // only long one on here and it has to break somewhere sensible.
-  const centredCaps = (text, y, size, tr, colour, alpha) => {
+  const centredCaps = (text, y) => {
     ctx.save();
-    ctx.font = `600 ${Math.round(size)}px ${FONT}`;
-    ctx.fillStyle = colour;
-    ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+    ctx.font = `600 ${size}px ${FONT}`;
+    ctx.fillStyle = way.accent;
     ctx.textBaseline = 'top';
     const track = size * tr;
     const rows = [];
@@ -652,44 +670,36 @@ LAYOUTS.invite = (ctx, W, H, p, way) => {
     }
     rows.push(line);
     let cy = y;
-    for (const r of rows) { centreTracked(ctx, r, mid, cy, track); cy += size * 1.42; }
+    for (const r of rows) { centreTracked(ctx, r, mid, cy, track); cy += gap; }
     ctx.restore();
     return cy;
   };
 
-  const lead = Math.round(W * 0.055);
-  const big = Math.round(W * 0.044);
-  const small = Math.round(W * 0.03);
-  const rs = Math.round(W * 0.032);
-
   // Measured first so the block sits on the middle whatever it says.
-  ctx.font = `600 ${lead}px ${FONT}`;
+  ctx.font = `600 ${size}px ${FONT}`;
   let rows = 1, line = '';
   for (const word of String(p.title).toUpperCase().split(/\s+/)) {
     const t = line ? line + ' ' + word : word;
-    if (tracked(ctx, t, lead * 0.1) > W * 0.78 && line) { rows++; line = word; } else line = t;
+    if (tracked(ctx, t, size * tr) > W * 0.78 && line) { rows++; line = word; } else line = t;
   }
-  const blockH = rows * lead * 1.42 + W * 0.085 + W * 0.075
-    + big * 1.75 * 3 + W * 0.082 + small * 1.75 * 2 + W * 0.055 + rs * 1.4;
+  const blockH = rows * gap + W * 0.06 + W * 0.075
+    + gap * p.items.length + W * 0.082 + W * 0.055 + gap;
 
   let y = H * 0.5 - blockH / 2;
-  y = centredCaps(p.title, y, lead, 0.1, way.ink);
-  y += W * 0.085;
+  y = centredCaps(p.title, y);
+  y += W * 0.06;
 
   rule(y, W * 0.34);
   y += W * 0.075;
 
-  // centreFit sets the font but not the colour, and what is left on the
-  // context at this point is the background gradient, which on this ground
-  // is invisible. Set it here, once, rather than relying on it.
+  // centreFit sets the font but not the colour. Set it here, once, rather
+  // than relying on whatever is left on the context.
   p.items.forEach((item, i) => {
-    const front = i < 3;
     ctx.save();
-    ctx.fillStyle = way.ink;
-    ctx.globalAlpha = front ? 1 : 0.72;
-    centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, front ? big : small, 0.12);
+    ctx.fillStyle = way.accent;
+    centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, size, tr);
     ctx.restore();
-    y += (front ? big : small) * 1.75;
+    y += gap;
     if (i === 2) { rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
   });
 
@@ -697,7 +707,7 @@ LAYOUTS.invite = (ctx, W, H, p, way) => {
   // is pressable, and a shape that looks like it is only invites the try.
   ctx.save();
   ctx.fillStyle = way.accent;
-  centreFit(ctx, p.small.toUpperCase(), mid, y + W * 0.055, W * 0.84, rs, 0.14);
+  centreFit(ctx, p.small.toUpperCase(), mid, y + W * 0.055, W * 0.84, size, tr);
   ctx.restore();
 };
 
@@ -1190,6 +1200,7 @@ function buildStrip() {
     load('hutline', '/art/hut-line.png'),
     load('figL', '/art/figure-left.png'),
     load('figR', '/art/figure-right.png'),
+    load('stars', '/art/stars.jpg'),
   ]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   build();

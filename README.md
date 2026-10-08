@@ -53,7 +53,8 @@ npm run dev
   which is that the room is dark and nobody has a phone to read by.
 - The artwork those two draw with is in `public/art/`: the wordmark, the hut
   drawing and the two carved figures, each one carried as a white stencil
-  with the shape in its alpha so it can be filled in any colour.
+  with the shape in its alpha so it can be filled in any colour, and
+  `stars.jpg`, the artist's night sky that the launch invitation sits on.
   `assets/README.md` says how they were made.
 
 The artist section and the three rules are built but not shown, in

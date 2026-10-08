@@ -58,3 +58,9 @@ pixel solid black. The hut drawing was scanned faintly, its strongest line
 only two thirds opaque, so its alpha is lifted until that line is solid.
 
 `/asset-generator.html` and `/rollout.html` both draw with these.
+
+`stars.jpg` is different: not a stencil but a photograph, the artist's own
+night sky, 1280 by 1600, used as it is under the launch invitation. The
+rollout page scales it to cover and anchors it to the top, so the stars
+stay in and the empty black at the bottom is what gets cropped. A copy is
+kept here as `assets/stars.jpg`.
