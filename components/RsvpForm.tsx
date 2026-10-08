@@ -13,7 +13,7 @@ type Status = "idle" | "sending" | "sent" | "error" | "unset";
 
   The form's address lives in content/home.json as rsvp.form.action. Until
   it is set, submitting says RSVP is opening shortly rather than failing
-  silently, which is what happens if a form posts into nothing.
+  silently, which is what a form posting into nothing does.
 
   Sent once, with mode "no-cors". Brevo's reply cannot be read across
   origins, so success is taken as the request going out. Sending it once
@@ -24,9 +24,9 @@ export default function RsvpForm() {
   const { form } = rsvpContent;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [coming, setComing] = useState<"yes" | "no">("yes");
   const [bringing, setBringing] = useState(false);
   const [guest, setGuest] = useState("");
+  const [guestEmail, setGuestEmail] = useState("");
   const [trap, setTrap] = useState("");
   const [status, setStatus] = useState<Status>("idle");
 
@@ -44,15 +44,15 @@ export default function RsvpForm() {
     }
 
     setStatus("sending");
+    const named = bringing ? guest.trim() : "";
     const body = new FormData();
     body.set("EMAIL", email);
     body.set("NAME", name.trim());
-    body.set("ATTENDING", coming === "yes" ? "Yes" : "No");
-    // Only a named guest counts. A ticked box with nothing in it is not a
-    // person, and a guest list that thinks it is will be wrong at the door.
-    const named = bringing && coming === "yes" ? guest.trim() : "";
     body.set("GUEST", named);
-    body.set("PARTY_SIZE", coming === "yes" ? String(named ? 2 : 1) : "0");
+    body.set("GUEST_EMAIL", bringing ? guestEmail.trim() : "");
+    // Only a named guest counts. A ticked box with nothing in it is not a
+    // person, and a list that thinks it is will be wrong at the door.
+    body.set("PARTY_SIZE", String(named ? 2 : 1));
     body.set("email_address_check", "");
     body.set("locale", "en");
 
@@ -67,7 +67,7 @@ export default function RsvpForm() {
   if (status === "sent") {
     return (
       <p role="status" className="rsvp-done">
-        {coming === "yes" ? form.success : form.successNo}
+        {form.success}
       </p>
     );
   }
@@ -101,33 +101,17 @@ export default function RsvpForm() {
         />
       </label>
 
-      <fieldset className="rsvp-field">
-        <legend>{form.coming}</legend>
-        <div className="rsvp-choice">
-          {(["yes", "no"] as const).map((value) => (
-            <label key={value} data-on={coming === value || undefined}>
-              <input
-                type="radio"
-                name="coming"
-                value={value}
-                checked={coming === value}
-                onChange={() => setComing(value)}
-              />
-              {value === "yes" ? form.yes : form.no}
-            </label>
-          ))}
-        </div>
-      </fieldset>
+      <div className="rsvp-field">
+        <label className="rsvp-check">
+          <input type="checkbox" checked={bringing} onChange={(e) => setBringing(e.target.checked)} />
+          {form.guestToggle}
+        </label>
 
-      {/* The guest only exists for someone who is coming. */}
-      {coming === "yes" && (
-        <div className="rsvp-field">
-          <label className="rsvp-check">
-            <input type="checkbox" checked={bringing} onChange={(e) => setBringing(e.target.checked)} />
-            {form.guestToggle}
-          </label>
-          {bringing && (
-            <label className="rsvp-guest">
+        {/* Both of the guest's details appear together, because a name with
+            no address is a person nobody can write to. */}
+        {bringing && (
+          <div className="rsvp-guest">
+            <label>
               <span className="sr-only">{form.guestName}</span>
               <input
                 type="text"
@@ -136,11 +120,24 @@ export default function RsvpForm() {
                 onChange={(e) => setGuest(e.target.value)}
                 placeholder={form.guestName}
                 autoComplete="off"
+                required
               />
             </label>
-          )}
-        </div>
-      )}
+            <label>
+              <span className="sr-only">{form.guestEmail}</span>
+              <input
+                type="email"
+                name="guestEmail"
+                value={guestEmail}
+                onChange={(e) => setGuestEmail(e.target.value)}
+                placeholder={form.guestEmail}
+                autoComplete="off"
+                required
+              />
+            </label>
+          </div>
+        )}
+      </div>
 
       {/* Honeypot: hidden from people, filled by bots. */}
       <label className="sr-only" aria-hidden="true">

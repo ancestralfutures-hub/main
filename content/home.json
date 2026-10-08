@@ -53,15 +53,12 @@
       "action": "",
       "name": "Your name",
       "email": "Email",
-      "coming": "Will you be there?",
-      "yes": "Yes, I'll be there",
-      "no": "Sorry, I can't make it",
       "guestToggle": "I'm bringing a guest",
       "guestName": "Your guest's name",
+      "guestEmail": "Your guest's email",
       "submit": "Send RSVP",
       "sending": "Sending",
       "success": "Thank you. You're on the list, and we'll see you on the 15th.",
-      "successNo": "Thank you for letting us know. We'll miss you.",
       "error": "That did not go through. Please check your connection and try again.",
       "notReady": "RSVP is opening shortly. Please check back."
     }

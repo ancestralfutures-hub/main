@@ -504,20 +504,10 @@ body:has(.rsvp-page) .bar-bottom {
   text-align: center;
 }
 
-.rsvp-logo {
-  width: min(44vw, 230px);
-  margin-bottom: var(--space-xs);
-}
-
-.rsvp-logo img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .rsvp-invite {
   color: var(--orange);
-  max-width: 28em;
+  max-width: 24em;
+  margin-top: var(--space-md);
 }
 
 .rsvp-when {
@@ -567,43 +557,6 @@ body:has(.rsvp-page) .bar-bottom {
   border-color: var(--orange);
 }
 
-/* Two choices drawn as one control, so the answer is one press rather
-   than a radio dot nobody can hit on a phone. */
-.rsvp-choice {
-  display: flex;
-  gap: var(--space-xs);
-  flex-wrap: wrap;
-}
-
-.rsvp-choice label {
-  flex: 1 1 12rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--button-height);
-  padding: 0.6em 1em;
-  border: 2px solid color-mix(in srgb, var(--cream) 34%, transparent);
-  cursor: pointer;
-  text-align: center;
-  transition:
-    border-color 0.3s var(--ease),
-    background-color 0.3s var(--ease),
-    color 0.3s var(--ease);
-}
-
-.rsvp-choice label[data-on] {
-  background: var(--orange);
-  border-color: var(--orange);
-  color: var(--ground);
-}
-
-.rsvp-choice input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
 .rsvp-check {
   display: flex;
   align-items: center;
@@ -618,7 +571,8 @@ body:has(.rsvp-page) .bar-bottom {
 }
 
 .rsvp-guest {
-  display: block;
+  display: grid;
+  gap: var(--space-xs);
   margin-top: var(--space-xs);
 }
 

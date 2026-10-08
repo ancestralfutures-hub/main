@@ -635,53 +635,70 @@ LAYOUTS.invite = (ctx, W, H, p, way) => {
     ctx.restore();
   };
 
-  const wmW = W * 0.52;
-  const wmH = ART.word ? wmW * (ART.word.height / ART.word.width) : W * 0.2;
+  // Spaced capitals, centred, wrapped on width. The invitation line is the
+  // only long one on here and it has to break somewhere sensible.
+  const centredCaps = (text, y, size, tr, colour, alpha) => {
+    ctx.save();
+    ctx.font = `600 ${Math.round(size)}px ${FONT}`;
+    ctx.fillStyle = colour;
+    ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+    ctx.textBaseline = 'top';
+    const track = size * tr;
+    const rows = [];
+    let line = '';
+    for (const word of String(text).toUpperCase().split(/\s+/)) {
+      const t = line ? line + ' ' + word : word;
+      if (tracked(ctx, t, track) > W * 0.78 && line) { rows.push(line); line = word; } else line = t;
+    }
+    rows.push(line);
+    let cy = y;
+    for (const r of rows) { centreTracked(ctx, r, mid, cy, track); cy += size * 1.42; }
+    ctx.restore();
+    return cy;
+  };
+
+  const lead = Math.round(W * 0.055);
   const big = Math.round(W * 0.044);
   const small = Math.round(W * 0.03);
   const rs = Math.round(W * 0.032);
 
-  // The whole block measured first, then placed from the middle out, so it
-  // sits on the optical centre at every size rather than drifting down.
-  const blockH = W * 0.06 + wmH + W * 0.085 + W * 0.075
-    + big * 1.75 * 3 + W * 0.082 + small * 1.75 * 2 + W * 0.05 + rs * 2.9;
+  // Measured first so the block sits on the middle whatever it says.
+  ctx.font = `600 ${lead}px ${FONT}`;
+  let rows = 1, line = '';
+  for (const word of String(p.title).toUpperCase().split(/\s+/)) {
+    const t = line ? line + ' ' + word : word;
+    if (tracked(ctx, t, lead * 0.1) > W * 0.78 && line) { rows++; line = word; } else line = t;
+  }
+  const blockH = rows * lead * 1.42 + W * 0.085 + W * 0.075
+    + big * 1.75 * 3 + W * 0.082 + small * 1.75 * 2 + W * 0.055 + rs * 1.4;
+
   let y = H * 0.5 - blockH / 2;
-
-  ctx.fillStyle = way.accent;
-  centreFit(ctx, p.title.toUpperCase(), mid, y, W * 0.78, Math.round(W * 0.026), 0.22);
-  y += W * 0.06;
-
-  wordmark(ctx, W, mid, y, wmW, way.ink);
-  y += wmH + W * 0.085;
+  y = centredCaps(p.title, y, lead, 0.1, way.ink);
+  y += W * 0.085;
 
   rule(y, W * 0.34);
   y += W * 0.075;
 
+  // centreFit sets the font but not the colour, and what is left on the
+  // context at this point is the background gradient, which on this ground
+  // is invisible. Set it here, once, rather than relying on it.
   p.items.forEach((item, i) => {
-    const lead = i < 3;
+    const front = i < 3;
+    ctx.save();
     ctx.fillStyle = way.ink;
-    ctx.globalAlpha = lead ? 1 : 0.7;
-    centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, lead ? big : small, 0.12);
-    y += (lead ? big : small) * 1.75;
-    if (i === 2) { ctx.globalAlpha = 1; rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
+    ctx.globalAlpha = front ? 1 : 0.72;
+    centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, front ? big : small, 0.12);
+    ctx.restore();
+    y += (front ? big : small) * 1.75;
+    if (i === 2) { rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
   });
-  ctx.globalAlpha = 1;
 
-  // The ask, boxed, because it is the one thing on here to act on.
-  const label = p.small.toUpperCase();
-  ctx.font = `600 ${rs}px ${FONT}`;
-  const tw = tracked(ctx, label, rs * 0.24);
-  const bw = tw + W * 0.11, bh = rs * 2.9;
-  const by = y + W * 0.05;
+  // The ask, set as a line rather than a button. Nothing on a still image
+  // is pressable, and a shape that looks like it is only invites the try.
   ctx.save();
-  ctx.fillStyle = P.orange;
-  ctx.fillRect(mid - bw / 2, by, bw, bh);
-  ctx.fillStyle = P.ground;
-  ctx.textBaseline = 'top';
-  fillTracked(ctx, label, mid - tw / 2, by + (bh - rs) / 2 - rs * 0.12, rs * 0.24);
+  ctx.fillStyle = way.accent;
+  centreFit(ctx, p.small.toUpperCase(), mid, y + W * 0.055, W * 0.84, rs, 0.14);
   ctx.restore();
-
-  footer(ctx, W, H, way, [SITE], W * 0.085);
 };
 
 LAYOUTS.detail = (ctx, W, H, p, way) => {
@@ -814,9 +831,9 @@ const PLAN = [
     caption:'In August 2025 we gathered in east London for the pilot of Daré.\n\nOne room, many collaborators, and a way of honouring our ancestors through the continuation of Daré.\n\nEverything since has come out of that night. 15 to 22 October at Zimbabwe House.' },
 
 { on:d(10,8), key:'invite', layout:'invite', way:'night', fmts:['story','portrait','square'],
-    title:'Shumba Maasai invites you to the launch of',
+    title:'Shumba Maasai invites you to the launch of Daré',
     items:['Thursday','15 October 2026','8pm to 11pm','Zimbabwe House','429 Strand, London'],
-    small:'RSVP',
+    small:'RSVP: ancestralfutures.co.uk/rsvp',
     head:'Launch invitation', why:'Stars and nothing else. The one asset in the run that is an invitation rather than an advertisement, for sending to people by name.',
     caption:'Shumba Maasai invites you to the launch of Daré.\n\nThursday 15 October 2026, 8pm to 11pm\nZimbabwe House, 429 Strand, London\n\nRSVP at ancestralfutures.co.uk/rsvp' },
 

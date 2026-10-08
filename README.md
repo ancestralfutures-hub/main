@@ -113,15 +113,16 @@ Until then the form says sign-up is opening soon.
 ## The launch RSVP
 
 `/rsvp` is the invitation page for the launch on 15 October: name, email,
-coming or not, and one named guest. Off the navigation, out of the sitemap
+and one guest with their own address. Everyone who fills it in is coming,
+so there is nothing to answer yes or no to. Off the navigation, out of the sitemap
 and not indexed, because it is a private party on a public site, so the
 address is given out rather than found.
 
 It posts to a Brevo form the same way the sign-up does, since GitHub Pages
 cannot hold an API key. **The form's address is empty until you make it**,
 and until then submitting says RSVP is opening shortly rather than failing
-into nothing. Make the form in Brevo with attributes `NAME`, `ATTENDING`,
-`GUEST` and `PARTY_SIZE`, then put its address in `content/home.json` as
+into nothing. Make the form in Brevo with attributes `NAME`, `GUEST`, `GUEST_EMAIL` and
+`PARTY_SIZE`, then put its address in `content/home.json` as
 `rsvp.form.action`.
 
 The story asset that points at it is `assets/invite-story.png`, and it is

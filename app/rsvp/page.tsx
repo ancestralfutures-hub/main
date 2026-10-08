@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import logo from "@/assets/dare-logo.webp";
 import RsvpForm from "@/components/RsvpForm";
 import { rsvpContent } from "@/lib/content";
 
@@ -21,11 +19,7 @@ export const metadata: Metadata = {
 export default function RsvpPage() {
   return (
     <section className="rsvp-page">
-      <h1 className="rsvp-logo">
-        <Image src={logo} alt="Daré" loading="eager" />
-      </h1>
-
-      <p className="eyebrow rsvp-invite">{rsvpContent.lede}</p>
+      <h1 className="eyebrow rsvp-invite">{rsvpContent.lede}</h1>
 
       <div className="rsvp-when">
         <p className="eyebrow">{rsvpContent.when}</p>
