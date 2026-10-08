@@ -428,10 +428,18 @@ Preheader: See you deya.
 
 ---
 
-**Before the first send:** add and verify a sender on
-`ancestralfutures.co.uk`. The only verified sender on the account is a
-gmail address from another project, which will hurt delivery and look
-wrong in the inbox.
+**Who these send from.** Three senders are verified and active on the
+account, so nothing needs setting up first:
+
+| Sender | Address |
+|---|---|
+| Shumba Maasai | `shumba@ancestralfutures.co.uk` |
+| Ancestral Futures | `hello@ancestralfutures.co.uk` |
+| ANCESTRAL FUTURES | `ancestralfutures@gmail.com` |
+
+Send every one of these from **Shumba Maasai**. All eighteen are written
+in his voice and signed by him, and the gmail address is the one to leave
+alone: a free address on a send to a list is the thing that lands in spam.
 
 # What this needs from you
 

@@ -52,9 +52,9 @@ npm run dev
   signs, three versions of each, and the one thing that governs all of it,
   which is that the room is dark and nobody has a phone to read by.
 - The artwork those two draw with is in `public/art/`: the wordmark, the hut
-  drawing, the two carved figures and the grain field, each one carried as a
-  white stencil with the shape in its alpha so it can be filled in any
-  colour. `assets/README.md` says how they were made.
+  drawing and the two carved figures, each one carried as a white stencil
+  with the shape in its alpha so it can be filled in any colour.
+  `assets/README.md` says how they were made.
 
 The artist section and the three rules are built but not shown, in
 `components/sections`.
@@ -123,10 +123,12 @@ cannot hold an API key. **The form's address is empty until you make it**,
 and until then submitting says RSVP is opening shortly rather than posting
 into nothing, so no replies are being collected yet.
 
-`assets/rsvp-setup.md` is the setup, and the one thing in it that matters
-is that the RSVP gets **its own list**, not `subscribers`. Party replies in
-the newsletter list means everyone who RSVPs starts getting ticket email
-they never asked for.
+`assets/rsvp-setup.md` is the setup. The list and the four attributes are
+already built: `Launch RSVP` is list 4, deliberately **not** `subscribers`,
+which is list 3. Party replies in the newsletter list means everyone who
+RSVPs starts getting ticket email they never asked for. Only the hosted
+form is left, and it has to be made in Brevo's own interface because there
+is no API for it.
 
 The story asset that points at it is `assets/invite-story.png`, and it is
 editable on `/rollout.html` under Launch invitation.

@@ -3,10 +3,7 @@
 **Where the RSVPs go right now: nowhere.** `rsvp.form.action` in
 `content/home.json` is empty, so the form never posts and says "RSVP is
 opening shortly" instead. Nothing is being collected and nothing is being
-lost. It also means nobody can reply yet, so this wants doing today.
-
-It cannot be set up from here: the Brevo connector on this machine is
-signed in to a **Medpilot** account, not Ancestral Futures.
+lost. One step is left and it is the one that cannot be done from here.
 
 ---
 
@@ -21,22 +18,31 @@ other is "I am coming on the 15th".
 
 ---
 
-## Setting it up
+## Already done
 
-1. **Contacts → Lists → Create a list**, called `Launch RSVP`.
+Built in the Ancestral Futures account over the API and read back to check:
 
-2. **Contacts → Settings → Contact attributes**, add four, all text:
+- **A list called `Launch RSVP`, list id 4.** Separate from `subscribers`,
+  which is list 3.
+- **The four attributes**, spelled the way the form posts them:
 
-   | Attribute | Holds |
-   |---|---|
-   | `NAME` | who replied |
-   | `GUEST` | their guest's name, blank if none |
-   | `GUEST_EMAIL` | their guest's address, blank if none |
-   | `PARTY_SIZE` | 1, or 2 with a named guest |
+  | Attribute | Type | Holds |
+  |---|---|---|
+  | `NAME` | text | who replied |
+  | `GUEST` | text | their guest's name, blank if none |
+  | `GUEST_EMAIL` | text | their guest's address, blank if none |
+  | `PARTY_SIZE` | number | 1, or 2 with a named guest |
 
-   The names have to match exactly. The form posts those keys.
+  `PARTY_SIZE` is a number rather than text so the door list can be added
+  up instead of counted by hand.
 
-3. **Contacts → Forms → Create a subscription form.** Point it at
+---
+
+## The step that is left
+
+Brevo has no API for building forms, so this one is the UI.
+
+1. **Contacts → Forms → Create a subscription form.** Point it at
    `Launch RSVP` and nothing else.
 
    - **Double opt-in off.** This is a reply to an invitation, not a
@@ -47,12 +53,15 @@ other is "I am coming on the 15th".
      submission fails. The form has a honeypot field instead, which stops
      the bots that bother with a site this size.
 
-4. **Share → copy the form's address.** It looks like
+   The four attributes do not have to be fields on Brevo's own form. The
+   page posts them by name whether or not Brevo drew a box for them.
+
+2. **Share → copy the form's address.** It looks like
    `https://xxxxxxxx.sibforms.com/serve/MUIF...`
 
-5. Put it in `content/home.json` as `rsvp.form.action`, and push.
+3. Put it in `content/home.json` as `rsvp.form.action`, and push.
 
-6. **Send yourself one**, with a guest, and check the contact in Brevo has
+4. **Send yourself one**, with a guest, and check the contact in list 4 has
    all four attributes filled.
 
 ---
