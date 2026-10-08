@@ -83,12 +83,15 @@ export default function SignupForm() {
         </button>
       </div>
 
-      {/* Honeypot: hidden from people, filled by bots. */}
+      {/* Honeypot: hidden from people, filled by bots. Its name must not be
+          anything a browser's autofill recognises: called "company", it was
+          filled in alongside the email by anyone who autofilled, and the
+          sign-up was then thrown away as a bot's. */}
       <label className="sr-only" aria-hidden="true">
-        Company
+        Leave this blank
         <input
           type="text"
-          name="company"
+          name="af_ref_token"
           value={trap}
           onChange={(e) => setTrap(e.target.value)}
           tabIndex={-1}
