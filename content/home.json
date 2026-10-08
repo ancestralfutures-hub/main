@@ -13,13 +13,18 @@
     "startDate": "2026-10-15T13:00:00+01:00",
     "endDate": "2026-10-22T20:00:00+01:00"
   },
-  "credits": ["Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London."],
+  "credits": [
+    "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London."
+  ],
   "about": {
     "title": "About",
     "paragraphs": [
       "Daré creates a space to encounter knowledge through sound, memory, heritage and presence, offering audiences a way to listen beyond information and reconnect with what can only be understood through experience."
     ],
-    "statement": ["A sonic refuge.", "A gathering of memory, feeling and imagination."]
+    "statement": [
+      "A sonic refuge.",
+      "A gathering of memory, feeling and imagination."
+    ]
   },
   "artist": {
     "title": "The Artist",
@@ -28,12 +33,38 @@
   },
   "rules": {
     "title": "The way in",
-    "lines": ["Shoes off.", "Phones outside.", "Enter the Daré."]
+    "lines": [
+      "Shoes off.",
+      "Phones outside.",
+      "Enter the Daré."
+    ]
   },
   "tickets": {
     "title": "Book tickets",
     "eventId": "2000644063249",
     "url": "https://www.eventbrite.co.uk/e/ancestral-futures-presents-dare-a-sonic-portrait-by-shumba-maasai-tickets-2000644063249"
+  },
+  "rsvp": {
+    "title": "RSVP",
+    "lede": "Shumba Maasai invites you to the launch of Daré.",
+    "when": "Thursday 15 October 2026, 8pm to 11pm",
+    "where": "Zimbabwe House, 429 Strand, London",
+    "form": {
+      "action": "",
+      "name": "Your name",
+      "email": "Email",
+      "coming": "Will you be there?",
+      "yes": "Yes, I'll be there",
+      "no": "Sorry, I can't make it",
+      "guestToggle": "I'm bringing a guest",
+      "guestName": "Your guest's name",
+      "submit": "Send RSVP",
+      "sending": "Sending",
+      "success": "Thank you. You're on the list, and we'll see you on the 15th.",
+      "successNo": "Thank you for letting us know. We'll miss you.",
+      "error": "That did not go through. Please check your connection and try again.",
+      "notReady": "RSVP is opening shortly. Please check back."
+    }
   },
   "signup": {
     "title": "Sign up",

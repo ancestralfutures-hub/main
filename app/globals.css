@@ -474,6 +474,182 @@
 }
 
 /* ------------------------------------------------------------------ */
+/* The RSVP                                                            */
+/* ------------------------------------------------------------------ */
+
+/* The one page on the site that scrolls. A form with a guest on it does
+   not fit a phone otherwise, and html is set to overflow hidden for the
+   opening screen, so this page has to turn that off for itself. */
+html:has(.rsvp-page),
+html:has(.rsvp-page) body {
+  height: auto;
+  overflow: visible;
+}
+
+/* The bar along the bottom is fixed, which is right on a screen that does
+   not move and wrong on one that does: it sits on top of the form and
+   covers whichever field happens to be under it. This page is one thing
+   to do, so it goes, and the name along the top stays. */
+body:has(.rsvp-page) .bar-bottom {
+  display: none;
+}
+
+.rsvp-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  min-height: 100dvh;
+  padding: calc(var(--header-height) + var(--space-md)) var(--space-xs) var(--space-lg);
+  text-align: center;
+}
+
+.rsvp-logo {
+  width: min(44vw, 230px);
+  margin-bottom: var(--space-xs);
+}
+
+.rsvp-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.rsvp-invite {
+  color: var(--orange);
+  max-width: 28em;
+}
+
+.rsvp-when {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.rsvp {
+  width: min(100%, 30rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  text-align: left;
+}
+
+.rsvp-field {
+  display: block;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.rsvp-field > span,
+.rsvp-field > legend {
+  display: block;
+  margin-bottom: 7px;
+  font-size: calc(var(--type-size) * 0.78);
+  letter-spacing: var(--caps-tracking);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rsvp input[type="text"],
+.rsvp input[type="email"] {
+  width: 100%;
+  height: var(--button-height);
+  padding-inline: 1em;
+  background: color-mix(in srgb, var(--ground) 70%, transparent);
+  border: 2px solid var(--cream);
+  transition: border-color 0.3s var(--ease);
+}
+
+.rsvp input[type="text"]:focus,
+.rsvp input[type="email"]:focus {
+  border-color: var(--orange);
+}
+
+/* Two choices drawn as one control, so the answer is one press rather
+   than a radio dot nobody can hit on a phone. */
+.rsvp-choice {
+  display: flex;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.rsvp-choice label {
+  flex: 1 1 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--button-height);
+  padding: 0.6em 1em;
+  border: 2px solid color-mix(in srgb, var(--cream) 34%, transparent);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 0.3s var(--ease),
+    background-color 0.3s var(--ease),
+    color 0.3s var(--ease);
+}
+
+.rsvp-choice label[data-on] {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: var(--ground);
+}
+
+.rsvp-choice input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.rsvp-check {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  cursor: pointer;
+}
+
+.rsvp-check input {
+  width: 1.15em;
+  height: 1.15em;
+  accent-color: var(--orange);
+}
+
+.rsvp-guest {
+  display: block;
+  margin-top: var(--space-xs);
+}
+
+.rsvp-submit {
+  width: 100%;
+  margin-top: var(--space-xs);
+}
+
+.rsvp-submit:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.rsvp-message:empty {
+  display: none;
+}
+
+.rsvp-message {
+  color: var(--muted);
+  text-align: center;
+}
+
+.rsvp-done {
+  width: min(100%, 30rem);
+  padding: var(--space-md) var(--space-sm);
+  border: 2px solid var(--orange);
+  color: var(--cream);
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ */
 /* The name and the navigation                                         */
 /* ------------------------------------------------------------------ */
 

@@ -616,6 +616,74 @@ LAYOUTS.hut = (ctx, W, H, p, way) => {
 };
 
 // Where and when, with the wordmark over it.
+/* The launch invitation.
+
+   Stars and nothing else: no hut, no fire, no figures. It is the one asset
+   in the run that is an invitation rather than an advertisement, and the
+   quiet is the point. Everything is centred on one axis and measured off
+   the width, so it holds at any of the four sizes. */
+LAYOUTS.invite = (ctx, W, H, p, way) => {
+  paintGround(ctx, W, H, way);
+  paintStars(ctx, W, H, 41);
+
+  const mid = W / 2;
+  const rule = (y, w) => {
+    ctx.save();
+    ctx.strokeStyle = way.ink; ctx.globalAlpha = 0.26;
+    ctx.beginPath(); ctx.moveTo(mid - w / 2, y); ctx.lineTo(mid + w / 2, y);
+    ctx.lineWidth = Math.max(1, W * 0.0016); ctx.stroke();
+    ctx.restore();
+  };
+
+  const wmW = W * 0.52;
+  const wmH = ART.word ? wmW * (ART.word.height / ART.word.width) : W * 0.2;
+  const big = Math.round(W * 0.044);
+  const small = Math.round(W * 0.03);
+  const rs = Math.round(W * 0.032);
+
+  // The whole block measured first, then placed from the middle out, so it
+  // sits on the optical centre at every size rather than drifting down.
+  const blockH = W * 0.06 + wmH + W * 0.085 + W * 0.075
+    + big * 1.75 * 3 + W * 0.082 + small * 1.75 * 2 + W * 0.05 + rs * 2.9;
+  let y = H * 0.5 - blockH / 2;
+
+  ctx.fillStyle = way.accent;
+  centreFit(ctx, p.title.toUpperCase(), mid, y, W * 0.78, Math.round(W * 0.026), 0.22);
+  y += W * 0.06;
+
+  wordmark(ctx, W, mid, y, wmW, way.ink);
+  y += wmH + W * 0.085;
+
+  rule(y, W * 0.34);
+  y += W * 0.075;
+
+  p.items.forEach((item, i) => {
+    const lead = i < 3;
+    ctx.fillStyle = way.ink;
+    ctx.globalAlpha = lead ? 1 : 0.7;
+    centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, lead ? big : small, 0.12);
+    y += (lead ? big : small) * 1.75;
+    if (i === 2) { ctx.globalAlpha = 1; rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
+  });
+  ctx.globalAlpha = 1;
+
+  // The ask, boxed, because it is the one thing on here to act on.
+  const label = p.small.toUpperCase();
+  ctx.font = `600 ${rs}px ${FONT}`;
+  const tw = tracked(ctx, label, rs * 0.24);
+  const bw = tw + W * 0.11, bh = rs * 2.9;
+  const by = y + W * 0.05;
+  ctx.save();
+  ctx.fillStyle = P.orange;
+  ctx.fillRect(mid - bw / 2, by, bw, bh);
+  ctx.fillStyle = P.ground;
+  ctx.textBaseline = 'top';
+  fillTracked(ctx, label, mid - tw / 2, by + (bh - rs) / 2 - rs * 0.12, rs * 0.24);
+  ctx.restore();
+
+  footer(ctx, W, H, way, [SITE], W * 0.085);
+};
+
 LAYOUTS.detail = (ctx, W, H, p, way) => {
   paintGround(ctx, W, H, way);
   if (way.stars) paintStars(ctx, W, H, 17);
@@ -744,6 +812,13 @@ const PLAN = [
     title:'How it began', body:'In August 2025 we gathered in east London for the pilot. One room, many collaborators, and a way of honouring our ancestors through the continuation of Daré. Everything since has come out of that night.',
     head:'How it began', why:'Origin story. Gives the people who were at the pilot something to recognise, and everyone else a sense that this is not the first time.',
     caption:'In August 2025 we gathered in east London for the pilot of Daré.\n\nOne room, many collaborators, and a way of honouring our ancestors through the continuation of Daré.\n\nEverything since has come out of that night. 15 to 22 October at Zimbabwe House.' },
+
+{ on:d(10,8), key:'invite', layout:'invite', way:'night', fmts:['story','portrait','square'],
+    title:'Shumba Maasai invites you to the launch of',
+    items:['Thursday','15 October 2026','8pm to 11pm','Zimbabwe House','429 Strand, London'],
+    small:'RSVP',
+    head:'Launch invitation', why:'Stars and nothing else. The one asset in the run that is an invitation rather than an advertisement, for sending to people by name.',
+    caption:'Shumba Maasai invites you to the launch of Daré.\n\nThursday 15 October 2026, 8pm to 11pm\nZimbabwe House, 429 Strand, London\n\nRSVP at ancestralfutures.co.uk/rsvp' },
 
   { on:d(10,8), key:'week1', layout:'countdown', way:'night', fmts:['story','square'],
     big:7, small:'days to go',
