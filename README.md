@@ -132,7 +132,9 @@ the two ways Brevo hides a broken form behind a working one, and how to
 be emailed when a reply comes in.
 
 The story asset that points at it is `assets/invite-story.png`, and it is
-editable on `/rollout.html` under Launch invitation.
+editable on `/rollout.html` under Launch invitation. The note Shumba sends
+back to each reply is `assets/emails/rsvp-confirmation.html`, held in Brevo
+as a transactional template.
 
 ## Tickets (Eventbrite)
 

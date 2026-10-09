@@ -108,6 +108,28 @@ import the ones who say yes. Do not add them silently.
 
 ---
 
+## What they get back
+
+A short note from Shumba, straight after they reply: on the list, looking
+forward to seeing you and celebrating together, see you deya. It names
+them and, if they brought one, their guest, with the night's time and
+address underneath.
+
+It is built in Brevo as a **transactional template, id 8, "RSVP
+confirmation: See you on the 15th"**, from Shumba Maasai at
+`shumba@ancestralfutures.co.uk`. The source is
+`assets/emails/rsvp-confirmation.html`; edit that, then paste it over the
+template's HTML in Brevo. The name and guest come from the contact's
+attributes, written as `{{ contact.NAME }}` and `{{ contact.GUEST }}`, each
+inside an `{% if %}` so a missing one leaves no gap.
+
+**To switch it on**, which is the one step that needs the form editor:
+Contacts → Forms → RSVP → **Settings** → **Simple confirmation email** →
+choose that template → Publish. Brevo then sends it to every address the
+form accepts, and nothing to the ones it refuses.
+
+---
+
 ## Being told when someone replies
 
 The form editor on this plan has no notification setting, so it is an
