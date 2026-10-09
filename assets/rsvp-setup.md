@@ -128,7 +128,7 @@ itself but cannot copy anyone on it, so the form's own confirmation stays
 **off** and the note is sent from here instead: `scripts/rsvp-notify.mjs`,
 run every ten minutes by `.github/workflows/rsvp-notify.yml`, reads the
 list and sends template 8 to every guest nobody has answered yet, with
-`shumba@ancestralfutures.co.uk` and `v.eluwasi@gmail.com` in cc. Do not
+`shumba@ancestralfutures.co.uk` and `valentineeluwasi@pavilionofzimbabwe.com` in cc. Do not
 also turn on the form's confirmation email, or guests get the note twice.
 
 The memory is the contact's `NOTIFIED` attribute, written only after the

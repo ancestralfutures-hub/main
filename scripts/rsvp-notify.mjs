@@ -29,7 +29,7 @@ const LIST = 4; // Launch RSVP
 const TEMPLATE = 8; // RSVP confirmation: See you on the 15th
 // Shumba and Valentine both see every reply. NOTIFY_CC, comma separated,
 // replaces the whole list.
-const CC = (process.env.NOTIFY_CC || "shumba@ancestralfutures.co.uk,v.eluwasi@gmail.com")
+const CC = (process.env.NOTIFY_CC || "shumba@ancestralfutures.co.uk,valentineeluwasi@pavilionofzimbabwe.com")
   .split(",")
   .map((e) => e.trim())
   .filter(Boolean);
