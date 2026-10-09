@@ -22,10 +22,23 @@
 // Without the key there is nothing to do, and that is not a failure:
 // failing here would mean GitHub emailing someone every ten minutes
 // until the secret is set.
-const KEY = process.env.BREVO_API_KEY;
+const KEY = unwrap(process.env.BREVO_API_KEY);
 if (!KEY) {
   console.log("BREVO_API_KEY is not set; nothing sent. Add it under Settings > Secrets and variables > Actions.");
   process.exit(0);
+}
+
+// Brevo hands the key out two ways: raw, starting xkeysib-, and wrapped
+// in base64 JSON for its MCP server. Either is accepted here, so whichever
+// one was copied into the secret works.
+function unwrap(v) {
+  const s = (v || "").trim();
+  if (!s || s.startsWith("xkeysib-")) return s;
+  try {
+    const k = JSON.parse(Buffer.from(s, "base64").toString("utf8")).api_key;
+    if (typeof k === "string" && k.startsWith("xkeysib-")) return k;
+  } catch {}
+  return s;
 }
 
 const LIST = 4; // Launch RSVP
@@ -48,6 +61,14 @@ async function brevo(path, init = {}) {
       ...(init.headers || {}),
     },
   });
+  if (res.status === 401) {
+    // The one failure that is about the secret rather than the data. Say
+    // so in words, since the run's log is the only place anyone will look.
+    throw new Error(
+      "Brevo refused the key (401). BREVO_API_KEY must be the raw key from the Ancestral Futures account, " +
+      "starting xkeysib-, with nothing around it: not the MCP server string, which is that key wrapped in base64 JSON."
+    );
+  }
   if (!res.ok && res.status !== 204) {
     throw new Error(`${init.method || "GET"} ${path} -> ${res.status} ${await res.text()}`);
   }
