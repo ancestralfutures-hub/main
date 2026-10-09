@@ -27,7 +27,12 @@ if (!KEY) {
 
 const LIST = 4; // Launch RSVP
 const TEMPLATE = 8; // RSVP confirmation: See you on the 15th
-const CC = process.env.NOTIFY_CC || "shumba@ancestralfutures.co.uk";
+// Shumba and Valentine both see every reply. NOTIFY_CC, comma separated,
+// replaces the whole list.
+const CC = (process.env.NOTIFY_CC || "shumba@ancestralfutures.co.uk,v.eluwasi@gmail.com")
+  .split(",")
+  .map((e) => e.trim())
+  .filter(Boolean);
 const API = "https://api.brevo.com/v3";
 
 async function brevo(path, init = {}) {
@@ -65,7 +70,7 @@ function message(c) {
   return {
     templateId: TEMPLATE,
     to: [{ email: c.email, ...(a.NAME ? { name: a.NAME } : {}) }],
-    cc: [{ email: CC, name: "Shumba Maasai" }],
+    cc: CC.map((email) => ({ email })),
     tags: ["rsvp-confirmation"],
   };
 }
@@ -82,5 +87,5 @@ for (const c of fresh) {
     method: "PUT",
     body: JSON.stringify({ attributes: { NOTIFIED: new Date().toISOString() } }),
   });
-  console.log(`answered ${c.email}, copied ${CC}`);
+  console.log(`answered ${c.email}, copied ${CC.join(", ")}`);
 }
