@@ -1,17 +1,22 @@
 /*
-  Tells Shumba about each new RSVP.
+  Sends Shumba's note back to each new RSVP, with Shumba copied in.
 
-  Brevo can only do this itself through an automation, and automations
-  cannot be made over the API, so this runs instead: it reads the Launch
-  RSVP list, and for every reply nobody has been told about yet it sends
-  one email and then writes the time onto the contact's NOTIFIED
+  Brevo's form can send a confirmation itself, but it cannot copy anyone
+  on it, and a copy to Shumba on every one is the ask. So this sends the
+  note instead: it reads the Launch RSVP list, and for every reply nobody
+  has answered yet it sends the confirmation template to the guest with
+  Shumba in cc, then writes the time onto the contact's NOTIFIED
   attribute. That attribute is the whole memory. There is no state file
-  and nothing to lose between runs, and a reply is told about exactly
-  once however many times this runs or on how many machines.
+  and nothing to lose between runs, and a reply is answered exactly once
+  however many times this runs or on how many machines.
+
+  The template is Brevo transactional template 8, whose source is
+  assets/emails/rsvp-confirmation.html. Its {{ contact.NAME }} and
+  {{ contact.GUEST }} are filled from the guest's own contact record.
 
   Run by .github/workflows/rsvp-notify.yml every ten minutes, and by hand
-  with BREVO_API_KEY in the environment. NOTIFY_TO overrides who is told,
-  for trying it out without writing to Shumba.
+  with BREVO_API_KEY in the environment. NOTIFY_CC overrides who is
+  copied, for trying it out without writing to Shumba.
 */
 
 const KEY = process.env.BREVO_API_KEY;
@@ -21,8 +26,8 @@ if (!KEY) {
 }
 
 const LIST = 4; // Launch RSVP
-const TO = process.env.NOTIFY_TO || "shumba@ancestralfutures.co.uk";
-const FROM = { name: "Ancestral Futures", email: "hello@ancestralfutures.co.uk" };
+const TEMPLATE = 8; // RSVP confirmation: See you on the 15th
+const CC = process.env.NOTIFY_CC || "shumba@ancestralfutures.co.uk";
 const API = "https://api.brevo.com/v3";
 
 async function brevo(path, init = {}) {
@@ -53,57 +58,21 @@ async function everyone() {
   return out;
 }
 
-const esc = (s) =>
-  String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
-
+// The note, to the guest, with Shumba copied. Sender, subject and
+// reply-to all come from the template, so the words live in one place.
 function message(c) {
   const a = c.attributes || {};
-  const name = a.NAME || c.email;
-  const guest = a.GUEST ? ` and ${a.GUEST}` : "";
-  const party = Number(a.PARTY_SIZE) || (a.GUEST ? 2 : 1);
-  const when = new Date(c.modifiedAt || Date.now()).toLocaleString("en-GB", {
-    timeZone: "Europe/London",
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const rows = [
-    ["Name", name],
-    ["Email", c.email],
-    ...(a.GUEST ? [["Guest", a.GUEST], ["Guest email", a.GUEST_EMAIL || ""]] : []),
-    ["Party", String(party)],
-    ["Replied", when],
-  ];
-
-  const text = `${name}${guest} ${party === 1 ? "is" : "are"} coming to the launch.\n\n` +
-    rows.map(([k, v]) => `${k}: ${v}`).join("\n") +
-    `\n\nThe full list: https://app.brevo.com/contact/list/id/${LIST}\n`;
-
-  const html = `<!doctype html><html><body style="margin:0;padding:32px 24px;background:#0b0d0c;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#f9f5cd;">
-<p style="margin:0 0 24px 0;font-size:20px;line-height:28px;">${esc(name)}${esc(guest)} ${party === 1 ? "is" : "are"} coming to the launch.</p>
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-size:15px;line-height:24px;">
-${rows.map(([k, v]) => `<tr><td style="padding:0 24px 6px 0;color:#908f78;">${esc(k)}</td><td style="padding:0 0 6px 0;color:#f9f5cd;">${esc(v)}</td></tr>`).join("\n")}
-</table>
-<p style="margin:28px 0 0 0;font-size:13px;line-height:20px;color:#908f78;">The full list: <a href="https://app.brevo.com/contact/list/id/${LIST}" style="color:#f43e00;">Launch RSVP in Brevo</a></p>
-</body></html>`;
-
   return {
-    sender: FROM,
-    to: [{ email: TO, name: "Shumba Maasai" }],
-    replyTo: { email: c.email, name },
-    subject: `RSVP: ${name}${guest}`,
-    textContent: text,
-    htmlContent: html,
-    tags: ["rsvp-notify"],
+    templateId: TEMPLATE,
+    to: [{ email: c.email, ...(a.NAME ? { name: a.NAME } : {}) }],
+    cc: [{ email: CC, name: "Shumba Maasai" }],
+    tags: ["rsvp-confirmation"],
   };
 }
 
 const all = await everyone();
 const fresh = all.filter((c) => !(c.attributes && c.attributes.NOTIFIED));
-console.log(`${all.length} on the list, ${fresh.length} new`);
+console.log(`${all.length} on the list, ${fresh.length} unanswered`);
 
 for (const c of fresh) {
   await brevo("/smtp/email", { method: "POST", body: JSON.stringify(message(c)) });
@@ -113,5 +82,5 @@ for (const c of fresh) {
     method: "PUT",
     body: JSON.stringify({ attributes: { NOTIFIED: new Date().toISOString() } }),
   });
-  console.log(`told ${TO} about ${c.email}`);
+  console.log(`answered ${c.email}, copied ${CC}`);
 }

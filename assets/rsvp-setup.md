@@ -123,26 +123,18 @@ template's HTML in Brevo. The name and guest come from the contact's
 attributes, written as `{{ contact.NAME }}` and `{{ contact.GUEST }}`, each
 inside an `{% if %}` so a missing one leaves no gap.
 
-**To switch it on**, which is the one step that needs the form editor:
-Contacts → Forms → RSVP → **Settings** → **Simple confirmation email** →
-choose that template → Publish. Brevo then sends it to every address the
-form accepts, and nothing to the ones it refuses.
-
----
-
-## Shumba hears about each reply
-
-The form editor on this plan has no notification setting, and Brevo's
-own way of doing it is an automation, which has no API. So it is done
-from here instead: `scripts/rsvp-notify.mjs`, run every ten minutes by
-`.github/workflows/rsvp-notify.yml`, reads the list and emails
-`shumba@ancestralfutures.co.uk` about every reply nobody has been told
-about, name, guest, party and address, with reply-to set to the guest.
+**Shumba is copied on every one.** Brevo's form can send a confirmation
+itself but cannot copy anyone on it, so the form's own confirmation stays
+**off** and the note is sent from here instead: `scripts/rsvp-notify.mjs`,
+run every ten minutes by `.github/workflows/rsvp-notify.yml`, reads the
+list and sends template 8 to every guest nobody has answered yet, with
+`shumba@ancestralfutures.co.uk` in cc. Do not also turn on the form's
+confirmation email, or guests get the note twice.
 
 The memory is the contact's `NOTIFIED` attribute, written only after the
 send is accepted. No state file, nothing sent twice, and a failed send is
 tried again next time rather than lost. Clear the attribute on a contact
-and Shumba is told again.
+and they are answered again.
 
 **It needs one secret.** In the repository on GitHub, **Settings →
 Secrets and variables → Actions → New repository secret**, named
