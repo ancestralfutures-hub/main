@@ -1,0 +1,33 @@
+name: Tell Shumba about new RSVPs
+
+# Brevo's own per-reply notification is an automation, which cannot be
+# made over the API, so this stands in: every ten minutes, read the
+# Launch RSVP list and email Shumba about each reply nobody has been told
+# about. The contact's NOTIFIED attribute is the memory, so nothing is
+# sent twice. See scripts/rsvp-notify.mjs.
+#
+# Needs one repository secret, BREVO_API_KEY. Nothing is sent without it.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: rsvp-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/rsvp-notify.mjs
+        env:
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}

@@ -130,19 +130,30 @@ form accepts, and nothing to the ones it refuses.
 
 ---
 
-## Being told when someone replies
+## Shumba hears about each reply
 
-The form editor on this plan has no notification setting, so it is an
-automation, and automations have no API either.
+The form editor on this plan has no notification setting, and Brevo's
+own way of doing it is an automation, which has no API. So it is done
+from here instead: `scripts/rsvp-notify.mjs`, run every ten minutes by
+`.github/workflows/rsvp-notify.yml`, reads the list and emails
+`shumba@ancestralfutures.co.uk` about every reply nobody has been told
+about, name, guest, party and address, with reply-to set to the guest.
 
-**Automations → Create an automation → start from scratch.**
+The memory is the contact's `NOTIFIED` attribute, written only after the
+send is accepted. No state file, nothing sent twice, and a failed send is
+tried again next time rather than lost. Clear the attribute on a contact
+and Shumba is told again.
 
-- Trigger: **a contact is added to a list**, list `Launch RSVP`.
-- Action: the one that **emails you**, not the contact. Brevo labels it a
-  notification. Put `hello@ancestralfutures.co.uk` or your own address in,
-  and the subject can carry the name: `New RSVP: {{ contact.NAME }}`.
-- Activate it.
+**It needs one secret.** In the repository on GitHub, **Settings →
+Secrets and variables → Actions → New repository secret**, named
+`BREVO_API_KEY`, holding a Brevo API key. Until it is there, the workflow
+runs and sends nothing. Make the key fresh for this rather than reusing
+one that has been pasted anywhere.
 
-Then send one through the page and see whether it lands. If it does not,
-the list is still the record: **Contacts → Lists → Launch RSVP** shows
-everyone, and the four attribute columns are the door list.
+Ten minutes is as often as GitHub will run anything on a schedule, and
+on a busy day it can be later. If instant matters, the automation is
+still there to build in Brevo: trigger *a contact is added to a list*,
+`Launch RSVP`; action the one that emails you rather than the contact.
+
+Either way the list is the record: **Contacts → Lists → Launch RSVP**
+shows everyone, and the four attribute columns are the door list.

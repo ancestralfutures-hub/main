@@ -134,7 +134,9 @@ be emailed when a reply comes in.
 The story asset that points at it is `assets/invite-story.png`, and it is
 editable on `/rollout.html` under Launch invitation. The note Shumba sends
 back to each reply is `assets/emails/rsvp-confirmation.html`, held in Brevo
-as a transactional template.
+as a transactional template. Shumba is told about each reply by
+`scripts/rsvp-notify.mjs`, which `.github/workflows/rsvp-notify.yml` runs
+every ten minutes once the `BREVO_API_KEY` secret is set.
 
 ## Tickets (Eventbrite)
 
