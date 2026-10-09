@@ -19,10 +19,13 @@
   copied, for trying it out without writing to Shumba.
 */
 
+// Without the key there is nothing to do, and that is not a failure:
+// failing here would mean GitHub emailing someone every ten minutes
+// until the secret is set.
 const KEY = process.env.BREVO_API_KEY;
 if (!KEY) {
-  console.error("BREVO_API_KEY is not set");
-  process.exit(1);
+  console.log("BREVO_API_KEY is not set; nothing sent. Add it under Settings > Secrets and variables > Actions.");
+  process.exit(0);
 }
 
 const LIST = 4; // Launch RSVP
