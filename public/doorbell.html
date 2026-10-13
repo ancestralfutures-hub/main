@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DARÉ · Doorbell</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground:#0b0d0c; --cream:#f9f5cd; --orange:#f43e00;
+    --muted:#908f78; --line:#24241e; --panel:#121410;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--ground); color:var(--cream);
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; font-weight:400;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--orange); }
+  header {
+    position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between;
+    padding:14px 24px; background:rgba(11,13,12,.94); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  header h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  header .meta { font-size:12px; color:var(--muted); letter-spacing:.06em; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; }
+  button, .filebtn {
+    font:inherit; font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--cream); background:transparent; border:1px solid #3d3c33;
+    padding:9px 16px; cursor:pointer; transition:background .2s,color .2s,border-color .2s;
+    display:inline-block;
+  }
+  button:hover, .filebtn:hover { background:var(--cream); color:var(--ground); border-color:var(--cream); }
+  button.primary { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  button.primary:hover { background:var(--cream); border-color:var(--cream); }
+  button.on { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  button:disabled { opacity:.4; cursor:default; }
+  .filebtn input { display:none; }
+
+  .wrap { max-width:1320px; margin:0 auto; padding:34px 24px 120px; }
+  .intro { max-width:62ch; margin-bottom:34px; }
+  .intro h2 { font-size:30px; font-weight:800; letter-spacing:-.01em; margin-bottom:14px; }
+  .intro p { color:#bdbb9d; margin-bottom:12px; }
+
+  .studio { display:grid; grid-template-columns:minmax(260px, 420px) 1fr; gap:34px; align-items:start; }
+  @media (max-width:860px) { .studio { grid-template-columns:1fr; } }
+  .stage canvas { width:100%; height:auto; display:block; background:#000; border:1px solid var(--line); }
+  .stage .note { font-size:12px; color:var(--muted); margin-top:8px; letter-spacing:.04em; }
+
+  .controls { display:grid; gap:18px; max-width:560px; }
+  label.f { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  label.f input[type=text] {
+    display:block; width:100%; margin-top:5px; font:inherit; font-size:14px;
+    color:var(--cream); background:var(--panel); border:1px solid var(--line);
+    padding:9px 11px; border-radius:0;
+  }
+  label.f input:focus { outline:none; border-color:var(--orange); }
+  input[type=range] { width:100%; accent-color:var(--orange); margin-top:8px; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+  .chips button { font-size:11px; padding:7px 12px; }
+  .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .check { display:flex; gap:8px; align-items:center; font-size:13px; color:#cfcbb0; }
+  .check input { accent-color:var(--orange); }
+
+  .drop {
+    border:1px dashed #3d3c33; padding:30px 20px; text-align:center;
+    color:var(--muted); font-size:14px; transition:border-color .2s, background .2s;
+  }
+  .drop.over { border-color:var(--orange); background:#15110c; }
+  .drop .filebtn { margin-left:8px; }
+  .drop .have { color:var(--cream); }
+
+  #status {
+    position:fixed; left:50%; bottom:22px; translate:-50% 0; z-index:50;
+    background:var(--orange); color:var(--ground); font-size:13px; font-weight:600;
+    padding:11px 20px; opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #status.on { opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>DARÉ · Doorbell</h1>
+    <div class="meta">A clip, seen through the lens on the door</div>
+  </div>
+  <div class="bar">
+    <button id="rec" class="primary" disabled>Record the clip</button>
+    <button id="frame">Save a frame</button>
+    <a href="/rollout.html"><button>Rollout</button></a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>Drop a clip in. It comes back through the doorbell.</h2>
+    <p>
+      A fisheye lens, the kind on a door, with the clip playing inside it and the
+      night around it: the name, a live dot, the time, and the camera's number.
+      Nothing leaves this page. The clip plays through once while it is recorded
+      off the canvas, and the file that saves is that recording at full size.
+    </p>
+    <p>
+      Until a clip is dropped in, the lens shows the hut, so the look can be set
+      before the footage is here. Save a frame for a still of it at any point.
+    </p>
+  </div>
+
+  <div class="studio">
+    <div class="stage">
+      <canvas id="out"></canvas>
+      <div class="note" id="note">Preview. The file is the full size.</div>
+    </div>
+
+    <div class="controls">
+      <div class="drop" id="drop">
+        <span id="dropText">Drop an MP4 here, or</span>
+        <label class="filebtn">Choose a clip<input type="file" id="file" accept="video/*"></label>
+      </div>
+
+      <div>
+        <label class="f">What it says</label>
+        <div class="chips" id="labels">
+          <button data-label="Daré Doorbell" class="on">Daré Doorbell</button>
+          <button data-label="Live">Live</button>
+          <button data-label="Enter the Daré">Enter the Daré</button>
+        </div>
+      </div>
+      <label class="f">Or your own words<input type="text" id="custom" placeholder="Leave empty to use the chip above"></label>
+      <label class="f">Line under it<input type="text" id="sub" value="Zimbabwe House, 429 Strand, London"></label>
+      <label class="f">Camera<input type="text" id="cam" value="CAM 01 · THE DOOR"></label>
+
+      <div>
+        <label class="f">Size</label>
+        <div class="chips" id="fmts"></div>
+      </div>
+
+      <label class="f">Lens<input type="range" id="strength" min="0.4" max="1.45" step="0.01" value="1.15"></label>
+      <label class="f">Zoom<input type="range" id="zoom" min="0.8" max="1.6" step="0.01" value="1"></label>
+
+      <div class="row">
+        <label class="check"><input type="checkbox" id="sound" checked> Keep the clip's sound</label>
+        <label class="check"><input type="checkbox" id="clock" checked> Clock runs on the real time</label>
+      </div>
+      <label class="f">Or a fixed time<input type="text" id="fixed" placeholder="15.10.2026  20:14:33"></label>
+    </div>
+  </div>
+</div>
+
+<video id="src" playsinline muted loop crossorigin="anonymous" style="display:none"></video>
+<div id="status"></div>
+
+<script>
+// ===========================================================
+// DARÉ · DOORBELL
+// A clip through a fisheye, drawn every frame: the lens is a
+// WebGL pass (the distortion), the rest is the same 2D canvas
+// and type as /rollout.html. The recording is the canvas itself.
+// ===========================================================
+const P = { ground:'#0b0d0c', cream:'#f9f5cd', orange:'#f43e00', muted:'#908f78' };
+const FONT = "Figtree,'Helvetica Neue',Arial,sans-serif";
+const SITE = 'ancestralfutures.co.uk';
+// `lens` is the lens's width as a share of the frame's, `cy` where its
+// centre sits, `big` the size of the words under it and `gap` the space
+// between the rim and those words. The square has far less room under the
+// lens, so everything on it is held smaller and closer.
+const FORMATS = {
+  story:  { w:1080, h:1920, label:'Story 9:16', lens:0.86, cy:0.42, big:0.068, gap:0.1 },
+  square: { w:1080, h:1080, label:'Square 1:1', lens:0.52, cy:0.37, big:0.058, gap:0.065 },
+};
+
+// ---------- type ----------
+function tracked(ctx, text, tr) {
+  let w = 0;
+  for (const ch of text) w += ctx.measureText(ch).width + tr;
+  return w - tr;
+}
+function fillTracked(ctx, text, x, y, tr) {
+  let cx = x;
+  for (const ch of text) { ctx.fillText(ch, cx, y); cx += ctx.measureText(ch).width + tr; }
+}
+function centreTracked(ctx, text, cx, y, tr) {
+  fillTracked(ctx, text, cx - tracked(ctx, text, tr) / 2, y, tr);
+}
+function centreFit(ctx, text, cx, y, maxW, size, trRatio, weight) {
+  let s = size;
+  for (let i = 0; i < 24; i++) {
+    ctx.font = `${weight || 600} ${Math.round(s)}px ${FONT}`;
+    if (tracked(ctx, text, s * trRatio) <= maxW) break;
+    s *= 0.94;
+  }
+  centreTracked(ctx, text, cx, y, s * trRatio);
+  return s;
+}
+
+// ---------- the lens ----------
+/* The distortion is a fisheye in the proper sense: a point at radius r of
+   the lens samples the picture at tan(r·a)/tan(a), so the middle is held
+   at its own scale and the edges are squeezed into the rim, the way a
+   door viewer does it. `a` is the strength slider; past about 1.45 the
+   maths runs off to infinity, so the slider stops before that. */
+const VS = `attribute vec2 p; varying vec2 v; void main(){ v = p; gl_Position = vec4(p, 0.0, 1.0); }`;
+const FS = `
+precision mediump float;
+varying vec2 v;
+uniform sampler2D tex;
+uniform float aspect;   // source width / height
+uniform float strength; // radians at the rim
+uniform float zoom;
+void main() {
+  float r = length(v);
+  if (r > 1.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); return; }
+  float s = r < 0.0005 ? 0.0 : tan(r * strength) / tan(strength);
+  vec2 p = v * (s / max(r, 0.0005));
+  vec2 uv = aspect >= 1.0 ? vec2(p.x / aspect, p.y) : vec2(p.x, p.y * aspect);
+  uv = uv / zoom * 0.5 + 0.5;
+  // a little colour fringing towards the rim, which is what a cheap lens does
+  vec2 d = (uv - 0.5) * 0.008 * r;
+  float R = texture2D(tex, uv + d).r;
+  float G = texture2D(tex, uv).g;
+  float B = texture2D(tex, uv - d).b;
+  vec3 c = vec3(R, G, B);
+  c *= 1.0 - 0.6 * pow(r, 3.0);
+  // soften the very edge so the rim is not a hard pixel step
+  float edge = smoothstep(1.0, 0.985, r);
+  gl_FragColor = vec4(c * edge, edge);
+}`;
+
+const lens = { canvas: document.createElement('canvas'), gl: null, prog: null, tex: null, u: {} };
+function lensInit(size) {
+  const c = lens.canvas;
+  c.width = size; c.height = size;
+  if (!lens.gl) {
+    const gl = c.getContext('webgl', { preserveDrawingBuffer: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) { toast('This browser cannot draw the lens'); return; }
+    lens.gl = gl;
+    const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+    const prog = gl.createProgram();
+    gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+    gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+    gl.linkProgram(prog);
+    gl.useProgram(prog);
+    lens.prog = prog;
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    lens.tex = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, lens.tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    for (const n of ['aspect', 'strength', 'zoom']) lens.u[n] = gl.getUniformLocation(prog, n);
+  }
+  lens.gl.viewport(0, 0, size, size);
+}
+function lensDraw(source, aspect, strength, zoom) {
+  const gl = lens.gl;
+  if (!gl) return;
+  gl.clearColor(0, 0, 0, 0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  if (!source) return;
+  gl.bindTexture(gl.TEXTURE_2D, lens.tex);
+  try { gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source); }
+  catch (e) { return; }
+  gl.uniform1f(lens.u.aspect, aspect);
+  gl.uniform1f(lens.u.strength, strength);
+  gl.uniform1f(lens.u.zoom, zoom);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+// A tile of grain, made once and laid on at a random offset each frame.
+const grain = document.createElement('canvas');
+(function () {
+  grain.width = 256; grain.height = 256;
+  const g = grain.getContext('2d');
+  const id = g.createImageData(256, 256);
+  for (let i = 0; i < id.data.length; i += 4) {
+    const v = 200 + Math.random() * 55;
+    id.data[i] = id.data[i + 1] = id.data[i + 2] = v;
+    id.data[i + 3] = Math.random() < 0.5 ? 0 : 40;
+  }
+  g.putImageData(id, 0, 0);
+})();
+
+// ---------- the frame ----------
+const out = document.getElementById('out');
+const video = document.getElementById('src');
+const state = { fmt: 'story', label: 'Daré Doorbell', haveClip: false, recording: false, frames: 0 };
+let fallback = null;   // the hut, shown before a clip is dropped in
+
+const pad2 = (n) => String(n).padStart(2, '0');
+function stamp() {
+  const fixed = document.getElementById('fixed').value.trim();
+  if (fixed) return fixed;
+  const d = new Date();
+  return `${pad2(d.getDate())}.${pad2(d.getMonth() + 1)}.${d.getFullYear()}  ${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+function label() {
+  const own = document.getElementById('custom').value.trim();
+  return own || state.label;
+}
+
+function draw() {
+  const f = FORMATS[state.fmt];
+  const W = f.w, H = f.h;
+  if (out.width !== W || out.height !== H) { out.width = W; out.height = H; }
+  const ctx = out.getContext('2d');
+
+  ctx.fillStyle = P.ground;
+  ctx.fillRect(0, 0, W, H);
+
+  // the lens
+  const D = Math.round(W * f.lens);
+  const cx = W / 2, cy = H * f.cy;
+  if (lens.canvas.width !== D) lensInit(D);
+  const src = state.haveClip && video.readyState >= 2 ? video : fallback;
+  const aspect = src ? (src.videoWidth || src.width) / (src.videoHeight || src.height) : 1;
+  lensDraw(src, aspect, Number(document.getElementById('strength').value), Number(document.getElementById('zoom').value));
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, cy, D / 2, 0, Math.PI * 2); ctx.closePath();
+  ctx.fillStyle = '#000';
+  ctx.fill();
+  ctx.clip();
+  if (lens.gl) ctx.drawImage(lens.canvas, cx - D / 2, cy - D / 2, D, D);
+  // scanlines
+  ctx.globalAlpha = 0.13;
+  ctx.fillStyle = '#000';
+  for (let y = cy - D / 2; y < cy + D / 2; y += 4) ctx.fillRect(cx - D / 2, y, D, 1.5);
+  // grain
+  ctx.globalAlpha = 0.16;
+  const gx = -Math.floor(Math.random() * 256), gy = -Math.floor(Math.random() * 256);
+  const pat = ctx.createPattern(grain, 'repeat');
+  ctx.translate(gx, gy);
+  ctx.fillStyle = pat;
+  ctx.fillRect(cx - D / 2 - gx, cy - D / 2 - gy, D, D);
+  ctx.restore();
+
+  // the rim
+  ctx.save();
+  ctx.strokeStyle = P.orange; ctx.globalAlpha = 0.55;
+  ctx.lineWidth = Math.max(2, W * 0.0025);
+  ctx.beginPath(); ctx.arc(cx, cy, D / 2, 0, Math.PI * 2); ctx.stroke();
+  ctx.globalAlpha = 0.18;
+  ctx.lineWidth = Math.max(1, W * 0.0012);
+  ctx.beginPath(); ctx.arc(cx, cy, D / 2 + W * 0.018, 0, Math.PI * 2); ctx.stroke();
+  ctx.restore();
+
+  // the name, top left, and the live dot, top right
+  const edge = W * 0.085;
+  const small = Math.round(W * 0.0235);
+  ctx.save();
+  ctx.textBaseline = 'top';
+  ctx.font = `600 ${small}px ${FONT}`;
+  ctx.fillStyle = P.cream; ctx.globalAlpha = 0.72;
+  fillTracked(ctx, 'ANCESTRAL FUTURES', edge, edge, small * 0.14);
+  ctx.globalAlpha = 1;
+  const live = 'LIVE';
+  const lw = tracked(ctx, live, small * 0.14);
+  const on = state.recording || Math.floor(performance.now() / 600) % 2 === 0;
+  ctx.fillStyle = P.orange;
+  fillTracked(ctx, live, W - edge - lw, edge, small * 0.14);
+  ctx.globalAlpha = on ? 1 : 0.25;
+  ctx.beginPath(); ctx.arc(W - edge - lw - small * 0.9, edge + small * 0.55, small * 0.3, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  // what it says, under the lens
+  let y = cy + D / 2 + W * f.gap;
+  const big = Math.round(W * f.big);
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = P.orange;
+  // wrapped on width, since "Enter the Daré" on a square runs long
+  ctx.font = `600 ${big}px ${FONT}`;
+  const words = label().toUpperCase().split(/\s+/);
+  const rows = [];
+  let line = '';
+  for (const w of words) {
+    const t = line ? line + ' ' + w : w;
+    if (tracked(ctx, t, big * 0.1) > W * 0.84 && line) { rows.push(line); line = w; } else line = t;
+  }
+  rows.push(line);
+  for (const r of rows) { centreFit(ctx, r, cx, y + big, W * 0.84, big, 0.1); y += big * 1.25; }
+  ctx.restore();
+
+  // the line under, the clock and the camera
+  y += W * (state.fmt === 'square' ? 0.012 : 0.03);
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = P.cream; ctx.globalAlpha = 0.92;
+  centreFit(ctx, document.getElementById('sub').value.toUpperCase(), cx, y + small, W * 0.84, small, 0.14);
+  y += small * 1.75;
+  ctx.globalAlpha = 0.6;
+  centreFit(ctx, stamp().toUpperCase(), cx, y + small, W * 0.84, small, 0.14);
+  ctx.restore();
+
+  // the camera's number, in the corner of the bottom
+  ctx.save();
+  ctx.textBaseline = 'alphabetic';
+  ctx.font = `600 ${small}px ${FONT}`;
+  ctx.fillStyle = P.cream; ctx.globalAlpha = 0.6;
+  fillTracked(ctx, document.getElementById('cam').value.toUpperCase(), edge, H - edge, small * 0.14);
+  const site = SITE.toUpperCase();
+  fillTracked(ctx, site, W - edge - tracked(ctx, site, small * 0.14), H - edge, small * 0.14);
+  ctx.restore();
+}
+
+function loop() { draw(); requestAnimationFrame(loop); }
+
+// ---------- the clip ----------
+function takeFile(file) {
+  if (!file || !file.type.startsWith('video/')) { toast('That is not a clip'); return; }
+  if (video.src) URL.revokeObjectURL(video.src);
+  video.src = URL.createObjectURL(file);
+  video.loop = true;
+  video.muted = true;
+  video.play().catch(() => {});
+  state.haveClip = true;
+  document.getElementById('dropText').innerHTML = `<span class="have">${file.name.replace(/</g, '&lt;')}</span> · drop another to swap it, or`;
+  document.getElementById('rec').disabled = false;
+  toast('Clip in. Playing through the lens.');
+}
+
+// ---------- recording ----------
+/* The canvas is captured as a stream and the clip is played through once
+   from the top while it records. Chrome on a Mac writes MP4 straight out;
+   anywhere that cannot, WebM, which Instagram also takes. The clip's own
+   sound is added from the video element if the box is ticked. */
+function mime() {
+  const tries = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp9', 'video/webm'];
+  return tries.find((t) => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+}
+async function record() {
+  if (!state.haveClip || state.recording) return;
+  const type = mime();
+  if (!type) { toast('This browser cannot record. Try Chrome.'); return; }
+  const stream = out.captureStream(30);
+  let audioStream = null;
+  if (document.getElementById('sound').checked && video.captureStream) {
+    try {
+      video.muted = false;
+      video.volume = 1;
+      audioStream = video.captureStream();
+      for (const t of audioStream.getAudioTracks()) stream.addTrack(t);
+    } catch (e) { /* no sound then */ }
+  }
+  const chunks = [];
+  const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 12_000_000 });
+  rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
+  const done = new Promise((res) => { rec.onstop = res; });
+
+  video.loop = false;
+  video.pause();
+  video.currentTime = 0;
+  await new Promise((r) => { video.onseeked = r; });
+  state.recording = true;
+  document.getElementById('rec').disabled = true;
+  toast('Recording. Leave this tab in front until it finishes.');
+  rec.start(250);
+  await video.play();
+  await new Promise((r) => { video.onended = r; });
+  rec.stop();
+  await done;
+  state.recording = false;
+  video.muted = true;
+  video.loop = true;
+  video.play().catch(() => {});
+  document.getElementById('rec').disabled = false;
+
+  const ext = type.startsWith('video/mp4') ? 'mp4' : 'webm';
+  const blob = new Blob(chunks, { type: type.split(';')[0] });
+  const u = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = u; a.download = `DARE_doorbell_${state.fmt}.${ext}`; a.click();
+  setTimeout(() => URL.revokeObjectURL(u), 4000);
+  toast(`Saved as ${ext.toUpperCase()}`);
+}
+
+function saveFrame() {
+  draw();
+  out.toBlob((b) => {
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = `DARE_doorbell_${state.fmt}_frame.png`; a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+  }, 'image/png');
+}
+
+// ---------- the page ----------
+function toast(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg; s.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => s.classList.remove('on'), 2600);
+}
+
+function build() {
+  const fmts = document.getElementById('fmts');
+  fmts.innerHTML = Object.keys(FORMATS).map((k) =>
+    `<button data-fmt="${k}"${k === state.fmt ? ' class="on"' : ''}>${FORMATS[k].label}</button>`).join('');
+  fmts.querySelectorAll('button').forEach((b) => {
+    b.onclick = () => {
+      state.fmt = b.dataset.fmt;
+      fmts.querySelectorAll('button').forEach((o) => o.classList.toggle('on', o === b));
+    };
+  });
+  const labels = document.getElementById('labels');
+  labels.querySelectorAll('button').forEach((b) => {
+    b.onclick = () => {
+      state.label = b.dataset.label;
+      document.getElementById('custom').value = '';
+      labels.querySelectorAll('button').forEach((o) => o.classList.toggle('on', o === b));
+    };
+  });
+  document.getElementById('clock').onchange = (e) => {
+    if (e.target.checked) document.getElementById('fixed').value = '';
+  };
+  document.getElementById('fixed').oninput = (e) => {
+    document.getElementById('clock').checked = !e.target.value.trim();
+  };
+
+  const drop = document.getElementById('drop');
+  document.getElementById('file').onchange = (e) => { takeFile(e.target.files[0]); e.target.value = ''; };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); takeFile(e.dataTransfer.files[0]); };
+  document.body.ondragover = (e) => e.preventDefault();
+  document.body.ondrop = (e) => { e.preventDefault(); takeFile(e.dataTransfer.files[0]); };
+
+  document.getElementById('rec').onclick = record;
+  document.getElementById('frame').onclick = saveFrame;
+  document.getElementById('note').textContent = mime()
+    ? `Preview. Records as ${mime().startsWith('video/mp4') ? 'MP4' : 'WebM'} at full size.`
+    : 'Preview. This browser cannot record; Chrome can.';
+}
+
+/* A clip can also come from the site itself: /doorbell.html?clip=/door.mp4
+   plays that file through the lens without dropping anything in, which
+   is the way to open it on a phone with footage already uploaded. */
+function takeUrl(src) {
+  video.src = src;
+  video.loop = true;
+  video.muted = true;
+  state.haveClip = true;
+  const btn = document.getElementById('rec');
+  if (btn) btn.disabled = false;
+  return new Promise((res) => {
+    video.onloadeddata = () => { video.play().catch(() => {}); res(); };
+    video.onerror = () => { state.haveClip = false; toast('That clip would not load'); res(); };
+  });
+}
+
+/* /doorbell.html?export=1&fmt=story draws one frame, with the hut in the
+   lens (or the clip, a second in), at full size and nothing else, for a
+   headless screenshot. */
+async function exportStill(f) {
+  if (FORMATS[f]) state.fmt = f;
+  document.getElementById('fixed').value = '15.10.2026  20:00:00';
+  state.recording = true; // keeps the dot on
+  if (state.haveClip) {
+    video.pause();
+    video.currentTime = Math.min(1, (video.duration || 2) / 2);
+    await new Promise((r) => { video.onseeked = r; });
+  }
+  draw();
+  const c = out;
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'margin:0;background:#000;overflow:hidden';
+  c.style.cssText = `display:block;width:${c.width}px;height:${c.height}px`;
+  document.body.appendChild(c);
+}
+
+(async function () {
+  await new Promise((res) => {
+    const i = new Image();
+    i.onload = () => { fallback = i; res(); };
+    i.onerror = () => res();
+    i.src = '/hut.webp';
+  });
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const q = new URLSearchParams(location.search);
+  if (q.has('export')) {
+    if (q.get('clip')) await takeUrl(q.get('clip'));
+    exportStill(q.get('fmt') || 'story');
+    return;
+  }
+  build();
+  loop();
+  if (q.get('clip')) takeUrl(q.get('clip'));
+})();
+</script>
+</body>
+</html>

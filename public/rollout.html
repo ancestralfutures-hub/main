@@ -130,6 +130,8 @@
   <div class="bar">
     <button id="dlAll" class="primary">Download every asset</button>
     <button id="dlStories">Stories only</button>
+    <a href="/friends.html"><button>Friends of Daré</button></a>
+    <a href="/doorbell.html"><button>Doorbell</button></a>
     <a href="/asset-generator.html"><button>Asset generator</button></a>
   </div>
 </header>
@@ -700,7 +702,10 @@ LAYOUTS.invite = (ctx, W, H, p, way) => {
     centreFit(ctx, item.toUpperCase(), mid, y, W * 0.8, size, tr);
     ctx.restore();
     y += gap;
-    if (i === 2) { rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
+    // The second rule sits after the third line unless the post says
+    // otherwise: the thank you has one line about the night and three
+    // about the week, so its rule comes earlier.
+    if (i === (p.ruleAfter === undefined ? 2 : p.ruleAfter)) { rule(y + W * 0.028, W * 0.34); y += W * 0.082; }
   });
 
   // The ask, set as a line rather than a button. Nothing on a still image
@@ -766,6 +771,12 @@ LAYOUTS.list = (ctx, W, H, p, way) => {
   topName(ctx, W, H, onOrange ? WAYS.orange : way, W * 0.085);
 
   let y = caps(ctx, p.title, pad, H * 0.2, W - pad * 2, Math.round(W * 0.056), accent, 0.08);
+  // A line under the heading, for a list that has to say one thing
+  // before it starts listing: that the library is free, for instance.
+  if (p.small) {
+    y += W * 0.012;
+    y = caps(ctx, p.small, pad, y, W - pad * 2, Math.round(W * 0.024), ink, 0.16);
+  }
   y += W * 0.03;
   const is = Math.round(W * 0.03);
   for (const item of p.items) {
@@ -777,6 +788,34 @@ LAYOUTS.list = (ctx, W, H, p, way) => {
     y = caps(ctx, item, pad, y + is * 0.7, W - pad * 2, is, ink, 0.14) + is * 0.6;
   }
   footer(ctx, W, H, onOrange ? WAYS.orange : way, [VENUE, DATES, SITE], W * 0.085);
+};
+
+/* Friends of Daré.
+
+   The poster's frame with a photograph in the window: orange, the two
+   carved figures, and the black window holding the picture. Here on the
+   rollout the window holds the artist's night sky, which is the frame on
+   its own, for posting as it is. /friends.html draws the same frame round
+   any photograph dropped on it, for the pictures from the opening. */
+function cover(ctx, img, x, y, w, h, focusY) {
+  const k = Math.max(w / img.width, h / img.height);
+  const dw = img.width * k, dh = img.height * k;
+  const fy = focusY === undefined ? 0.5 : focusY;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) * fy, dw, dh);
+}
+LAYOUTS.friends = (ctx, W, H, p, way) => {
+  const panel = posterFrame(ctx, W, H, { top: H * 0.17, bot: H * 0.8 });
+  ctx.save();
+  ctx.beginPath(); ctx.rect(panel.x, panel.y, panel.w, panel.h); ctx.clip();
+  const img = p.photo || ART.stars;
+  if (img) cover(ctx, img, panel.x, panel.y, panel.w, panel.h, p.photo ? p.focus : 0);
+  ctx.restore();
+  ctx.save();
+  ctx.fillStyle = INK;
+  ctx.textBaseline = 'alphabetic';
+  centreFit(ctx, String(p.title).toUpperCase(), W / 2, panel.y - W * 0.06, W * 0.8, Math.round(W * 0.046), 0.16);
+  ctx.restore();
+  footer(ctx, W, H, WAYS.orange, [p.small, VENUE, SITE], W * 0.085);
 };
 
 // One carved figure, large and bled off the edge, with a line beside it.
@@ -895,6 +934,24 @@ const PLAN = [
     title:'We are open',
     head:'Opening day', why:'Doors. Pin this one and keep it at the top of the profile for the week.',
     caption:'We are open.\n\n1pm to 8pm, every day until the 22nd.\nZimbabwe House, 429 Strand, London\n\nShoes off. No phones. Enter the Daré.\nancestralfutures.co.uk' },
+
+  { on:d(10,15), key:'library', layout:'list', way:'orange', fmts:['portrait','square','story'],
+    title:'The Library', small:'Free and open throughout Daré',
+    items:['Explore the Ancestral Futures collection of books','The vinyl listening booth','Meditate to the sound of night time rural Harare'],
+    head:'The library', why:'The one part of the building that needs no ticket. Says so first, then the three things in it. Post it on opening day and again mid run.',
+    caption:'The Library.\n\nFree and open throughout Daré.\n\nExplore the Ancestral Futures collection of books. Sit in the vinyl listening booth. Meditate to the sound of night time rural Harare.\n\nZimbabwe House, 429 Strand, London\n15 to 22 October, 1pm to 8pm\nancestralfutures.co.uk' },
+
+  { on:d(10,16), key:'thanks-launch', layout:'invite', way:'night', fmts:['story','portrait','square'],
+    title:'Thank you to everyone who came to the launch of Daré',
+    items:['Last night, Thursday 15 October','Zimbabwe House, London','Daré is open until 22 October','1pm to 8pm, every day'],
+    ruleAfter:1, small:'ancestralfutures.co.uk',
+    head:'Thank you for last night', why:'The morning after the launch, on the same sky as the invitation so it reads as the other half of it. Thanks first, then the reminder that the room is open for a week.',
+    caption:'Thank you to everyone who came to the launch of Daré last night.\n\nThe room is open until 22 October, 1pm to 8pm, every day.\n\nZimbabwe House, 429 Strand, London\nShoes off. No phones. Enter the Daré.\nancestralfutures.co.uk' },
+
+  { on:d(10,16), key:'friends', layout:'friends', way:'orange', fmts:['story','portrait','square'],
+    title:'Friends of Daré', small:'Opening night · 15 October 2026',
+    head:'Friends of Daré', why:'The frame for the opening night pictures. This is the frame on its own, on the night sky; drop the photographs on /friends.html and each one comes back inside it.',
+    caption:'Friends of Daré.\n\nOpening night, 15 October 2026, Zimbabwe House.\n\nTag yourself. Open until 22 October, 1pm to 8pm.\nancestralfutures.co.uk' },
 
   { on:d(10,16), key:'today', layout:'detail', way:'ink', fmts:['story','square'],
     head:'Open today', why:'A frame to reuse each morning of the run. Change nothing, post it daily, and keep the top of the profile current.',
@@ -1192,6 +1249,28 @@ function buildStrip() {
   });
 }
 
+/* One post, drawn on its own at full size and nothing else on the page.
+
+   /rollout.html?export=library&fmt=portrait is the whole page: one canvas,
+   as many pixels as the file, so a headless browser screenshot of it at
+   that window size is the file. `way` can be passed to recolour it. This
+   is how the PNGs in assets/ are made without pressing anything. */
+function exportOne(key, fmt, way) {
+  const row = PLAN.find((r) => r.key === key);
+  if (!row || !FORMATS[fmt]) { document.body.textContent = `No post called ${key} at ${fmt}`; return; }
+  if (way && WAYS[way]) row.way = way;
+  if (row.layout === 'countdown') {
+    row.big = row.small === 'days left' ? Math.max(0, daysBetween(row.on, CLOSES)) : Math.max(0, daysBetween(row.on, OPENS));
+  }
+  const c = document.createElement('canvas');
+  render(c, row, fmt);
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'margin:0;background:#000;overflow:hidden';
+  c.style.cssText = `display:block;width:${c.width}px;height:${c.height}px`;
+  document.body.appendChild(c);
+  document.title = `DARE_${key}_${fmt}`;
+}
+
 // ---------- go ----------
 (async function () {
   await Promise.all([
@@ -1203,6 +1282,8 @@ function buildStrip() {
     load('stars', '/art/stars.jpg'),
   ]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const q = new URLSearchParams(location.search);
+  if (q.has('export')) { exportOne(q.get('export'), q.get('fmt') || 'story', q.get('way')); return; }
   build();
   buildStrip();
 })();

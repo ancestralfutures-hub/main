@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>DARÉ · Friends of Daré</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ground:#0b0d0c; --cream:#f9f5cd; --orange:#f43e00;
+    --muted:#908f78; --line:#24241e; --panel:#121410;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body {
+    background:var(--ground); color:var(--cream);
+    font-family:Figtree,'Helvetica Neue',Arial,sans-serif; font-weight:400;
+    line-height:1.55; -webkit-font-smoothing:antialiased;
+  }
+  a { color:var(--orange); }
+  header {
+    position:sticky; top:0; z-index:20; display:flex; flex-wrap:wrap; gap:14px;
+    align-items:center; justify-content:space-between;
+    padding:14px 24px; background:rgba(11,13,12,.94); backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  header h1 { font-size:15px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+  header .meta { font-size:12px; color:var(--muted); letter-spacing:.06em; }
+  .bar { display:flex; gap:8px; flex-wrap:wrap; }
+  button, .filebtn {
+    font:inherit; font-size:12px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+    color:var(--cream); background:transparent; border:1px solid #3d3c33;
+    padding:9px 16px; cursor:pointer; transition:background .2s,color .2s,border-color .2s;
+    display:inline-block;
+  }
+  button:hover, .filebtn:hover { background:var(--cream); color:var(--ground); border-color:var(--cream); }
+  button.primary { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  button.primary:hover { background:var(--cream); border-color:var(--cream); }
+  button.on { background:var(--orange); border-color:var(--orange); color:var(--ground); }
+  .filebtn input { display:none; }
+
+  .wrap { max-width:1320px; margin:0 auto; padding:34px 24px 120px; }
+  .intro { max-width:62ch; margin-bottom:34px; }
+  .intro h2 { font-size:30px; font-weight:800; letter-spacing:-.01em; margin-bottom:14px; }
+  .intro p { color:#bdbb9d; margin-bottom:12px; }
+
+  .controls { display:grid; grid-template-columns:1fr 1fr; gap:18px 26px; max-width:860px; margin-bottom:28px; }
+  @media (max-width:700px) { .controls { grid-template-columns:1fr; } }
+  label.f { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  label.f input[type=text] {
+    display:block; width:100%; margin-top:5px; font:inherit; font-size:14px;
+    color:var(--cream); background:var(--panel); border:1px solid var(--line);
+    padding:9px 11px; border-radius:0;
+  }
+  label.f input:focus { outline:none; border-color:var(--orange); }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-top:5px; }
+  .chips button { font-size:11px; padding:7px 12px; }
+
+  .drop {
+    grid-column:1 / -1; border:1px dashed #3d3c33; padding:34px 20px; text-align:center;
+    color:var(--muted); font-size:14px; transition:border-color .2s, background .2s;
+  }
+  .drop.over { border-color:var(--orange); background:#15110c; }
+  .drop .filebtn { margin-left:8px; }
+
+  .cards { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:26px; }
+  .card { border:1px solid var(--line); background:var(--panel); }
+  .card canvas { width:100%; height:auto; display:block; background:#000; cursor:pointer; }
+  .card .under { padding:12px 12px 14px; display:grid; gap:10px; }
+  .card .name { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+                white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card input[type=range] { width:100%; accent-color:var(--orange); }
+  .card .acts { display:flex; gap:8px; }
+  .card .acts button { flex:1; }
+
+  #status {
+    position:fixed; left:50%; bottom:22px; translate:-50% 0; z-index:50;
+    background:var(--orange); color:var(--ground); font-size:13px; font-weight:600;
+    padding:11px 20px; opacity:0; transition:opacity .25s; pointer-events:none;
+  }
+  #status.on { opacity:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>DARÉ · Friends of Daré</h1>
+    <div class="meta">The frame for the opening night pictures</div>
+  </div>
+  <div class="bar">
+    <button id="saveAll" class="primary">Save every picture</button>
+    <a href="/rollout.html"><button>Rollout</button></a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="intro">
+    <h2>Drop the opening night pictures in. Each comes back in the frame.</h2>
+    <p>
+      The poster's own frame: the orange, the two carved figures, and the black window in the
+      middle, with the photograph in the window. Nothing leaves this page; the pictures are
+      drawn here and the file that saves is the canvas at full size.
+    </p>
+    <p>
+      The first card is the frame on its own, on the artist's night sky, for posting as it is.
+      Slide a picture up or down if a face is cropped. Press any picture to save it.
+    </p>
+  </div>
+
+  <div class="controls">
+    <label class="f">Title<input type="text" id="title" value="Friends of Daré"></label>
+    <label class="f">Line under the picture<input type="text" id="line" value="Opening night · 15 October 2026"></label>
+    <div>
+      <label class="f">Size</label>
+      <div class="chips" id="fmts"></div>
+    </div>
+    <div class="drop" id="drop">
+      Drop pictures here, as many as you like, or
+      <label class="filebtn">Choose pictures<input type="file" id="files" accept="image/*" multiple></label>
+    </div>
+  </div>
+
+  <div class="cards" id="cards"></div>
+</div>
+
+<div id="status"></div>
+
+<script>
+// ===========================================================
+// DARÉ · FRIENDS OF DARÉ
+// The poster's frame drawn round any photograph. The same
+// palette, type and artwork as /rollout.html, which carries
+// the blank version of this frame in the run.
+// ===========================================================
+const P = { ground:'#0b0d0c', cream:'#f9f5cd', orange:'#f43e00', muted:'#908f78' };
+const INK = '#17100a';
+const FONT = "Figtree,'Helvetica Neue',Arial,sans-serif";
+const SITE = 'ancestralfutures.co.uk';
+const VENUE = 'Zimbabwe House, 429 Strand, London';
+const FORMATS = {
+  story:    { w:1080, h:1920, label:'Story 9:16' },
+  portrait: { w:1080, h:1350, label:'Portrait 4:5' },
+  square:   { w:1080, h:1080, label:'Square 1:1' },
+};
+
+const ART = {};
+function load(name, src) {
+  return new Promise((res) => {
+    const i = new Image();
+    i.onload = () => { ART[name] = i; res(); };
+    i.onerror = () => { ART[name] = null; res(); };
+    i.src = src;
+  });
+}
+
+// ---------- type, as the rollout sets it ----------
+function tracked(ctx, text, tr) {
+  let w = 0;
+  for (const ch of text) w += ctx.measureText(ch).width + tr;
+  return w - tr;
+}
+function fillTracked(ctx, text, x, y, tr) {
+  let cx = x;
+  for (const ch of text) { ctx.fillText(ch, cx, y); cx += ctx.measureText(ch).width + tr; }
+}
+function centreTracked(ctx, text, cx, y, tr) {
+  fillTracked(ctx, text, cx - tracked(ctx, text, tr) / 2, y, tr);
+}
+function centreFit(ctx, text, cx, y, maxW, size, trRatio, weight) {
+  let s = size;
+  for (let i = 0; i < 24; i++) {
+    ctx.font = `${weight || 600} ${Math.round(s)}px ${FONT}`;
+    if (tracked(ctx, text, s * trRatio) <= maxW) break;
+    s *= 0.94;
+  }
+  centreTracked(ctx, text, cx, y, s * trRatio);
+  return s;
+}
+
+const stencil = document.createElement('canvas');
+function drawArt(ctx, img, x, y, w, h, colour, alpha) {
+  if (!img) return;
+  stencil.width = Math.max(1, Math.round(w));
+  stencil.height = Math.max(1, Math.round(h));
+  const s = stencil.getContext('2d');
+  s.clearRect(0, 0, stencil.width, stencil.height);
+  s.drawImage(img, 0, 0, stencil.width, stencil.height);
+  s.globalCompositeOperation = 'source-in';
+  s.fillStyle = colour;
+  s.fillRect(0, 0, stencil.width, stencil.height);
+  s.globalCompositeOperation = 'source-over';
+  ctx.save();
+  ctx.globalAlpha = alpha === undefined ? 1 : alpha;
+  ctx.drawImage(stencil, x, y, w, h);
+  ctx.restore();
+}
+function figures(ctx, W, H, colour, alpha) {
+  const w = W * 0.27;
+  if (ART.figL) {
+    const h = w * (ART.figL.height / ART.figL.width);
+    drawArt(ctx, ART.figL, -w * 0.22, H - h * 0.92, w, h, colour, alpha);
+  }
+  if (ART.figR) {
+    const h = w * (ART.figR.height / ART.figR.width);
+    drawArt(ctx, ART.figR, W - w * 0.78, H - h * 0.92, w, h, colour, alpha);
+  }
+}
+function footer(ctx, W, H, lines, pad) {
+  ctx.save();
+  ctx.fillStyle = INK;
+  ctx.textBaseline = 'alphabetic';
+  const fs = Math.round(W * 0.0235);
+  let y = H - pad;
+  for (let i = lines.length - 1; i >= 0; i--) {
+    ctx.globalAlpha = i === lines.length - 1 ? 0.6 : 0.92;
+    centreFit(ctx, lines[i].toUpperCase(), W / 2, y, W - pad * 2, fs, 0.14);
+    y -= fs * 1.75;
+  }
+  ctx.restore();
+}
+function cover(ctx, img, x, y, w, h, focusY) {
+  const k = Math.max(w / img.width, h / img.height);
+  const dw = img.width * k, dh = img.height * k;
+  ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) * focusY, dw, dh);
+}
+
+// ---------- the frame ----------
+function draw(canvas, fmt, photo, focus, title, line) {
+  const f = FORMATS[fmt];
+  const W = f.w, H = f.h;
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = P.orange;
+  ctx.fillRect(0, 0, W, H);
+  figures(ctx, W, H, INK, 0.7);
+
+  const panel = { x: W * 0.12, y: H * 0.17, w: W * 0.76, h: H * 0.8 - H * 0.17 };
+  ctx.fillStyle = P.ground;
+  ctx.fillRect(panel.x, panel.y, panel.w, panel.h);
+
+  ctx.save();
+  ctx.beginPath(); ctx.rect(panel.x, panel.y, panel.w, panel.h); ctx.clip();
+  const img = photo || ART.stars;
+  if (img) cover(ctx, img, panel.x, panel.y, panel.w, panel.h, photo ? focus : 0);
+  ctx.restore();
+
+  ctx.save();
+  ctx.fillStyle = INK;
+  ctx.textBaseline = 'alphabetic';
+  centreFit(ctx, String(title).toUpperCase(), W / 2, panel.y - W * 0.06, W * 0.8, Math.round(W * 0.046), 0.16);
+  ctx.restore();
+
+  footer(ctx, W, H, [line, VENUE, SITE], W * 0.085);
+}
+
+// ---------- the page ----------
+let fmt = 'story';
+const cards = [];   // { img, name, focus, el, canvas }
+
+function toast(msg) {
+  const s = document.getElementById('status');
+  s.textContent = msg; s.classList.add('on');
+  clearTimeout(toast.t); toast.t = setTimeout(() => s.classList.remove('on'), 2200);
+}
+function save(canvas, name) {
+  return new Promise((res) => canvas.toBlob((b) => {
+    const u = URL.createObjectURL(b);
+    const a = document.createElement('a');
+    a.href = u; a.download = name; a.click();
+    setTimeout(() => URL.revokeObjectURL(u), 4000);
+    res();
+  }, 'image/png'));
+}
+const words = () => [document.getElementById('title').value, document.getElementById('line').value];
+const slug = (s) => String(s).replace(/\.[^.]+$/, '').replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'picture';
+
+function redrawAll() {
+  const [t, l] = words();
+  for (const c of cards) draw(c.canvas, fmt, c.img, c.focus, t, l);
+}
+
+const scratch = document.createElement('canvas');
+async function download(c) {
+  const [t, l] = words();
+  draw(scratch, fmt, c.img, c.focus, t, l);
+  await save(scratch, `DARE_friends_${slug(c.name)}_${fmt}.png`);
+}
+
+function addCard(img, name) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  const blank = !img;
+  el.innerHTML = `
+    <canvas></canvas>
+    <div class="under">
+      <div class="name">${blank ? 'The frame on its own' : name.replace(/</g, '&lt;')}</div>
+      ${blank ? '' : '<input type="range" min="0" max="1" step="0.01" value="0.5" title="Slide the picture up or down">'}
+      <div class="acts"><button data-save>Save</button>${blank ? '' : '<button data-remove class="quiet">Remove</button>'}</div>
+    </div>`;
+  const c = { img, name: blank ? 'frame' : name, focus: 0.5, el, canvas: el.querySelector('canvas') };
+  cards.push(c);
+  document.getElementById('cards').appendChild(el);
+  const [t, l] = words();
+  draw(c.canvas, fmt, c.img, c.focus, t, l);
+  c.canvas.onclick = () => download(c);
+  el.querySelector('[data-save]').onclick = () => download(c);
+  const range = el.querySelector('input[type=range]');
+  if (range) range.oninput = () => { c.focus = Number(range.value); draw(c.canvas, fmt, c.img, c.focus, ...words()); };
+  const rm = el.querySelector('[data-remove]');
+  if (rm) rm.onclick = () => { cards.splice(cards.indexOf(c), 1); el.remove(); };
+}
+
+function takeFiles(list) {
+  const files = [...list].filter((f) => f.type.startsWith('image/'));
+  if (!files.length) { toast('No pictures in that'); return; }
+  let n = 0;
+  for (const file of files) {
+    const img = new Image();
+    img.onload = () => { addCard(img, file.name); n++; if (n === files.length) toast(`${n} picture${n === 1 ? '' : 's'} framed`); };
+    img.src = URL.createObjectURL(file);
+  }
+}
+
+function build() {
+  const fmts = document.getElementById('fmts');
+  fmts.innerHTML = Object.keys(FORMATS).map((k) =>
+    `<button data-fmt="${k}"${k === fmt ? ' class="on"' : ''}>${FORMATS[k].label}</button>`).join('');
+  fmts.querySelectorAll('button').forEach((b) => {
+    b.onclick = () => {
+      fmt = b.dataset.fmt;
+      fmts.querySelectorAll('button').forEach((o) => o.classList.toggle('on', o === b));
+      redrawAll();
+    };
+  });
+  document.getElementById('title').oninput = redrawAll;
+  document.getElementById('line').oninput = redrawAll;
+
+  const drop = document.getElementById('drop');
+  document.getElementById('files').onchange = (e) => { takeFiles(e.target.files); e.target.value = ''; };
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add('over'); };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove('over'); takeFiles(e.dataTransfer.files); };
+  document.body.ondragover = (e) => e.preventDefault();
+  document.body.ondrop = (e) => { e.preventDefault(); takeFiles(e.dataTransfer.files); };
+
+  document.getElementById('saveAll').onclick = async () => {
+    let n = 0;
+    for (const c of cards) { await download(c); n++; toast(`Saving ${n} of ${cards.length}`); await new Promise((r) => setTimeout(r, 220)); }
+    toast(`${n} files saved`);
+  };
+
+  addCard(null, 'frame');
+}
+
+/* /friends.html?export=1&fmt=story is the blank frame alone at full size,
+   for a headless screenshot. The same trick as the rollout page. */
+function exportBlank(f) {
+  if (!FORMATS[f]) f = 'story';
+  const c = document.createElement('canvas');
+  draw(c, f, null, 0, ...words());
+  document.body.innerHTML = '';
+  document.body.style.cssText = 'margin:0;background:#000;overflow:hidden';
+  c.style.cssText = `display:block;width:${c.width}px;height:${c.height}px`;
+  document.body.appendChild(c);
+}
+
+(async function () {
+  await Promise.all([
+    load('figL', '/art/figure-left.png'),
+    load('figR', '/art/figure-right.png'),
+    load('stars', '/art/stars.jpg'),
+  ]);
+  if (document.fonts && document.fonts.ready) await document.fonts.ready;
+  const q = new URLSearchParams(location.search);
+  if (q.has('export')) { exportBlank(q.get('fmt') || 'story'); return; }
+  build();
+})();
+</script>
+</body>
+</html>

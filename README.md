@@ -36,6 +36,17 @@ npm run dev
   written beside it. The countdown numbers are worked out from the real
   dates, so they are right whenever the page is opened. Both tools are kept
   out of the sitemap and out of search.
+- Two more tools draw the same frame round things that have to be dropped
+  in. `/friends.html` is the Friends of Daré frame: drop the opening night
+  pictures on it and each comes back inside the poster's window, as story,
+  portrait or square. `/doorbell.html` plays a clip through a fisheye lens
+  with the name, a live dot, the time and a camera number round it, and
+  records the result off the canvas as MP4 (Chrome) or WebM.
+- Any post on the rollout can be drawn alone at full size with
+  `/rollout.html?export=<key>&fmt=<story|portrait|square|wide>`, and the
+  two tools with `?export=1&fmt=…`. A headless Chrome screenshot of that
+  page at the format's size is the file; this is how the PNGs in `assets/`
+  were made.
 - `/emails/` composes every send in the plan from one template: edit the
   subject, headline and Shumba's note, then copy the finished HTML straight
   into Brevo. Each one carries a Book tickets button and a share row.

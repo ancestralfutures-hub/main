@@ -59,6 +59,29 @@ only two thirds opaque, so its alpha is lifted until that line is solid.
 
 `/asset-generator.html` and `/rollout.html` both draw with these.
 
+## Exported posts
+
+PNGs of the posts people asked for by name, each at the sizes the rollout
+offers, so they can be sent on without opening the page. Every one can be
+remade from `/rollout.html?export=<key>&fmt=<size>` (or `/friends.html`
+and `/doorbell.html` with `?export=1&fmt=<size>`) by screenshotting that
+page in headless Chrome at the format's size:
+
+```bash
+"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+  --hide-scrollbars --force-device-scale-factor=1 --window-size=1080,1350 \
+  --virtual-time-budget=12000 --screenshot=assets/library-portrait.png \
+  "http://localhost:3000/rollout.html?export=library&fmt=portrait"
+```
+
+| Files | What it is |
+|---|---|
+| `invite-story.png`, `invite-portrait.png` | The launch invitation (`invite`) |
+| `library-*.png` | The library, free and open throughout (`library`) |
+| `thanks-launch-*.png` | Thank you for coming to the launch (`thanks-launch`) |
+| `friends-*.png` | The Friends of Daré frame on its own, night sky in the window (`friends`) |
+| `doorbell-*.png` | A still of the doorbell with the hut in the lens, to show the look before a clip is in |
+
 `stars.jpg` is different: not a stencil but a photograph, the artist's own
 night sky, 1280 by 1600, used as it is under the launch invitation. The
 rollout page scales it to cover and anchors it to the top, so the stars
