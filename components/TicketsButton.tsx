@@ -1,7 +1,6 @@
 "use client";
 
-import Script from "next/script";
-import { useState, type MouseEvent } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 
 const WIDGET_SCRIPT = "https://www.eventbrite.co.uk/static/widgets/eb_widgets.js";
 
@@ -16,6 +15,37 @@ declare global {
       }): void;
     };
   }
+}
+
+/*
+  Eventbrite's widget script, fetched once for the whole page however many
+  buttons there are. Each button waits on the same promise and builds its
+  own widget when it resolves.
+
+  This used to be next/script with an onReady on each button. With two
+  buttons that only built the first: the script is deduplicated by its
+  address, and the ready callback ran for the instance that loaded it and
+  not for the one that found it already loading. The second button then
+  stayed a plain link to Eventbrite, which is the fallback working, but
+  not the checkout over the page it was meant to be.
+*/
+let widgets: Promise<void> | null = null;
+function loadWidgets(): Promise<void> {
+  if (widgets) return widgets;
+  widgets = new Promise((resolve) => {
+    if (window.EBWidgets) return resolve();
+    const existing = document.querySelector<HTMLScriptElement>(`script[src="${WIDGET_SCRIPT}"]`);
+    const script = existing ?? document.createElement("script");
+    script.addEventListener("load", () => resolve());
+    // A blocked or failed script leaves the promise pending for ever, and
+    // the button a link to Eventbrite, which is exactly right.
+    if (!existing) {
+      script.src = WIDGET_SCRIPT;
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  });
+  return widgets;
 }
 
 /*
@@ -51,16 +81,22 @@ export default function TicketsButton({
   const [modal, setModal] = useState(false);
   const triggerId = `eventbrite-checkout-${eventId}`;
 
-  const build = () => {
-    if (!window.EBWidgets) return;
-    window.EBWidgets.createWidget({
-      widgetType: "checkout",
-      eventId,
-      modal: true,
-      modalTriggerElementId: triggerId,
+  useEffect(() => {
+    let mounted = true;
+    loadWidgets().then(() => {
+      if (!mounted || !window.EBWidgets) return;
+      window.EBWidgets.createWidget({
+        widgetType: "checkout",
+        eventId,
+        modal: true,
+        modalTriggerElementId: triggerId,
+      });
+      setModal(true);
     });
-    setModal(true);
-  };
+    return () => {
+      mounted = false;
+    };
+  }, [eventId, triggerId]);
 
   const onClick = (event: MouseEvent<HTMLAnchorElement>) => {
     const modified = event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
@@ -68,21 +104,15 @@ export default function TicketsButton({
   };
 
   return (
-    <>
-      <a
-        id={triggerId}
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-        onClick={onClick}
-      >
-        {label}
-      </a>
-      {/* After the page is interactive: the button works before it lands.
-          onReady rather than onLoad, so the widget is still built if the
-          script is already in the browser's cache from a previous view. */}
-      <Script src={WIDGET_SCRIPT} strategy="afterInteractive" onReady={build} />
-    </>
+    <a
+      id={triggerId}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+      onClick={onClick}
+    >
+      {label}
+    </a>
   );
 }
