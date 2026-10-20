@@ -1,5 +1,5 @@
 import HeroSection from "@/components/sections/HeroSection";
-import { eventContent, heroContent, siteConfig, ticketsContent } from "@/lib/content";
+import { eventContent, heroContent, liveContent, siteConfig, ticketsContent } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site-url";
 
 /*
@@ -54,6 +54,38 @@ const eventSchema = {
   },
 };
 
+// The live show in November, the same way: a TheaterEvent, since that is
+// what two nights on a stage are, drawn from the same content file.
+const liveSchema = {
+  "@context": "https://schema.org",
+  "@type": "TheaterEvent",
+  name: liveContent.name,
+  startDate: liveContent.startDate,
+  endDate: liveContent.endDate,
+  eventStatus: "https://schema.org/EventScheduled",
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  image: [absoluteUrl("/opengraph-image.png")],
+  url: liveContent.url,
+  location: {
+    "@type": "Place",
+    name: liveContent.venue,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: liveContent.street,
+      addressLocality: liveContent.city,
+      postalCode: liveContent.postcode,
+      addressCountry: liveContent.country,
+    },
+  },
+  performer: { "@type": "Person", name: "Shumba Maasai" },
+  organizer: { "@type": "Organization", name: siteConfig.name, url: absoluteUrl("/") },
+  offers: {
+    "@type": "Offer",
+    url: liveContent.url,
+    availability: "https://schema.org/InStock",
+  },
+};
+
 export default function Home() {
   return (
     <>
@@ -61,7 +93,7 @@ export default function Home() {
         type="application/ld+json"
         // The object above is ours, built from our own content files, so
         // there is nothing here that could have come from a visitor.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(eventSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([eventSchema, liveSchema]) }}
       />
       <HeroSection />
     </>

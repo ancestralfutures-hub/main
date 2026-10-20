@@ -22,5 +22,6 @@ export const rulesContent = home.rules;
 export const creditsContent = home.credits;
 export const eventContent = home.event;
 export const ticketsContent = home.tickets;
+export const liveContent = home.live;
 export const rsvpContent = home.rsvp;
 export const signupContent = home.signup;
