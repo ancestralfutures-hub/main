@@ -5,7 +5,7 @@ never scrolls: the logo, the hut, the venue and dates, Book tickets, and
 the credits along the bottom, with About and Sign up opening over it as
 full-screen drawers.
 
-Zimbabwe House, 429 Strand, London, 15 to 22 October 2026, 1pm to 8pm.
+Zimbabwe House, 429 Strand, London, 15 to 25 October 2026, 1pm to 8pm, extended from the 22nd.
 
 Built with Next.js as plain static files and hosted on GitHub Pages. The
 logo and the hut are the designer's; the colours are the logo's own cream
