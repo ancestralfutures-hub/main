@@ -476,16 +476,41 @@ function seekToStart() {
   });
 }
 
+/* The clip's sound, as a track the recorder can take.
+
+   Not captureStream on the video element: Safari does not have it, and a
+   recording made there came back silent with the box ticked. Web Audio
+   instead: the element is wired into an audio graph whose only output is
+   a stream, so the sound goes to the file and nowhere else, and the
+   preview stays quiet as it always was. The graph can only be built once
+   per element, and only on a click, so it is made at the top of record()
+   and kept. */
+let sound = null;
+function soundTrack() {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!AC) return null;
+  if (!sound) {
+    const ctx = new AC();
+    const source = ctx.createMediaElementSource(video);
+    const dest = ctx.createMediaStreamDestination();
+    source.connect(dest);
+    sound = { ctx, source, dest };
+  }
+  if (sound.ctx.state === 'suspended') sound.ctx.resume();
+  return sound.dest.stream.getAudioTracks()[0] || null;
+}
+
 async function recordOnce(type, withSound) {
   // Frames on demand, pushed from the timer below. A browser without
   // requestFrame gets the timed stream instead.
   let stream = out.captureStream(0);
   let track = stream.getVideoTracks()[0];
   if (!track || !track.requestFrame) { stream = out.captureStream(30); track = stream.getVideoTracks()[0]; }
-  if (withSound && video.captureStream) {
+  if (withSound) {
     try {
       video.muted = false; video.volume = 1;
-      for (const t of video.captureStream().getAudioTracks()) stream.addTrack(t);
+      const t = soundTrack();
+      if (t) stream.addTrack(t);
     } catch (e) { /* no sound then */ }
   }
   const chunks = [];
@@ -531,6 +556,9 @@ async function record() {
   state.recording = true;
   document.getElementById('rec').disabled = true;
   const withSound = document.getElementById('sound').checked;
+  // Built here, inside the click, which is the only place Safari lets an
+  // audio graph start.
+  if (withSound) { try { soundTrack(); } catch (e) { /* no sound then */ } }
   // Even a second of video is more than this. Anything under it is a
   // recorder that produced nothing, and is not worth saving.
   const MIN = 150_000;
