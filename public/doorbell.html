@@ -416,7 +416,16 @@ function draw() {
   ctx.restore();
 }
 
-function loop() { draw(); requestAnimationFrame(loop); }
+// The preview. While a recording runs the recorder draws on its own clock
+// instead, so the frames it pushes are the only ones drawn.
+function loop() { if (!state.recording) draw(); requestAnimationFrame(loop); }
+
+// A line under the preview that stays until it is replaced, for progress
+// the toast is too brief for.
+function progress(msg) {
+  const n = document.getElementById('note');
+  if (n) n.textContent = msg || n.dataset.idle || '';
+}
 
 // ---------- the clip ----------
 function takeFile(file) {
@@ -436,55 +445,120 @@ function takeFile(file) {
 /* The canvas is captured as a stream and the clip is played through once
    from the top while it records. Chrome on a Mac writes MP4 straight out;
    anywhere that cannot, WebM, which Instagram also takes. The clip's own
-   sound is added from the video element if the box is ticked. */
-function mime() {
-  const tries = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp9', 'video/webm'];
-  return tries.find((t) => window.MediaRecorder && MediaRecorder.isTypeSupported(t)) || '';
+   sound is added from the video element if the box is ticked and the
+   browser can do it (Safari cannot).
+
+   Three things keep this honest, each learned from a laptop that saved
+   files of a few kilobytes:
+   - frames are pushed into the stream by hand after every draw, on a
+     timer, rather than left to the browser to notice the canvas changed.
+     Safari does not notice, and Chrome stops noticing when the tab is not
+     in front, and either way the file comes out with nothing in it;
+   - the recorder's own errors are caught and said out loud;
+   - the file is measured before it is saved. One too small to be a video
+     is thrown away and the recording is tried again in the next format
+     down, MP4 first and WebM after, so a browser whose MP4 encoder quietly
+     fails still hands back a clip. */
+const TYPES = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp9', 'video/webm'];
+function supported() {
+  return window.MediaRecorder ? TYPES.filter((t) => MediaRecorder.isTypeSupported(t)) : [];
 }
-async function record() {
-  if (!state.haveClip || state.recording) return;
-  const type = mime();
-  if (!type) { toast('This browser cannot record. Try Chrome.'); return; }
-  const stream = out.captureStream(30);
-  let audioStream = null;
-  if (document.getElementById('sound').checked && video.captureStream) {
+function mime() { return supported()[0] || ''; }
+
+// Back to the top of the clip. Already there is not an event, and a seek
+// that never reports back should not hold the recording hostage.
+function seekToStart() {
+  return new Promise((res) => {
+    if (video.currentTime < 0.05) return res();
+    const t = setTimeout(res, 1500);
+    video.onseeked = () => { clearTimeout(t); res(); };
+    video.currentTime = 0;
+  });
+}
+
+async function recordOnce(type, withSound) {
+  // Frames on demand, pushed from the timer below. A browser without
+  // requestFrame gets the timed stream instead.
+  let stream = out.captureStream(0);
+  let track = stream.getVideoTracks()[0];
+  if (!track || !track.requestFrame) { stream = out.captureStream(30); track = stream.getVideoTracks()[0]; }
+  if (withSound && video.captureStream) {
     try {
-      video.muted = false;
-      video.volume = 1;
-      audioStream = video.captureStream();
-      for (const t of audioStream.getAudioTracks()) stream.addTrack(t);
+      video.muted = false; video.volume = 1;
+      for (const t of video.captureStream().getAudioTracks()) stream.addTrack(t);
     } catch (e) { /* no sound then */ }
   }
   const chunks = [];
+  let error = null;
   const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: 12_000_000 });
-  rec.ondataavailable = (e) => { if (e.data.size) chunks.push(e.data); };
-  const done = new Promise((res) => { rec.onstop = res; });
+  rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.onerror = (e) => { error = (e.error && e.error.message) || 'the recorder stopped with an error'; };
+  const stopped = new Promise((res) => { rec.onstop = res; });
 
   video.loop = false;
   video.pause();
-  video.currentTime = 0;
-  await new Promise((r) => { video.onseeked = r; });
+  await seekToStart();
+  rec.start();
+  const total = Math.ceil(video.duration || 0);
+  const pump = setInterval(() => {
+    draw();
+    if (track.requestFrame) track.requestFrame();
+    progress(`Recording ${type.split(';')[0].replace('video/', '').toUpperCase()}: ${Math.min(total, Math.ceil(video.currentTime))}s of ${total}s. Keep this tab in front until it saves.`);
+  }, 1000 / 30);
+  try {
+    await video.play();
+    await new Promise((res) => {
+      video.onended = res;
+      // Should ended never come, the clip's own length plus a second.
+      setTimeout(res, ((video.duration || 60) + 1) * 1000);
+    });
+  } finally {
+    clearInterval(pump);
+    if (rec.state !== 'inactive') rec.stop();
+    await stopped;
+    video.muted = true;
+    video.loop = true;
+    video.play().catch(() => {});
+  }
+  if (error) throw new Error(error);
+  return new Blob(chunks, { type: type.split(';')[0] });
+}
+
+async function record() {
+  if (!state.haveClip || state.recording) return;
+  const types = supported();
+  if (!types.length) { toast('This browser cannot record. Try Chrome.'); return; }
   state.recording = true;
   document.getElementById('rec').disabled = true;
-  toast('Recording. Leave this tab in front until it finishes.');
-  rec.start(250);
-  await video.play();
-  await new Promise((r) => { video.onended = r; });
-  rec.stop();
-  await done;
-  state.recording = false;
-  video.muted = true;
-  video.loop = true;
-  video.play().catch(() => {});
-  document.getElementById('rec').disabled = false;
-
-  const ext = type.startsWith('video/mp4') ? 'mp4' : 'webm';
-  const blob = new Blob(chunks, { type: type.split(';')[0] });
-  const u = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = u; a.download = `DARE_doorbell_${state.fmt}.${ext}`; a.click();
-  setTimeout(() => URL.revokeObjectURL(u), 4000);
-  toast(`Saved as ${ext.toUpperCase()}`);
+  const withSound = document.getElementById('sound').checked;
+  // Even a second of video is more than this. Anything under it is a
+  // recorder that produced nothing, and is not worth saving.
+  const MIN = 150_000;
+  let saved = false;
+  try {
+    for (const type of types) {
+      let blob = null, why = '';
+      try { blob = await recordOnce(type, withSound); } catch (e) { why = e.message; }
+      if (blob && blob.size >= MIN) {
+        const ext = type.startsWith('video/mp4') ? 'mp4' : 'webm';
+        const u = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = u; a.download = `DARE_doorbell_${state.fmt}.${ext}`; a.click();
+        setTimeout(() => URL.revokeObjectURL(u), 4000);
+        toast(`Saved as ${ext.toUpperCase()}, ${(blob.size / 1e6).toFixed(1)} MB`);
+        saved = true;
+        break;
+      }
+      const short = type.split(';')[0].replace('video/', '').toUpperCase();
+      progress(`${short} came out ${blob ? 'empty' : 'with an error'}${why ? ' (' + why + ')' : ''}. Trying the next format.`);
+      await new Promise((r) => setTimeout(r, 900));
+    }
+    if (!saved) toast('Could not record a clip in this browser. Try Chrome, with this tab in front the whole time.');
+  } finally {
+    state.recording = false;
+    document.getElementById('rec').disabled = false;
+    if (saved) progress('');
+  }
 }
 
 function saveFrame() {
@@ -539,9 +613,11 @@ function build() {
 
   document.getElementById('rec').onclick = record;
   document.getElementById('frame').onclick = saveFrame;
-  document.getElementById('note').textContent = mime()
-    ? `Preview. Records as ${mime().startsWith('video/mp4') ? 'MP4' : 'WebM'} at full size.`
+  const note = document.getElementById('note');
+  note.dataset.idle = mime()
+    ? `Preview. Records as ${mime().startsWith('video/mp4') ? 'MP4' : 'WebM'} at full size, with WebM as the fallback.`
     : 'Preview. This browser cannot record; Chrome can.';
+  note.textContent = note.dataset.idle;
 }
 
 /* A clip can also come from the site itself: /doorbell.html?clip=/door.mp4
