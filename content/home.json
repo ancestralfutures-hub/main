@@ -1,25 +1,28 @@
 {
   "hero": {
     "title": "DARÉ",
-    "subtitle": "A sonic portrait by Shumba Maasai",
-    "where": "Zimbabwe House, 429 Strand, London",
-    "when": "Extended to 25 October, 1pm–8pm"
+    "subtitle": "A live encounter with sound by Shumba Maasai",
+    "where": "Bernie Grant Arts Centre, London N15",
+    "when": "Saturday 7 November, doors 7pm"
   },
   "event": {
-    "venue": "Zimbabwe House",
-    "street": "429 Strand",
+    "venue": "Bernie Grant Arts Centre",
+    "street": "Town Hall Approach Road",
     "city": "London",
+    "postcode": "N15 4RX",
     "country": "GB",
-    "startDate": "2026-10-15T13:00:00+01:00",
-    "endDate": "2026-10-25T20:00:00+00:00"
+    "startDate": "2026-11-07T19:00:00+00:00",
+    "endDate": "2026-11-07T22:00:00+00:00"
   },
   "credits": [
-    "Presented by Ancestral Futures in partnership with the Embassy of Zimbabwe, London."
+    "Presented by Ancestral Futures in partnership with Bernie Grant Arts Centre."
   ],
   "about": {
     "title": "About",
     "paragraphs": [
-      "Daré creates a space to encounter knowledge through sound, memory, heritage and presence, offering audiences a way to listen beyond information and reconnect with what can only be understood through experience."
+      "On Saturday 7 November 2026, Bernie Grant Arts Centre hosts DARÉ: A Live Encounter with Sound, an immersive, multisensory performance by Zimbabwean-born artist Shumba Maasai. Doors at 7pm, the performance from 8:30pm to 10pm.",
+      "Rooted in the Shona concept of the daré, a traditional gathering space for communal wisdom and healing, the work brings ancient African practices into the contemporary art sphere, exploring the ties between the African diaspora and its roots.",
+      "Weaving together live performance, spatial audio, scent design and immersive visuals, DARÉ on stage is a sonic portrait and a fully immersive theatre show for all audiences. After eleven days as an installation at Zimbabwe House in October, this is where it goes next, for one night only. Presented by Ancestral Futures in partnership with Bernie Grant Arts Centre."
     ],
     "statement": [
       "A sonic refuge.",
@@ -40,9 +43,9 @@
     ]
   },
   "tickets": {
-    "title": "Book tickets",
-    "eventId": "2000644063249",
-    "url": "https://www.eventbrite.co.uk/e/ancestral-futures-presents-dare-a-sonic-portrait-by-shumba-maasai-tickets-2000644063249"
+    "title": "Get tickets",
+    "eventId": "2002951390527",
+    "url": "https://www.eventbrite.co.uk/e/dare-a-live-encounter-with-sound-tickets-2002951390527"
   },
   "live": {
     "title": "Daré Live · Sat 7 Nov",

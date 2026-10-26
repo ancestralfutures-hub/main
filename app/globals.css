@@ -821,7 +821,6 @@ body:has(.rsvp-page) .bar-bottom {
   .hero {
     --rows: 5;
     --fine-rows: 2;
-    --button-rows: 2;
   }
 
   .hero-ctas {

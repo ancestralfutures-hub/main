@@ -1,5 +1,5 @@
 import HeroSection from "@/components/sections/HeroSection";
-import { eventContent, heroContent, liveContent, siteConfig, ticketsContent } from "@/lib/content";
+import { liveContent, siteConfig } from "@/lib/content";
 import { absoluteUrl } from "@/lib/site-url";
 
 /*
@@ -14,52 +14,21 @@ import { absoluteUrl } from "@/lib/site-url";
 
 /*
   The same facts again, in the form a search engine reads, so that a result
-  can carry the dates, the venue and a way to buy without anyone opening
-  the page. It is an ExhibitionEvent rather than a plain Event because that
-  is what a week-long installation is, and it draws every value from
-  content/home.json, so the words on the screen and the words in the markup
-  cannot drift apart.
+  can carry the date, the venue and a way to buy without anyone opening the
+  page. A TheaterEvent, since that is what a night on a stage is, drawn
+  from content/home.json so the words on the screen and the words in the
+  markup cannot drift apart. The installation that ran before it is over
+  and is not described here: a past event in the markup only invites a
+  search engine to show the wrong one.
 
   No price: the tickets are Eventbrite's and this file does not know what
   they cost. Better to say nothing than to say a number that goes stale.
 */
-const eventSchema = {
-  "@context": "https://schema.org",
-  "@type": "ExhibitionEvent",
-  name: heroContent.title,
-  alternateName: siteConfig.metaTitle,
-  description: siteConfig.metaDescription,
-  startDate: eventContent.startDate,
-  endDate: eventContent.endDate,
-  eventStatus: "https://schema.org/EventScheduled",
-  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  image: [absoluteUrl("/opengraph-image.png")],
-  url: absoluteUrl("/"),
-  location: {
-    "@type": "Place",
-    name: eventContent.venue,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: eventContent.street,
-      addressLocality: eventContent.city,
-      addressCountry: eventContent.country,
-    },
-  },
-  performer: { "@type": "Person", name: "Shumba Maasai" },
-  organizer: { "@type": "Organization", name: siteConfig.name, url: absoluteUrl("/") },
-  offers: {
-    "@type": "Offer",
-    url: ticketsContent.url,
-    availability: "https://schema.org/InStock",
-  },
-};
-
-// The live show in November, the same way: a TheaterEvent, since that is
-// what two nights on a stage are, drawn from the same content file.
 const liveSchema = {
   "@context": "https://schema.org",
   "@type": "TheaterEvent",
   name: liveContent.name,
+  description: siteConfig.metaDescription,
   startDate: liveContent.startDate,
   endDate: liveContent.endDate,
   eventStatus: "https://schema.org/EventScheduled",
@@ -93,7 +62,7 @@ export default function Home() {
         type="application/ld+json"
         // The object above is ours, built from our own content files, so
         // there is nothing here that could have come from a visitor.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([eventSchema, liveSchema]) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(liveSchema) }}
       />
       <HeroSection />
     </>
