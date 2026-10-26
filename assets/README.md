@@ -10,6 +10,8 @@ designer's: `Dare Logo-02.png` (5625 × 4500) and `hut lit up.jpg`
 | `dare-logo.webp` | The logo, trimmed of its empty margin, 1400 wide, lossless |
 | `hut-1800.webp` | The hut for large screens, 1800 wide |
 | `hut-1000.webp` | The hut for phones, 1000 wide |
+| `bgac-room.jpg` | The auditorium at Bernie Grant Arts Centre, from their site, 650 by 400, shown in the About drawer |
+| `bgac-logo.png` | Bernie Grant Arts Centre's own logo as they publish it, green on transparent, 307 wide, in the About drawer |
 
 `public/` also carries `dare-logo.png` (2400 wide) and `hut.webp` (the same
 as `hut-1800.webp`) for the asset generator, which loads them by path.

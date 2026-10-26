@@ -207,6 +207,55 @@
   margin-inline: auto;
 }
 
+/* The room, in the About drawer: the auditorium photograph, as wide as a
+   paragraph, held back and feathered at every edge so it sits in the
+   night the way the hut does rather than as a bright rectangle on it. */
+.about-photo {
+  width: 100%;
+  max-width: 34em;
+  margin-inline: auto;
+}
+
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  opacity: 0.88;
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 7%, #000 93%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 93%, transparent);
+  mask-composite: intersect;
+}
+
+.about-photo figcaption {
+  margin-top: var(--space-xs);
+  color: var(--muted);
+  font-size: calc(var(--type-size) * 0.72);
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+/* The partner's mark, under its line, at a size its own words can be
+   read at. It is their green as they publish it; the one colour on the
+   site that is not the logo's. */
+.partner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.partner img {
+  display: block;
+  width: auto;
+  height: clamp(84px, 12vh, 112px);
+}
+
 /* A screen of its own, for the page that is not the opening screen. */
 .section-full {
   position: relative;

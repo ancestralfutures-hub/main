@@ -27,7 +27,16 @@
     "statement": [
       "A sonic refuge.",
       "A gathering of memory, feeling and imagination."
-    ]
+    ],
+    "photo": {
+      "alt": "The auditorium at Bernie Grant Arts Centre: raked rows of red seats facing an empty stage under a rig of lights.",
+      "caption": "The auditorium at Bernie Grant Arts Centre, Tottenham"
+    },
+    "partner": {
+      "lede": "In partnership with",
+      "name": "Bernie Grant Arts Centre",
+      "url": "https://www.berniegrantcentre.co.uk/"
+    }
   },
   "artist": {
     "title": "The Artist",
