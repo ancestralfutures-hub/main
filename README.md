@@ -44,6 +44,12 @@ npm run dev
   portrait or square. `/doorbell.html` plays a clip through a fisheye lens
   with the name, a live dot, the time and a camera number round it, and
   records the result off the canvas as MP4 (Chrome) or WebM.
+- `/cast.html` is the cast and crew announcer for the live show: an
+  identity card per person, drawn as a passport's data page, with a
+  picture or a clip in the window, their name, their part ("Starring as",
+  "Playing", "Role") and a line about them, the stamp and the
+  machine-readable lines. Cards are kept in the browser's own storage so
+  they can be edited later, and come out as PNG or as a recorded clip.
 - Any post on the rollout can be drawn alone at full size with
   `/rollout.html?export=<key>&fmt=<story|portrait|square|wide>`, and the
   two tools with `?export=1&fmt=…`. A headless Chrome screenshot of that
