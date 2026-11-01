@@ -398,7 +398,7 @@ function cloud(w, h, cell, r) {
 function paper(w, h, seed, tone) {
   const key = `${w}x${h}:${seed}:${tone}`;
   const T = tone === 'orange'
-    ? { base:'#ef4810', dark:'rgba(70,15,0,', light:'rgba(255,215,180,', fox:'rgba(70,15,0,', edge:'rgba(60,10,0,', foldHi:'rgba(255,200,170,0.4)' }
+    ? { base:'#f43e00', dark:'rgba(70,15,0,', light:'rgba(255,200,160,', fox:'rgba(70,15,0,', edge:'rgba(60,10,0,', foldHi:'rgba(255,200,170,0.4)' }
     : { base:'#e3d7b4', dark:'rgba(100,70,35,', light:'rgba(255,250,235,', fox:'rgba(135,90,35,', edge:'rgba(80,50,15,', foldHi:'rgba(255,250,232,0.45)' };
   if (paperCache[key]) return paperCache[key];
   const c = document.createElement('canvas'); c.width = w; c.height = h;
@@ -407,9 +407,11 @@ function paper(w, h, seed, tone) {
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   // the clouds, coarse to fine, each laid on as light and shade
   for (const [cell, alpha] of [[w / 5, 0.5], [w / 12, 0.35], [w / 30, 0.25], [w / 80, 0.18]]) {
-    g.save(); g.globalCompositeOperation = 'overlay'; g.globalAlpha = alpha;
+    g.save(); g.globalCompositeOperation = 'overlay'; g.globalAlpha = tone === 'orange' ? alpha * 0.6 : alpha;
     g.drawImage(cloud(w, h, cell, r), -cell, -cell, w + cell * 2, h + cell * 2); g.restore();
   }
+  // the orange is kept the poster's own, the clouds only shading it
+  if (tone === 'orange') { g.save(); g.globalCompositeOperation = 'multiply'; g.fillStyle = 'rgba(225,70,10,0.5)'; g.fillRect(0, 0, w, h); g.restore(); }
   // the grain
   const img = g.getImageData(0, 0, w, h); const d = img.data;
   for (let i = 0; i < d.length; i += 4) { const n = (r() - 0.5) * 22; d[i] += n; d[i + 1] += n; d[i + 2] += n * 0.8; }
