@@ -182,14 +182,9 @@
       </div>
 
       <details>
-        <summary>The show, on every card</summary>
+        <summary>On every card</summary>
         <div class="inner">
-          <label class="f">Show<input type="text" data-g="show"></label>
-          <label class="f">Line under it<input type="text" data-g="sub"></label>
-          <label class="f">Date<input type="text" data-g="date"></label>
-          <label class="f">Place<input type="text" data-g="place"></label>
-          <label class="f">Last line<input type="text" data-g="cta"></label>
-          <label class="f">Issued by<input type="text" data-g="issuer"></label>
+          <label class="f">On the stamp<input type="text" data-g="issuer"></label>
         </div>
       </details>
     </div>
@@ -221,16 +216,9 @@ const KINDS = {
   band:  { label:'Band',          heading:'The band',          roleLabel:'Playing' },
   guest: { label:'Special guest', heading:'Special guest',     roleLabel:'Appearing as' },
 };
-const TREATS = { orange:'Orange', natural:'Natural', mono:'Black and white' };
+const TREATS = { sepia:'Sepia', mono:'Black and white', orange:'Orange', natural:'Natural' };
 
-const GLOBAL_DEFAULT = {
-  show:'DARÉ: An Experimental Theatre Performance',
-  sub:'A live encounter with sound by Shumba Maasai',
-  date:'Saturday 7 November 2026 · Doors 7pm',
-  place:'Bernie Grant Arts Centre, Tottenham, London',
-  cta:'Tickets out now · ancestralfutures.co.uk',
-  issuer:'Ancestral Futures',
-};
+const GLOBAL_DEFAULT = { issuer:'Ancestral Futures' };
 
 // ---------- storage ----------
 const DB = { name:'dare-cast', store:'cards' };
@@ -342,7 +330,7 @@ const pic = document.createElement('canvas');
 function drawPicture(ctx, source, x, y, w, h, card) {
   ctx.save();
   ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
-  ctx.fillStyle = card.treat === 'orange' ? '#1a0a02' : '#101010';
+  ctx.fillStyle = card.treat === 'orange' ? '#1a0a02' : '#2a241c';
   ctx.fillRect(x, y, w, h);
   if (source) {
     const sw = source.videoWidth || source.naturalWidth || source.width;
@@ -357,11 +345,11 @@ function drawPicture(ctx, source, x, y, w, h, card) {
       } else {
         pic.width = Math.max(1, Math.round(w)); pic.height = Math.max(1, Math.round(h));
         const g = pic.getContext('2d');
-        g.filter = card.treat === 'orange' ? 'grayscale(1) contrast(1.35) brightness(0.95)' : 'grayscale(1) contrast(1.15)';
+        g.filter = card.treat === 'orange' ? 'grayscale(1) contrast(1.35) brightness(0.95)' : card.treat === 'sepia' ? 'grayscale(1) contrast(1.12) brightness(1.04)' : 'grayscale(1) contrast(1.15)';
         g.drawImage(source, dx - x, dy - y, dw, dh);
         g.filter = 'none';
-        if (card.treat === 'orange') {
-          g.globalCompositeOperation = 'multiply'; g.fillStyle = P.orange; g.fillRect(0, 0, pic.width, pic.height);
+        if (card.treat === 'orange' || card.treat === 'sepia') {
+          g.globalCompositeOperation = 'multiply'; g.fillStyle = card.treat === 'orange' ? P.orange : '#d2b685'; g.fillRect(0, 0, pic.width, pic.height);
           g.globalCompositeOperation = 'source-over';
         }
         ctx.drawImage(pic, x, y, w, h);
@@ -379,7 +367,7 @@ function drawPicture(ctx, source, x, y, w, h, card) {
 function stamp(ctx, cx, cy, r, text, angle) {
   ctx.save();
   ctx.translate(cx, cy); ctx.rotate(angle || -0.22);
-  ctx.strokeStyle = P.orange; ctx.fillStyle = P.orange; ctx.globalAlpha = 0.86;
+  ctx.strokeStyle = '#c8321a'; ctx.fillStyle = '#c8321a'; ctx.globalAlpha = 0.78;
   ctx.lineWidth = r * 0.07; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
   ctx.lineWidth = r * 0.03; ctx.beginPath(); ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2); ctx.stroke();
   ctx.font = `800 ${Math.round(r * 0.19)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -406,151 +394,171 @@ function mrz(text, len) {
 // ===========================================================
 // THE CARD
 // ===========================================================
+/* Paper, made once per size and kept: an uneven cream, the fibres,
+   the foxing, darker towards the edges, and one fold. Nothing in it is
+   a photograph; it is all drawn, so it never repeats from card to
+   card unless the seed does. */
+const paperCache = {};
+function paper(w, h, seed) {
+  const key = `${w}x${h}:${seed}`;
+  if (paperCache[key]) return paperCache[key];
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const g = c.getContext('2d'); const r = rnd(seed);
+  g.fillStyle = '#e6dbb9'; g.fillRect(0, 0, w, h);
+  const img = g.getImageData(0, 0, w, h); const d = img.data;
+  for (let i = 0; i < d.length; i += 4) { const n = (r() - 0.5) * 28; d[i] += n; d[i + 1] += n; d[i + 2] += n * 0.85; }
+  g.putImageData(img, 0, 0);
+  g.strokeStyle = 'rgba(110,80,40,0.11)'; g.lineWidth = 1;
+  for (let i = 0; i < (w * h) / 700; i++) { const x = r() * w, y = r() * h, a = r() * Math.PI, l = 4 + r() * 22; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke(); }
+  for (let i = 0; i < 14; i++) {
+    const x = r() * w, y = r() * h, rad = w * (0.02 + r() * 0.1);
+    const gr = g.createRadialGradient(x, y, 0, x, y, rad);
+    gr.addColorStop(0, `rgba(140,95,40,${0.05 + r() * 0.12})`); gr.addColorStop(1, 'rgba(140,95,40,0)');
+    g.fillStyle = gr; g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  }
+  const v = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.25, w / 2, h / 2, Math.max(w, h) * 0.72);
+  v.addColorStop(0, 'rgba(90,60,20,0)'); v.addColorStop(1, 'rgba(90,60,20,0.3)');
+  g.fillStyle = v; g.fillRect(0, 0, w, h);
+  const fx = w * (0.42 + r() * 0.16);
+  g.strokeStyle = 'rgba(90,60,20,0.16)'; g.lineWidth = Math.max(1, w * 0.0015);
+  g.beginPath(); g.moveTo(fx, 0); g.lineTo(fx + (r() - 0.5) * w * 0.02, h); g.stroke();
+  g.strokeStyle = 'rgba(255,250,230,0.35)'; g.beginPath(); g.moveTo(fx + 2, 0); g.lineTo(fx + 2 + (r() - 0.5) * w * 0.02, h); g.stroke();
+  paperCache[key] = c;
+  return c;
+}
+
+/* The torn edge, as a path. Each side is a line with three waves of
+   noise laid on it, a long one, a short one and a jitter, and the top
+   and right are rougher than the bottom and left, which is how a piece
+   torn from a larger sheet comes away. */
+function tornPath(ctx, x, y, w, h, seed) {
+  const r = rnd(seed); const pts = [];
+  const edge = (x0, y0, x1, y1, rough) => {
+    const n = Math.max(14, Math.round(Math.hypot(x1 - x0, y1 - y0) / 6));
+    const len = Math.hypot(x1 - x0, y1 - y0); const ux = -(y1 - y0) / len, uy = (x1 - x0) / len;
+    const p1 = r() * 6.28, p2 = r() * 6.28, p3 = r() * 6.28;
+    for (let i = 0; i < n; i++) {
+      const t = i / n;
+      const a = (Math.sin(t * 6.28 * 2.3 + p1) * 0.5 + Math.sin(t * 6.28 * 7.1 + p2) * 0.3 + Math.sin(t * 6.28 * 23 + p3) * 0.15 + (r() - 0.5) * 0.5) * rough;
+      pts.push([x0 + (x1 - x0) * t + ux * a, y0 + (y1 - y0) * t + uy * a]);
+    }
+  };
+  edge(x, y, x + w, y, w * 0.014);
+  edge(x + w, y, x + w, y + h, w * 0.018);
+  edge(x + w, y + h, x, y + h, w * 0.007);
+  edge(x, y + h, x, y, w * 0.011);
+  ctx.beginPath(); pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))); ctx.closePath();
+}
+
+// A strip of old tape, yellowed and half see-through, laid across a corner.
+function tape(ctx, x, y, w, h, angle) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(angle);
+  ctx.fillStyle = 'rgba(232,218,170,0.55)'; ctx.fillRect(-w / 2, -h / 2, w, h);
+  ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(-w / 2, -h / 2, w, h * 0.3);
+  ctx.restore();
+}
+
+// ===========================================================
+// THE CARD
+// ===========================================================
 function draw(ctx, W, H, card, G, source, t) {
-  // the night
+  // the night, quiet
   ctx.fillStyle = P.ground; ctx.fillRect(0, 0, W, H);
   const r = rnd(card.seed || 7);
-  for (let i = 0; i < (W * H) / 20000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.2 + s * 0.5; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; ctx.fillRect(x, y, s > 0.96 ? 2.4 : 1.2, s > 0.96 ? 2.4 : 1.2); }
+  for (let i = 0; i < (W * H) / 26000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.15 + s * 0.4; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; ctx.fillRect(x, y, s > 0.96 ? 2 : 1.2, s > 0.96 ? 2 : 1.2); }
   ctx.globalAlpha = 1;
-  ctx.save(); ctx.globalAlpha = 0.5; const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
+  ctx.save(); ctx.globalAlpha = 0.22; const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
   ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(grain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
 
   const pad = W * 0.085;
-  // A square has less height to give, so its heading and the show
-  // beneath the card are set a little smaller than the story's.
   const k = Math.max(0.8, Math.min(1, (H / W) / 1.35));
-  const small = Math.round(W * 0.0235 * k);
-  const hs = Math.round(W * 0.052 * k);
-  const ss = Math.round(W * 0.03 * k);
-  const wrapRows = (text, size, tr, maxW, weight) => {
-    ctx.font = `${weight} ${size}px ${FONT}`;
-    const rows = []; let line = '';
-    for (const w of text.split(/\s+/)) { const tt = line ? line + ' ' + w : w; if (tracked(ctx, tt, size * tr) > maxW && line) { rows.push(line); line = w; } else line = tt; }
-    rows.push(line); return rows;
-  };
+  const hs = Math.round(W * 0.05 * k);
   const heading = (card.heading || KINDS[card.kind].heading).toUpperCase();
-  const headRows = wrapRows(heading, hs, 0.08, W - pad * 2, 800);
-  const showRows = wrapRows(G.show.toUpperCase(), ss, 0.08, W - pad * 2, 800);
-  const lines = [G.sub, G.date, G.place].filter(Boolean);
+  ctx.font = `800 ${hs}px ${FONT}`;
+  const headRows = []; let line = '';
+  for (const w of heading.split(/\s+/)) { const tt = line ? line + ' ' + w : w; if (tracked(ctx, tt, hs * 0.08) > W - pad * 2 && line) { headRows.push(line); line = w; } else line = tt; }
+  headRows.push(line);
 
-  /* The block, measured before anything is drawn: heading, card, show.
-     The card starts as wide as the frame allows and is narrowed until
-     the whole block fits above the line along the bottom, so the square
-     holds everything the story does, smaller. Then it is centred. */
-  const headH = small * 2.1 + headRows.length * hs * 1.18;
-  const detailH = showRows.length * ss * 1.25 + small * 0.4 + lines.length * small * 1.7;
-  const avail = H - pad * 2 - small * 2.2;
+  // the block: the heading and the paper, nothing else, centred. The
+  // date, the venue and the ticket line belong in the caption.
+  const headH = headRows.length * hs * 1.18;
+  const avail = H - pad * 2;
   let cw = W - pad * 2;
-  const blockH = (w) => headH + W * 0.05 + w / 1.586 + W * 0.07 + detailH;
+  const blockH = (w) => headH + W * 0.06 + w / 1.5;
   while (blockH(cw) > avail && cw > W * 0.6) cw *= 0.96;
-  const ch = cw / 1.586;
+  const ch = cw / 1.5;
   const y0 = pad + Math.max(0, (avail - blockH(cw)) / 2);
   const cx = (W - cw) / 2;
 
-  // the heading above the card
-  ctx.save();
-  ctx.textBaseline = 'top'; ctx.fillStyle = P.cream; ctx.globalAlpha = 0.72;
-  ctx.font = `600 ${small}px ${FONT}`; fillTracked(ctx, G.issuer.toUpperCase(), cx, y0, small * 0.14);
-  ctx.globalAlpha = 1; ctx.fillStyle = P.orange; ctx.font = `800 ${hs}px ${FONT}`;
-  let hy = y0 + small * 2.1;
-  for (const rw of headRows) { fillTracked(ctx, rw, cx, hy, hs * 0.08); hy += hs * 1.18; }
+  ctx.save(); ctx.textBaseline = 'top'; ctx.fillStyle = P.orange; ctx.font = `800 ${hs}px ${FONT}`;
+  let hy = y0; for (const rw of headRows) { fillTracked(ctx, rw, cx, hy, hs * 0.08); hy += hs * 1.18; }
   ctx.restore();
 
-  /* The card: a passport's data page rather than a ticket. A dark page
-     with the fine orange lines under everything, a double rule round the
-     edge with the corners rounded, the hut as the watermark, the
-     photograph in a cream frame, cream type with the labels in orange,
-     and the machine-readable lines on a strip along the bottom. */
-  const cy = y0 + headH + W * 0.05;
-  const rad = cw * 0.028;
-  const page = (x, y, w, h, rr) => { ctx.beginPath(); ctx.moveTo(x + rr, y); ctx.arcTo(x + w, y, x + w, y + h, rr); ctx.arcTo(x + w, y + h, x, y + h, rr); ctx.arcTo(x, y + h, x, y, rr); ctx.arcTo(x, y, x + w, y, rr); ctx.closePath(); };
+  /* The paper: a piece torn from a larger sheet, set down a little
+     askew, with a soft shadow under it and nothing glowing. */
+  const cy = y0 + headH + W * 0.06;
+  const seed = card.seed || 7;
   ctx.save();
-  ctx.shadowColor = 'rgba(244,62,0,0.22)'; ctx.shadowBlur = W * 0.06; ctx.shadowOffsetY = W * 0.01;
-  page(cx, cy, cw, ch, rad); ctx.fillStyle = '#13100c'; ctx.fill();
-  ctx.restore();
+  ctx.translate(cx + cw / 2, cy + ch / 2); ctx.rotate(-0.022); ctx.translate(-(cx + cw / 2), -(cy + ch / 2));
+  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = W * 0.03; ctx.shadowOffsetY = W * 0.008;
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.fillStyle = '#e6dbb9'; ctx.fill(); ctx.restore();
   ctx.save();
-  page(cx, cy, cw, ch, rad); ctx.clip();
-  ctx.globalAlpha = 1; ctx.drawImage(guilloche(Math.round(cw), Math.round(ch)), cx, cy); ctx.globalAlpha = 1;
-  if (ART.hutline) { const hw = cw * 0.46, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, cx + cw * 0.5, cy + ch * 0.52 - hh / 2, hw, hh, P.orange, 0.13); }
-  // the header line: who issues it, and what it is
-  const ls = Math.round(ch * 0.034), vs = Math.round(ch * 0.072);
-  ctx.textBaseline = 'top';
-  ctx.fillStyle = P.orange; ctx.font = `600 ${ls}px ${FONT}`;
-  fillTracked(ctx, (G.issuer || 'Ancestral Futures').toUpperCase(), cx + cw * 0.05, cy + ch * 0.07, ls * 0.22);
-  if (ART.word) { const ww = cw * 0.15, wh = ww * (ART.word.height / ART.word.width); drawArt(ctx, ART.word, cx + cw * 0.95 - ww, cy + ch * 0.06, ww, wh, P.cream, 1); }
-  ctx.fillStyle = P.cream; ctx.globalAlpha = 0.65; ctx.font = `600 ${ls}px ${FONT}`;
-  const docText = (card.doc || 'Identity card').toUpperCase() + ' · TYPE P · DARE';
-  fillTracked(ctx, docText, cx + cw * 0.95 - tracked(ctx, docText, ls * 0.16), cy + ch * 0.07 + ls * 1.5 + ch * 0.035, ls * 0.16);
-  ctx.globalAlpha = 1;
-  ctx.strokeStyle = P.orange; ctx.globalAlpha = 0.45; ctx.lineWidth = Math.max(1, W * 0.0012);
-  ctx.beginPath(); ctx.moveTo(cx + cw * 0.05, cy + ch * 0.175); ctx.lineTo(cx + cw * 0.95, cy + ch * 0.175); ctx.stroke();
-  ctx.globalAlpha = 1;
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.clip();
+  ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed), cx, cy);
+  if (ART.hutline) { const hw = cw * 0.5, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, cx + cw * 0.47, cy + ch * 0.5 - hh / 2, hw, hh, '#5a3a1a', 0.1); }
+  // the torn edge's fibres, light along the inside of the tear
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = 'rgba(255,250,232,0.9)'; ctx.lineWidth = Math.max(2, W * 0.006); ctx.stroke();
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = 'rgba(120,85,45,0.35)'; ctx.lineWidth = Math.max(1, W * 0.002); ctx.stroke();
 
-  // the photograph, in a cream frame
-  const px = cx + cw * 0.05, py = cy + ch * 0.22, pw = cw * 0.28, ph = ch * 0.58;
-  ctx.fillStyle = P.cream; ctx.fillRect(px - cw * 0.006, py - cw * 0.006, pw + cw * 0.012, ph + cw * 0.012);
+  const INKP = '#2b1d10';
+  const ls = Math.round(ch * 0.04), vs = Math.round(ch * 0.085);
+  // a faint header, typed
+  ctx.textBaseline = 'top'; ctx.fillStyle = INKP; ctx.globalAlpha = 0.55; ctx.font = `700 ${ls}px ${MONO}`;
+  fillTracked(ctx, ((card.doc || 'Identity card') + '  ·  No. ' + (card.number || '')).toUpperCase(), cx + cw * 0.06, cy + ch * 0.07, ls * 0.12);
+  ctx.globalAlpha = 1;
+  if (ART.word) { const ww = cw * 0.14, wh = ww * (ART.word.height / ART.word.width); drawArt(ctx, ART.word, cx + cw * 0.94 - ww, cy + ch * 0.065, ww, wh, INKP, 0.85); }
+
+  // the photograph, an old print pasted on with a corner of tape
+  const px = cx + cw * 0.065, py = cy + ch * 0.2, pw = cw * 0.29, ph = ch * 0.62;
+  ctx.save();
+  ctx.translate(px + pw / 2, py + ph / 2); ctx.rotate(0.03); ctx.translate(-(px + pw / 2), -(py + ph / 2));
+  ctx.shadowColor = 'rgba(0,0,0,0.35)'; ctx.shadowBlur = W * 0.012; ctx.shadowOffsetY = W * 0.004;
+  ctx.fillStyle = '#f3ecd6'; ctx.fillRect(px - cw * 0.012, py - cw * 0.012, pw + cw * 0.024, ph + cw * 0.03);
+  ctx.shadowColor = 'transparent';
   drawPicture(ctx, source, px, py, pw, ph, card);
+  tape(ctx, px + pw * 0.05, py - cw * 0.006, cw * 0.11, cw * 0.028, -0.5);
+  tape(ctx, px + pw * 0.95, py + ph + cw * 0.005, cw * 0.1, cw * 0.026, -0.45);
+  ctx.restore();
 
-  // the fields
-  const fx = cx + cw * 0.385, fw = cw * 0.565;
-  let fy = cy + ch * 0.22;
+  // the words, typed: as few as will say it
+  const fx = cx + cw * 0.42, fw = cw * 0.52;
+  let fy = cy + ch * 0.24;
   const field = (label, value, big) => {
     ctx.textBaseline = 'top';
-    ctx.fillStyle = P.orange; ctx.font = `600 ${ls}px ${FONT}`;
-    fillTracked(ctx, label.toUpperCase(), fx, fy, ls * 0.2);
-    fy += ls * 1.45;
-    const size = big ? vs : Math.round(vs * 0.74);
-    const sz = fitTracked(ctx, value.toUpperCase(), fw, size, 0.04, 800);
-    ctx.fillStyle = P.cream; fillTracked(ctx, value.toUpperCase(), fx, fy, sz * 0.04);
-    fy += sz * 1.22 + ch * 0.026;
+    ctx.fillStyle = INKP; ctx.globalAlpha = 0.55; ctx.font = `700 ${ls}px ${MONO}`;
+    fillTracked(ctx, label.toUpperCase(), fx, fy, ls * 0.12);
+    ctx.globalAlpha = 1; fy += ls * 1.5;
+    const size = big ? vs : Math.round(vs * 0.7);
+    const sz = fitTracked(ctx, value.toUpperCase(), fw, size, 0.02, 700, MONO);
+    ctx.font = `700 ${Math.round(sz)}px ${MONO}`;
+    fillTracked(ctx, value.toUpperCase(), fx, fy, sz * 0.02);
+    fy += sz * 1.25 + ch * 0.04;
   };
   field('Name', card.name || ' ', true);
   field(card.roleLabel || KINDS[card.kind].roleLabel, card.role || ' ', true);
-  if (card.note) field('Notes', card.note, false);
-  // the small facts along the bottom of the fields
-  const facts = [['No.', card.number || ''], ['Issued', '07 NOV 2026'], ['Place', 'Tottenham']];
-  let fxx = fx; const fyy = cy + ch * 0.72;
-  ctx.textBaseline = 'top';
-  for (const [l, v] of facts) {
-    ctx.fillStyle = P.orange; ctx.font = `600 ${ls}px ${FONT}`; fillTracked(ctx, l.toUpperCase(), fxx, fyy, ls * 0.2);
-    ctx.fillStyle = P.cream; leftFit(ctx, v.toUpperCase(), fxx, fyy + ls * 1.4, fw / 3 - ls * 0.9, Math.round(ls * 1.25), 0.06, 800);
-    fxx += fw / 3;
-  }
-  // the machine-readable zone, on its own strip
-  const my = cy + ch * 0.87;
-  ctx.fillStyle = '#1e1813'; ctx.fillRect(cx, my - ch * 0.025, cw, ch * 0.16);
-  ctx.fillStyle = P.cream; ctx.globalAlpha = 0.9; ctx.font = `700 ${Math.round(ch * 0.05)}px ${MONO}`; ctx.textBaseline = 'top';
-  const parts = (card.name || '').trim().split(/\s+/); const last = parts.length > 1 ? parts.pop() : ''; const given = parts.join('<');
-  const l1 = mrz(`P<DARE${last}<<${given}`, 36);
-  const l2 = mrz(`${(card.number || 'DARE000').replace(/\s+/g, '')}<${card.kind || 'cast'}<7NOV2026<BGAC<TOTTENHAM`, 36);
-  ctx.fillText(l1, cx + cw * 0.05, my);
-  ctx.fillText(l2, cx + cw * 0.05, my + ch * 0.06);
+  if (card.note) field('', card.note, false);
+  // a rule to sign on, and the date typed under it
+  ctx.strokeStyle = INKP; ctx.globalAlpha = 0.5; ctx.lineWidth = Math.max(1, W * 0.0012);
+  ctx.beginPath(); ctx.moveTo(fx, cy + ch * 0.84); ctx.lineTo(fx + fw, cy + ch * 0.84); ctx.stroke();
+  ctx.globalAlpha = 0.55; ctx.font = `700 ${ls}px ${MONO}`; ctx.textBaseline = 'top';
+  fillTracked(ctx, '07 · XI · 2026   TOTTENHAM', fx, cy + ch * 0.86, ls * 0.12);
   ctx.globalAlpha = 1;
   ctx.restore();
-  // the double rule round the edge
-  ctx.save();
-  ctx.strokeStyle = P.orange; ctx.globalAlpha = 0.9; ctx.lineWidth = Math.max(1.5, W * 0.0028);
-  page(cx, cy, cw, ch, rad); ctx.stroke();
-  ctx.globalAlpha = 0.45; ctx.lineWidth = Math.max(1, W * 0.0012);
-  page(cx + W * 0.009, cy + W * 0.009, cw - W * 0.018, ch - W * 0.018, rad * 0.75); ctx.stroke();
+
+  // the stamp, red ink, pressed over the corner of the print
+  stamp(ctx, px + pw * 0.86, py + ph * 0.9, cw * 0.075, ` · ${(G.issuer || 'Ancestral Futures')} · BERNIE GRANT ARTS CENTRE`, -0.3);
   ctx.restore();
 
-  // the stamp, over the lower corner of the photograph
-  stamp(ctx, px + pw * 0.8, py + ph * 0.82, cw * 0.07, ' · ANCESTRAL FUTURES · BERNIE GRANT ARTS CENTRE', -0.28);
-
-  // the show, under the card
-  let y = cy + ch + W * 0.07;
-  ctx.save(); ctx.textBaseline = 'top'; ctx.fillStyle = P.cream;
-  ctx.font = `800 ${ss}px ${FONT}`;
-  for (const rw of showRows) { fillTracked(ctx, rw, cx, y, ss * 0.08); y += ss * 1.25; }
-  y += small * 0.4;
-  ctx.globalAlpha = 0.8; ctx.font = `600 ${small}px ${FONT}`;
-  for (const l of lines) { leftFit(ctx, l.toUpperCase(), cx, y, W - pad * 2, small, 0.12); y += small * 1.7; }
-  ctx.restore();
-  // the ask, along the bottom
-  ctx.save(); ctx.textBaseline = 'alphabetic'; ctx.fillStyle = P.orange;
-  centreFit(ctx, G.cta.toUpperCase(), W / 2, H - pad, W - pad * 2, small, 0.14);
-  ctx.restore();
 }
 
 // ===========================================================
@@ -572,7 +580,7 @@ const uid = () => 'c' + Date.now().toString(36) + Math.random().toString(36).sli
 function newCard(kind) {
   const n = cards.length + 1;
   return { id: uid(), kind: kind || 'cast', heading: '', name: '', roleLabel: '', role: '', note: '', number: `DARE ${String(n).padStart(3, '0')}`, doc: 'Identity card',
-           treat: 'orange', fx: 0.5, fy: 0.35, zoom: 1, seed: Math.floor(Math.random() * 1e6), media: null, mediaType: '', mediaName: '' };
+           treat: 'sepia', fx: 0.5, fy: 0.35, zoom: 1, seed: Math.floor(Math.random() * 1e6), media: null, mediaType: '', mediaName: '' };
 }
 
 // The media each card holds, as something the canvas can draw. Pictures
