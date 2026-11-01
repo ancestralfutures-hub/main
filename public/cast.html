@@ -161,6 +161,8 @@
             <label class="f">Document<input type="text" data-f="doc" placeholder="Identity card"></label>
           </div>
           <label class="f">On the stamp<input type="text" data-g="issuer"></label>
+          <div><label class="f">Paper</label><div class="chips" id="papers"></div></div>
+          <div><label class="f">Ground</label><div class="chips" id="grounds"></div></div>
         </div>
       </details>
     </div>
@@ -196,7 +198,7 @@ const KINDS = {
 };
 const TREATS = { sepia:'Sepia', mono:'Black and white', orange:'Orange', natural:'Natural' };
 
-const GLOBAL_DEFAULT = { issuer:'Ancestral Futures' };
+const GLOBAL_DEFAULT = { issuer:'Ancestral Futures', ground:'night', paper:'orange' };
 
 // ---------- storage ----------
 const DB = { name:'dare-cast', store:'cards' };
@@ -261,6 +263,15 @@ const grain = document.createElement('canvas');
   grain.width = 256; grain.height = 256;
   const g = grain.getContext('2d'); const id = g.createImageData(256, 256);
   for (let i = 0; i < id.data.length; i += 4) { const v = 180 + Math.random() * 75; id.data[i] = v; id.data[i + 1] = v * 0.45; id.data[i + 2] = 0; id.data[i + 3] = Math.random() < 0.6 ? 0 : 34; }
+  g.putImageData(id, 0, 0);
+})();
+
+// The same grain in ink, for the orange ground.
+const darkGrain = document.createElement('canvas');
+(function () {
+  darkGrain.width = 256; darkGrain.height = 256;
+  const g = darkGrain.getContext('2d'); const id = g.createImageData(256, 256);
+  for (let i = 0; i < id.data.length; i += 4) { const v = 10 + Math.random() * 40; id.data[i] = v; id.data[i + 1] = v * 0.6; id.data[i + 2] = 0; id.data[i + 3] = Math.random() < 0.55 ? 0 : 40; }
   g.putImageData(id, 0, 0);
 })();
 
@@ -342,10 +353,10 @@ function drawPicture(ctx, source, x, y, w, h, card) {
 }
 
 // The round stamp, text run round a circle, set down slightly askew.
-function stamp(ctx, cx, cy, r, text, angle) {
+function stamp(ctx, cx, cy, r, text, angle, ink) {
   ctx.save();
   ctx.translate(cx, cy); ctx.rotate(angle || -0.22);
-  ctx.strokeStyle = '#c8321a'; ctx.fillStyle = '#c8321a'; ctx.globalAlpha = 0.78;
+  ctx.strokeStyle = ink || '#c8321a'; ctx.fillStyle = ink || '#c8321a'; ctx.globalAlpha = 0.8;
   ctx.lineWidth = r * 0.07; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
   ctx.lineWidth = r * 0.03; ctx.beginPath(); ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2); ctx.stroke();
   ctx.font = `800 ${Math.round(r * 0.19)}px ${FONT}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -384,12 +395,15 @@ function cloud(w, h, cell, r) {
   for (let i = 0; i < id.data.length; i += 4) { const v = 110 + r() * 140; id.data[i] = id.data[i + 1] = id.data[i + 2] = v; id.data[i + 3] = 255; }
   g.putImageData(id, 0, 0); return c;
 }
-function paper(w, h, seed) {
-  const key = `${w}x${h}:${seed}`;
+function paper(w, h, seed, tone) {
+  const key = `${w}x${h}:${seed}:${tone}`;
+  const T = tone === 'orange'
+    ? { base:'#ef4810', dark:'rgba(70,15,0,', light:'rgba(255,215,180,', fox:'rgba(70,15,0,', edge:'rgba(60,10,0,', foldHi:'rgba(255,200,170,0.4)' }
+    : { base:'#e3d7b4', dark:'rgba(100,70,35,', light:'rgba(255,250,235,', fox:'rgba(135,90,35,', edge:'rgba(80,50,15,', foldHi:'rgba(255,250,232,0.45)' };
   if (paperCache[key]) return paperCache[key];
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const g = c.getContext('2d'); const r = rnd(seed);
-  g.fillStyle = '#e3d7b4'; g.fillRect(0, 0, w, h);
+  g.fillStyle = T.base; g.fillRect(0, 0, w, h);
   g.imageSmoothingEnabled = true; g.imageSmoothingQuality = 'high';
   // the clouds, coarse to fine, each laid on as light and shade
   for (const [cell, alpha] of [[w / 5, 0.5], [w / 12, 0.35], [w / 30, 0.25], [w / 80, 0.18]]) {
@@ -403,7 +417,7 @@ function paper(w, h, seed) {
   // the fibres, a few long and many short, both ways
   for (let i = 0; i < (w * h) / 500; i++) {
     const x = r() * w, y = r() * h, a = r() * Math.PI, l = 3 + r() * (r() < 0.1 ? 60 : 16);
-    g.strokeStyle = r() < 0.5 ? 'rgba(100,70,35,0.12)' : 'rgba(255,250,235,0.35)'; g.lineWidth = r() < 0.2 ? 1.5 : 1;
+    g.strokeStyle = r() < 0.5 ? T.dark + '0.14)' : T.light + '0.32)'; g.lineWidth = r() < 0.2 ? 1.5 : 1;
     g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
   }
   // foxing: soft brown spots, a few with a darker ring
@@ -411,25 +425,25 @@ function paper(w, h, seed) {
     const x = r() * w, y = r() * h, rad = w * (0.012 + r() * 0.08);
     const gr = g.createRadialGradient(x, y, 0, x, y, rad);
     const a = 0.05 + r() * 0.14;
-    gr.addColorStop(0, `rgba(135,90,35,${a})`); gr.addColorStop(0.7, `rgba(135,90,35,${a * 0.5})`); gr.addColorStop(1, 'rgba(135,90,35,0)');
+    gr.addColorStop(0, T.fox + `${a})`); gr.addColorStop(0.7, T.fox + `${a * 0.5})`); gr.addColorStop(1, T.fox + '0)');
     g.fillStyle = gr; g.fillRect(x - rad, y - rad, rad * 2, rad * 2);
-    if (r() < 0.3) { g.strokeStyle = `rgba(120,75,25,${a * 0.9})`; g.lineWidth = 1; g.beginPath(); g.arc(x, y, rad * 0.9, 0, Math.PI * 2); g.stroke(); }
+    if (r() < 0.3) { g.strokeStyle = T.fox + `${a * 0.9})`; g.lineWidth = 1; g.beginPath(); g.arc(x, y, rad * 0.9, 0, Math.PI * 2); g.stroke(); }
   }
   // a tide line, where damp once reached
   if (r() < 0.8) {
     const ty = h * (0.15 + r() * 0.7); const amp = h * 0.03;
-    g.strokeStyle = 'rgba(125,85,35,0.22)'; g.lineWidth = Math.max(1, w * 0.002);
+    g.strokeStyle = T.fox + '0.22)'; g.lineWidth = Math.max(1, w * 0.002);
     g.beginPath(); for (let x = 0; x <= w; x += 4) { const y = ty + Math.sin(x / w * 9 + seed) * amp + Math.sin(x / w * 31) * amp * 0.3; x ? g.lineTo(x, y) : g.moveTo(x, y); } g.stroke();
   }
   // darker towards the edges, and the corners more so
   const v = g.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.2, w / 2, h / 2, Math.max(w, h) * 0.7);
-  v.addColorStop(0, 'rgba(80,50,15,0)'); v.addColorStop(1, 'rgba(80,50,15,0.34)');
+  v.addColorStop(0, T.edge + '0)'); v.addColorStop(1, T.edge + '0.34)');
   g.fillStyle = v; g.fillRect(0, 0, w, h);
   // the fold: a shadow and a highlight side by side
   const fx = w * (0.42 + r() * 0.16), fdx = (r() - 0.5) * w * 0.03;
   g.lineWidth = Math.max(1, w * 0.002);
-  g.strokeStyle = 'rgba(80,50,15,0.2)'; g.beginPath(); g.moveTo(fx, 0); g.lineTo(fx + fdx, h); g.stroke();
-  g.strokeStyle = 'rgba(255,250,232,0.45)'; g.beginPath(); g.moveTo(fx + 2, 0); g.lineTo(fx + fdx + 2, h); g.stroke();
+  g.strokeStyle = T.edge + '0.22)'; g.beginPath(); g.moveTo(fx, 0); g.lineTo(fx + fdx, h); g.stroke();
+  g.strokeStyle = T.foldHi; g.beginPath(); g.moveTo(fx + 2, 0); g.lineTo(fx + fdx + 2, h); g.stroke();
   paperCache[key] = c;
   return c;
 }
@@ -484,13 +498,17 @@ function tape(ctx, x, y, w, h, angle) {
 // THE CARD
 // ===========================================================
 function draw(ctx, W, H, card, G, source, t) {
-  // the night, quiet
-  ctx.fillStyle = P.ground; ctx.fillRect(0, 0, W, H);
+  // the ground: the poster's orange with its grain, or the night
+  const night = G.ground === 'night';
+  ctx.fillStyle = night ? P.ground : P.orange; ctx.fillRect(0, 0, W, H);
   const r = rnd(card.seed || 7);
-  for (let i = 0; i < (W * H) / 26000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.15 + s * 0.4; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; ctx.fillRect(x, y, s > 0.96 ? 2 : 1.2, s > 0.96 ? 2 : 1.2); }
+  if (night) { for (let i = 0; i < (W * H) / 26000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.15 + s * 0.4; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; ctx.fillRect(x, y, s > 0.96 ? 2 : 1.2, s > 0.96 ? 2 : 1.2); } }
   ctx.globalAlpha = 1;
-  ctx.save(); ctx.globalAlpha = 0.22; const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
-  ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(grain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+  ctx.save(); ctx.globalAlpha = night ? 0.22 : 0.5; const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
+  ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(night ? grain : darkGrain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+  const headInk = night ? P.orange : P.ink;
+  const orangePaper = (G.paper || 'orange') === 'orange';
+  const tone = orangePaper ? 'orange' : 'cream';
 
   const pad = W * 0.085;
   const k = Math.max(0.8, Math.min(1, (H / W) / 1.35));
@@ -512,7 +530,7 @@ function draw(ctx, W, H, card, G, source, t) {
   const y0 = pad + Math.max(0, (avail - blockH(cw)) / 2);
   const cx = (W - cw) / 2;
 
-  ctx.save(); ctx.textBaseline = 'top'; ctx.fillStyle = P.orange; ctx.font = `800 ${hs}px ${FONT}`;
+  ctx.save(); ctx.textBaseline = 'top'; ctx.fillStyle = headInk; ctx.font = `800 ${hs}px ${FONT}`;
   let hy = y0; for (const rw of headRows) { fillTracked(ctx, rw, cx, hy, hs * 0.08); hy += hs * 1.18; }
   ctx.restore();
 
@@ -523,25 +541,25 @@ function draw(ctx, W, H, card, G, source, t) {
   ctx.save();
   ctx.translate(cx + cw / 2, cy + ch / 2); ctx.rotate(-0.022); ctx.translate(-(cx + cw / 2), -(cy + ch / 2));
   // the white core of the sheet, showing where it came apart
-  ctx.save(); ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = W * 0.028; ctx.shadowOffsetY = W * 0.007;
-  fibrePath(ctx, cx, cy, cw, ch, seed); ctx.fillStyle = '#efe6cc'; ctx.fill(); ctx.restore();
+  ctx.save(); ctx.shadowColor = night ? 'rgba(0,0,0,0.55)' : 'rgba(40,10,0,0.5)'; ctx.shadowBlur = W * 0.028; ctx.shadowOffsetY = W * 0.008;
+  fibrePath(ctx, cx, cy, cw, ch, seed); ctx.fillStyle = orangePaper ? '#f7c9ad' : '#efe6cc'; ctx.fill(); ctx.restore();
   ctx.save(); fibrePath(ctx, cx, cy, cw, ch, seed); ctx.clip();
-  ctx.globalAlpha = 0.5; ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed), cx, cy); ctx.globalAlpha = 1;
-  ctx.fillStyle = 'rgba(255,252,240,0.55)'; ctx.fillRect(cx - W * 0.05, cy - W * 0.05, cw + W * 0.1, ch + W * 0.1);
+  ctx.globalAlpha = 0.5; ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed, tone), cx, cy); ctx.globalAlpha = 1;
+  ctx.fillStyle = orangePaper ? 'rgba(255,225,205,0.6)' : 'rgba(255,252,240,0.55)'; ctx.fillRect(cx - W * 0.05, cy - W * 0.05, cw + W * 0.1, ch + W * 0.1);
   // loose fibres, drawn outward from the printed edge
   const tp = tearPoints(cx, cy, cw, ch, seed); const fr = rnd(seed + 5);
-  ctx.strokeStyle = 'rgba(190,165,120,0.3)'; ctx.lineWidth = 1;
+  ctx.strokeStyle = orangePaper ? 'rgba(255,200,170,0.4)' : 'rgba(190,165,120,0.3)'; ctx.lineWidth = 1;
   for (let i = 0; i < tp.inner.length; i += 3) { const [ix, iy] = tp.inner[i]; const [ox, oy] = tp.outer[i]; if (fr() < 0.5) { ctx.beginPath(); ctx.moveTo(ix, iy); ctx.lineTo(ox + (fr() - 0.5) * 4, oy + (fr() - 0.5) * 4); ctx.stroke(); } }
   ctx.restore();
   // the printed surface
   ctx.save();
   tornPath(ctx, cx, cy, cw, ch, seed); ctx.clip();
-  ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed), cx, cy);
-  if (ART.hutline) { const hw = cw * 0.5, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, cx + cw * 0.47, cy + ch * 0.5 - hh / 2, hw, hh, '#5a3a1a', 0.1); }
+  ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed, tone), cx, cy);
+  if (ART.hutline) { const hw = cw * 0.5, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, cx + cw * 0.47, cy + ch * 0.5 - hh / 2, hw, hh, orangePaper ? '#3a0c00' : '#5a3a1a', orangePaper ? 0.14 : 0.1); }
   // a little shade just inside the tear, where the surface lifts
-  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = 'rgba(90,60,25,0.16)'; ctx.lineWidth = Math.max(1.5, W * 0.003); ctx.stroke();
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = orangePaper ? 'rgba(60,10,0,0.2)' : 'rgba(90,60,25,0.16)'; ctx.lineWidth = Math.max(1.5, W * 0.003); ctx.stroke();
 
-  const INKP = '#2b1d10';
+  const INKP = orangePaper ? '#17100a' : '#2b1d10';
   const ls = Math.round(ch * 0.04), vs = Math.round(ch * 0.085);
   // a faint header, typed
   ctx.textBaseline = 'top'; ctx.fillStyle = INKP; ctx.globalAlpha = 0.55; ctx.font = `700 ${ls}px ${MONO}`;
@@ -587,7 +605,7 @@ function draw(ctx, W, H, card, G, source, t) {
   ctx.restore();
 
   // the stamp, red ink, pressed over the corner of the print
-  stamp(ctx, px + pw * 0.86, py + ph * 0.9, cw * 0.075, ` · ${(G.issuer || 'Ancestral Futures')} · BERNIE GRANT ARTS CENTRE`, -0.3);
+  stamp(ctx, px + pw * 0.86, py + ph * 0.9, cw * 0.075, ` · ${(G.issuer || 'Ancestral Futures')} · BERNIE GRANT ARTS CENTRE`, -0.3, orangePaper ? '#17100a' : '#c8321a');
   ctx.restore();
 
 }
@@ -788,6 +806,18 @@ function build() {
     i.oninput = () => { if (!current) return; current[f] = i.type === 'range' ? Number(i.value) : i.value; changed(); };
   }
   c.querySelectorAll('[data-g]').forEach((i) => { i.value = G[i.dataset.g] || ''; i.oninput = () => { G[i.dataset.g] = i.value; dbSetting('global', G); cards.forEach(redrawThumb); }; });
+  const grounds = document.getElementById('grounds');
+  const paintGrounds = () => {
+    grounds.innerHTML = [['orange', 'Orange'], ['night', 'Night']].map(([k, l]) => `<button data-ground="${k}"${(G.ground || 'orange') === k ? ' class="on"' : ''}>${l}</button>`).join('');
+    grounds.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.ground = b.dataset.ground; dbSetting('global', G); cards.forEach(redrawThumb); paintGrounds(); }; });
+  };
+  paintGrounds();
+  const papers = document.getElementById('papers');
+  const paintPapers = () => {
+    papers.innerHTML = [['orange', 'Orange'], ['cream', 'Cream']].map(([k, l]) => `<button data-paper="${k}"${(G.paper || 'orange') === k ? ' class="on"' : ''}>${l}</button>`).join('');
+    papers.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.paper = b.dataset.paper; dbSetting('global', G); cards.forEach(redrawThumb); paintPapers(); }; });
+  };
+  paintPapers();
   const fmts = document.getElementById('fmts');
   fmts.innerHTML = Object.keys(FORMATS).map((k) => `<button data-fmt="${k}"${k === fmt ? ' class="on"' : ''}>${FORMATS[k].label}</button>`).join('');
   fmts.querySelectorAll('button').forEach((b) => { b.onclick = () => { fmt = b.dataset.fmt; fmts.querySelectorAll('button').forEach((o) => o.classList.toggle('on', o === b)); }; });
