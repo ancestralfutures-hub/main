@@ -43,7 +43,7 @@
   button:disabled { opacity:.4; cursor:default; }
   .filebtn input { display:none; }
 
-  .wrap { max-width:1400px; margin:0 auto; padding:30px 24px 120px; }
+  .wrap { max-width:1400px; margin:0 auto; padding:26px 24px 120px; }
   .intro { max-width:64ch; margin-bottom:28px; }
   .intro h2 { font-size:28px; font-weight:800; letter-spacing:-.01em; margin-bottom:12px; }
   .intro p { color:#bdbb9d; margin-bottom:10px; font-size:15px; }
@@ -67,7 +67,7 @@
   .stage .note { font-size:12px; color:var(--muted); margin-top:8px; letter-spacing:.04em; min-height:18px; }
   .stage .acts { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
 
-  .controls { display:grid; gap:16px; }
+  .controls { display:grid; gap:14px; }
   label.f { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
   label.f input[type=text], label.f textarea {
     display:block; width:100%; margin-top:5px; font:inherit; font-size:14px;
@@ -103,7 +103,7 @@
 <header>
   <div>
     <h1>DARÉ · Cast and crew</h1>
-    <div class="meta">Identity cards for the people of the show</div>
+    <div class="meta">One card per person. Kept in this browser. Date, venue and tickets go in the caption.</div>
   </div>
   <div class="bar">
     <button id="new" class="primary">New card</button>
@@ -113,20 +113,6 @@
 </header>
 
 <div class="wrap">
-  <div class="intro">
-    <h2>One card per person. A picture or a clip in the window, their name and their part beneath it.</h2>
-    <p>
-      An identity document for DARÉ: the paper, the photograph, the stamp, the machine-readable
-      line along the bottom. Make a card for everyone in the cast, the band and the crew, and
-      post them one at a time as the announcements. Every word on it can be changed here.
-    </p>
-    <p>
-      Cards are kept in this browser, so you can come back and change them. Nothing is uploaded
-      anywhere. Save a still as PNG, or record the card as a short clip, with the person's own
-      footage playing in the window if that is what you dropped in.
-    </p>
-  </div>
-
   <div class="studio">
     <div class="cards">
       <h3>Cards</h3>
@@ -146,50 +132,42 @@
     </div>
 
     <div class="controls" id="controls">
-      <h3>This card</h3>
-      <div>
-        <label class="f">Announcement</label>
-        <div class="chips" id="kinds"></div>
-      </div>
-      <label class="f">Heading on the frame<input type="text" data-f="heading" placeholder="Cast announcement"></label>
+      <div class="chips" id="kinds"></div>
       <label class="f">Name<input type="text" data-f="name" placeholder="Shumba Maasai"></label>
       <div class="two">
-        <label class="f">Part, the label<input type="text" data-f="roleLabel" placeholder="Starring as"></label>
-        <label class="f">Part, the words<input type="text" data-f="role" placeholder="The Storyteller"></label>
+        <label class="f">Part<input type="text" data-f="roleLabel" placeholder="Starring as"></label>
+        <label class="f">&nbsp;<input type="text" data-f="role" placeholder="The Storyteller"></label>
       </div>
-      <label class="f">A line about them<input type="text" data-f="note" placeholder="Zimbabwean born, London based"></label>
-      <div class="two">
-        <label class="f">Card number<input type="text" data-f="number" placeholder="DARE 001"></label>
-        <label class="f">Document<input type="text" data-f="doc" placeholder="Identity card"></label>
-      </div>
+      <label class="f">One line<input type="text" data-f="note" placeholder="Zimbabwean born, London based"></label>
 
       <div class="drop" id="drop">
-        <span id="dropText">Drop a picture or a clip here, or</span>
-        <label class="filebtn">Choose a file<input type="file" id="file" accept="image/*,video/*"></label>
+        <span id="dropText">Drop a picture or a clip, or</span>
+        <label class="filebtn">Choose<input type="file" id="file" accept="image/*,video/*"></label>
       </div>
-      <div>
-        <label class="f">The picture</label>
-        <div class="chips" id="treats"></div>
-      </div>
+      <div class="chips" id="treats"></div>
       <div class="two">
         <label class="f">Across<input type="range" data-f="fx" min="0" max="1" step="0.01"></label>
         <label class="f">Up and down<input type="range" data-f="fy" min="0" max="1" step="0.01"></label>
       </div>
       <label class="f">Zoom<input type="range" data-f="zoom" min="1" max="2.5" step="0.01"></label>
-      <div>
-        <label class="f">Size</label>
-        <div class="chips" id="fmts"></div>
-      </div>
+      <div class="chips" id="fmts"></div>
 
       <details>
-        <summary>On every card</summary>
+        <summary>Fine print</summary>
         <div class="inner">
+          <label class="f">Heading on the frame<input type="text" data-f="heading" placeholder="Cast announcement"></label>
+          <div class="two">
+            <label class="f">Card number<input type="text" data-f="number" placeholder="DARE 001"></label>
+            <label class="f">Document<input type="text" data-f="doc" placeholder="Identity card"></label>
+          </div>
           <label class="f">On the stamp<input type="text" data-g="issuer"></label>
         </div>
       </details>
     </div>
   </div>
 </div>
+
+<div id="status"></div>
 
 <video id="src" playsinline muted loop crossorigin="anonymous" style="display:none"></video>
 <div id="status"></div>
