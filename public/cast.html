@@ -438,7 +438,7 @@ function paper(w, h, seed) {
    step, which is how a tear wanders, with the odd sharper jag. Two
    outlines come from the same walk: the printed surface, and the white
    fibrous core that shows a little beyond it where the paper came
-   apart. The top and right are rougher than the bottom and left. */
+   apart. Three edges are cut clean; only the right one is torn. */
 const tearCache = {};
 function tearPoints(x, y, w, h, seed) {
   const key = `${Math.round(x)},${Math.round(y)},${Math.round(w)},${Math.round(h)}:${seed}`;
@@ -452,18 +452,19 @@ function tearPoints(x, y, w, h, seed) {
       const t = i / n;
       drift = drift * 0.97 + (r() - 0.5) * rough * 0.25;
       a = a * 0.82 + (r() - 0.5) * rough * 0.9;
-      if (r() < 0.02) a += (r() - 0.5) * rough * 2.2;
+      if (r() < 0.012) a += (r() - 0.5) * rough * 1.8;
       const ease = Math.min(1, t * 6, (1 - t) * 6);
       const off = (a + drift) * ease;
-      const fibre = off + (r() * 0.5 + 0.2) * rough * 0.9 * ease;
+      const fibre = off + (r() * 0.4 + 0.15) * rough * 0.7 * ease;
       inner.push([x0 + (x1 - x0) * t + ux * off, y0 + (y1 - y0) * t + uy * off]);
       outer.push([x0 + (x1 - x0) * t + ux * fibre, y0 + (y1 - y0) * t + uy * fibre]);
     }
   };
-  edge(x, y, x + w, y, w * 0.016);
-  edge(x + w, y, x + w, y + h, w * 0.02);
-  edge(x + w, y + h, x, y + h, w * 0.009);
-  edge(x, y + h, x, y, w * 0.013);
+  // Three edges cut clean; only the right one is torn.
+  edge(x, y, x + w, y, 0);
+  edge(x + w, y, x + w, y + h, w * 0.012);
+  edge(x + w, y + h, x, y + h, 0);
+  edge(x, y + h, x, y, 0);
   tearCache[key] = { inner, outer };
   return tearCache[key];
 }
@@ -529,8 +530,8 @@ function draw(ctx, W, H, card, G, source, t) {
   ctx.fillStyle = 'rgba(255,252,240,0.55)'; ctx.fillRect(cx - W * 0.05, cy - W * 0.05, cw + W * 0.1, ch + W * 0.1);
   // loose fibres, drawn outward from the printed edge
   const tp = tearPoints(cx, cy, cw, ch, seed); const fr = rnd(seed + 5);
-  ctx.strokeStyle = 'rgba(190,165,120,0.5)'; ctx.lineWidth = 1;
-  for (let i = 0; i < tp.inner.length; i += 2) { const [ix, iy] = tp.inner[i]; const [ox, oy] = tp.outer[i]; if (fr() < 0.5) { ctx.beginPath(); ctx.moveTo(ix, iy); ctx.lineTo(ox + (fr() - 0.5) * 4, oy + (fr() - 0.5) * 4); ctx.stroke(); } }
+  ctx.strokeStyle = 'rgba(190,165,120,0.3)'; ctx.lineWidth = 1;
+  for (let i = 0; i < tp.inner.length; i += 3) { const [ix, iy] = tp.inner[i]; const [ox, oy] = tp.outer[i]; if (fr() < 0.5) { ctx.beginPath(); ctx.moveTo(ix, iy); ctx.lineTo(ox + (fr() - 0.5) * 4, oy + (fr() - 0.5) * 4); ctx.stroke(); } }
   ctx.restore();
   // the printed surface
   ctx.save();
@@ -538,7 +539,7 @@ function draw(ctx, W, H, card, G, source, t) {
   ctx.drawImage(paper(Math.round(cw), Math.round(ch), seed), cx, cy);
   if (ART.hutline) { const hw = cw * 0.5, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, cx + cw * 0.47, cy + ch * 0.5 - hh / 2, hw, hh, '#5a3a1a', 0.1); }
   // a little shade just inside the tear, where the surface lifts
-  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = 'rgba(90,60,25,0.28)'; ctx.lineWidth = Math.max(2, W * 0.005); ctx.stroke();
+  tornPath(ctx, cx, cy, cw, ch, seed); ctx.strokeStyle = 'rgba(90,60,25,0.16)'; ctx.lineWidth = Math.max(1.5, W * 0.003); ctx.stroke();
 
   const INKP = '#2b1d10';
   const ls = Math.round(ch * 0.04), vs = Math.round(ch * 0.085);
