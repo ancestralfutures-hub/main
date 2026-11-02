@@ -163,6 +163,7 @@
           <label class="f">On the stamp<input type="text" data-g="issuer"></label>
           <div><label class="f">Paper</label><div class="chips" id="papers"></div></div>
           <div><label class="f">Ground</label><div class="chips" id="grounds"></div></div>
+          <div><label class="f">In the frame</label><div class="chips" id="scenes"></div></div>
         </div>
       </details>
     </div>
@@ -198,7 +199,7 @@ const KINDS = {
 };
 const TREATS = { sepia:'Sepia', mono:'Black and white', orange:'Orange', natural:'Natural' };
 
-const GLOBAL_DEFAULT = { issuer:'Ancestral Futures', ground:'night', paper:'orange' };
+const GLOBAL_DEFAULT = { issuer:'Ancestral Futures', ground:'night', paper:'orange', scene:'full' };
 
 // ---------- storage ----------
 const DB = { name:'dare-cast', store:'cards' };
@@ -266,6 +267,19 @@ const grain = document.createElement('canvas');
   g.putImageData(id, 0, 0);
 })();
 
+// The poster's dust: coarse orange specks, sparse, on a black that stays
+// black between them. Not a haze.
+const speck = document.createElement('canvas');
+(function () {
+  speck.width = 256; speck.height = 256;
+  const g = speck.getContext('2d');
+  for (let i = 0; i < 900; i++) {
+    const r = Math.random(); const d = r < 0.7 ? 1 : r < 0.93 ? 1.6 : 2.4;
+    g.globalAlpha = 0.25 + Math.random() * 0.65; g.fillStyle = Math.random() < 0.8 ? '#f43e00' : '#ff8a4a';
+    g.fillRect(Math.random() * 256, Math.random() * 256, d, d);
+  }
+})();
+
 // The same grain in ink, for the orange ground.
 const darkGrain = document.createElement('canvas');
 (function () {
@@ -287,6 +301,14 @@ function drawArt(ctx, img, x, y, w, h, colour, alpha) {
   s.globalCompositeOperation = 'source-in'; s.fillStyle = colour; s.fillRect(0, 0, stencil.width, stencil.height);
   s.globalCompositeOperation = 'source-over';
   ctx.save(); ctx.globalAlpha = alpha === undefined ? 1 : alpha; ctx.drawImage(stencil, x, y, w, h); ctx.restore();
+}
+
+// The two carved birds, bled off the left and right edges as the poster
+// has them. They sit under everything else.
+function figures(ctx, W, H, colour, alpha, share) {
+  const w = W * (share || 0.27);
+  if (ART.figL) { const h = w * (ART.figL.height / ART.figL.width); drawArt(ctx, ART.figL, -w * 0.22, H - h * 0.92, w, h, colour, alpha); }
+  if (ART.figR) { const h = w * (ART.figR.height / ART.figR.width); drawArt(ctx, ART.figR, W - w * 0.78, H - h * 0.92, w, h, colour, alpha); }
 }
 
 /* The fine wavy lines a passport page carries under its print, so a
@@ -500,13 +522,37 @@ function tape(ctx, x, y, w, h, angle) {
 // THE CARD
 // ===========================================================
 function draw(ctx, W, H, card, G, source, t) {
-  // the ground: the poster's orange with its grain, or the night
+  // the ground: the poster's night with everything the poster has in it,
+  // the hut lit from inside, the two carved birds bled off the edges, the
+  // stars and the dust of grain over all of it; or the poster's orange.
   const night = G.ground === 'night';
-  ctx.fillStyle = night ? P.ground : P.orange; ctx.fillRect(0, 0, W, H);
+  const scene = (G.scene || 'full') === 'full';
+  if (night) {
+    const g = ctx.createRadialGradient(W / 2, H * 0.34, 0, W / 2, H * 0.34, Math.max(W, H) * 0.78);
+    g.addColorStop(0, '#110f0c'); g.addColorStop(0.72, P.ground); g.addColorStop(1, P.ground);
+    ctx.fillStyle = g;
+  } else ctx.fillStyle = P.orange;
+  ctx.fillRect(0, 0, W, H);
   const r = rnd(card.seed || 7);
-  if (night) { for (let i = 0; i < (W * H) / 26000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.15 + s * 0.4; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; ctx.fillRect(x, y, s > 0.96 ? 2 : 1.2, s > 0.96 ? 2 : 1.2); } }
-  ctx.globalAlpha = 1;
-  ctx.save(); ctx.globalAlpha = night ? 0.22 : 0.5; const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
+  const sq = Math.max(0, Math.min(1, (1.78 - H / W) / 0.78)); // 0 for a story, 1 for a square
+  const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
+  if (night) {
+    // the dust first, so the stars stay sharp on top of it
+    ctx.save(); ctx.globalAlpha = scene ? 0.85 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+    for (let i = 0; i < (W * H) / 16000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.18 + s * 0.5; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; const d = s > 0.96 ? 2.4 : s > 0.8 ? 1.6 : 1.1; ctx.fillRect(x, y, d, d); }
+    // and a few of the poster's big soft stars
+    for (let i = 0; i < 7 + Math.round(H / W * 4); i++) { const x = r() * W, y = r() * H * 0.9, rad = W * 0.002 + r() * W * 0.0035; ctx.globalAlpha = 0.75 + r() * 0.25; ctx.fillStyle = '#f3efe4'; ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(x, y, rad * 2.2, 0, Math.PI * 2); ctx.fill(); }
+    ctx.globalAlpha = 1;
+    if (scene) {
+      // the squarer the frame, the lower the hut sits and the smaller the birds
+      if (ART.hut) { const hw = W * 0.98, hh = hw * (ART.hut.height / ART.hut.width); ctx.save(); ctx.globalCompositeOperation = 'lighten'; ctx.globalAlpha = 0.96; ctx.drawImage(ART.hut, (W - hw) / 2, H * (1.02 + 0.05 * sq) - hh, hw, hh); ctx.restore(); }
+      figures(ctx, W, H, P.orange, 0.8, 0.27 - 0.08 * sq);
+    }
+  } else if (scene) {
+    figures(ctx, W, H, P.ink, 0.7, 0.27 - 0.08 * sq);
+    if (ART.hutline) { const hw = W * 1.04, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, (W - hw) / 2, H - hh * 1.02, hw, hh, P.ink, 0.2); }
+  }
+  ctx.save(); ctx.globalAlpha = night ? 0.26 : 0.5;
   ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(night ? grain : darkGrain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
   const headInk = night ? P.orange : P.ink;
   const orangePaper = (G.paper || 'orange') === 'orange';
@@ -525,11 +571,13 @@ function draw(ctx, W, H, card, G, source, t) {
   // date, the venue and the ticket line belong in the caption.
   const headH = headRows.length * hs * 1.18;
   const avail = H - pad * 2;
-  let cw = W - pad * 2;
+  // with the hut and the birds in the frame the paper gives up a little
+  // width and sits higher, so they have the foot of the frame to stand in
+  let cw = scene ? W * 0.76 : W - pad * 2;
   const blockH = (w) => headH + W * 0.06 + w / 1.5;
   while (blockH(cw) > avail && cw > W * 0.6) cw *= 0.96;
   const ch = cw / 1.5;
-  const y0 = pad + Math.max(0, (avail - blockH(cw)) / 2);
+  const y0 = pad + Math.max(0, (avail - blockH(cw)) * (scene ? 0.3 : 0.5));
   const cx = (W - cw) / 2;
 
   ctx.save(); ctx.textBaseline = 'top'; ctx.fillStyle = headInk; ctx.font = `800 ${hs}px ${FONT}`;
@@ -820,6 +868,12 @@ function build() {
     papers.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.paper = b.dataset.paper; dbSetting('global', G); cards.forEach(redrawThumb); paintPapers(); }; });
   };
   paintPapers();
+  const scenes = document.getElementById('scenes');
+  const paintScenes = () => {
+    scenes.innerHTML = [['full', 'The hut and the birds'], ['plain', 'Just the card']].map(([k, l]) => `<button data-scene="${k}"${(G.scene || 'full') === k ? ' class="on"' : ''}>${l}</button>`).join('');
+    scenes.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.scene = b.dataset.scene; dbSetting('global', G); cards.forEach(redrawThumb); paintScenes(); }; });
+  };
+  paintScenes();
   const fmts = document.getElementById('fmts');
   fmts.innerHTML = Object.keys(FORMATS).map((k) => `<button data-fmt="${k}"${k === fmt ? ' class="on"' : ''}>${FORMATS[k].label}</button>`).join('');
   fmts.querySelectorAll('button').forEach((b) => { b.onclick = () => { fmt = b.dataset.fmt; fmts.querySelectorAll('button').forEach((o) => o.classList.toggle('on', o === b)); }; });
@@ -867,7 +921,7 @@ async function exportSample(f) {
 }
 
 (async function () {
-  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png')]);
+  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png'), load('hut', '/hut.webp'), load('figL', '/art/figure-left.png'), load('figR', '/art/figure-right.png')]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   const q = new URLSearchParams(location.search);
   if (q.has('export')) { await exportSample(q.get('fmt') || 'story'); return; }

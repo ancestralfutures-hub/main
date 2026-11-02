@@ -48,8 +48,11 @@ npm run dev
   identity card per person on a torn piece of aged paper, all of it
   drawn, with their picture or clip pasted on as an old print, their
   name, their part ("Starring as", "Playing", "Role") and a line about
-  them in typewriter capitals, and the stamp. Nothing else on the frame
-  but the heading; the date, venue and ticket line go in the caption.
+  them in typewriter capitals, and the stamp. Round it, the poster's
+  night: the hut lit from inside, the two carved birds bled off the
+  edges, the stars and the orange dust over everything. "Just the card"
+  under Fine print leaves the night bare. Nothing else on the frame but
+  the heading; the date, venue and ticket line go in the caption.
   Cards are kept in the browser's own storage so they can be edited
   later, and come out as PNG or as a recorded clip.
 - Any post on the rollout can be drawn alone at full size with
