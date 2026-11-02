@@ -51,8 +51,9 @@ npm run dev
   them in typewriter capitals, and the stamp. Round it, the poster's
   night: the artist's own star sky, the two carved birds standing the
   full height of the frame and fading into the sky, and the orange dust
-  over everything. "Just the card" under Fine print leaves the night
-  bare. Nothing else on the frame but
+  over everything. Under Fine print each of those, and the hut lit from
+  inside, is its own switch, so any of them can be taken out or put
+  back; all off leaves the night bare. Nothing else on the frame but
   the heading; the date, venue and ticket line go in the caption.
   Cards are kept in the browser's own storage so they can be edited
   later, and come out as PNG or as a recorded clip.

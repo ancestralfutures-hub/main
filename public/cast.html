@@ -199,7 +199,10 @@ const KINDS = {
 };
 const TREATS = { sepia:'Sepia', mono:'Black and white', orange:'Orange', natural:'Natural' };
 
-const GLOBAL_DEFAULT = { issuer:'Ancestral Futures', ground:'night', paper:'orange', scene:'full' };
+// What is in the frame round the card. Each can be taken out on its own.
+const ELEMENTS = { stars:'Stars', birds:'The birds', hut:'The hut', dust:'Dust' };
+const ELEMENTS_DEFAULT = { stars:true, birds:true, hut:false, dust:true };
+const GLOBAL_DEFAULT = { issuer:'Ancestral Futures', ground:'night', paper:'orange', elements:{ ...ELEMENTS_DEFAULT } };
 
 // ---------- storage ----------
 const DB = { name:'dare-cast', store:'cards' };
@@ -542,12 +545,13 @@ function draw(ctx, W, H, card, G, source, t) {
   // the hut lit from inside, the two carved birds bled off the edges, the
   // stars and the dust of grain over all of it; or the poster's orange.
   const night = G.ground === 'night';
-  const scene = (G.scene || 'full') === 'full';
+  const on = { ...ELEMENTS_DEFAULT, ...(G.elements || {}) };
+  const scene = on.birds || on.hut;
   ctx.fillStyle = night ? P.ground : P.orange;
   ctx.fillRect(0, 0, W, H);
   // the poster's own sky, covering the frame and anchored to the top so
   // its stars stay in
-  if (night && ART.stars) {
+  if (night && on.stars && ART.stars) {
     const img = ART.stars, s = Math.max(W / img.width, H / img.height);
     const sw = img.width * s, sh = img.height * s;
     ctx.drawImage(img, (W - sw) / 2, 0, sw, sh);
@@ -557,16 +561,18 @@ function draw(ctx, W, H, card, G, source, t) {
   const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
   if (night) {
     // the dust first, so the stars stay sharp on top of it
-    ctx.save(); ctx.globalAlpha = scene ? 0.7 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+    if (on.dust) { ctx.save(); ctx.globalAlpha = scene ? 0.7 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore(); }
     ctx.globalAlpha = 1;
+    // the hut lit from inside, low in the frame
+    if (on.hut && ART.hut) { const hw = W * 0.98, hh = hw * (ART.hut.height / ART.hut.width); ctx.save(); ctx.globalCompositeOperation = 'lighten'; ctx.globalAlpha = 0.55; ctx.drawImage(ART.hut, (W - hw) / 2, H * (1.02 + 0.05 * sq) - hh, hw, hh); ctx.restore(); }
     // the two birds, the full height of the frame, held back behind the card
-    if (scene) figures(ctx, W, H, P.orange, 0.42, 'tall');
-  } else if (scene) {
-    figures(ctx, W, H, P.ink, 0.7, 0.27 - 0.08 * sq);
-    if (ART.hutline) { const hw = W * 1.04, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, (W - hw) / 2, H - hh * 1.02, hw, hh, P.ink, 0.2); }
+    if (on.birds) figures(ctx, W, H, P.orange, 0.42, 'tall');
+  } else {
+    if (on.birds) figures(ctx, W, H, P.ink, 0.7, 0.27 - 0.08 * sq);
+    if (on.hut && ART.hutline) { const hw = W * 1.04, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, (W - hw) / 2, H - hh * 1.02, hw, hh, P.ink, 0.2); }
   }
-  ctx.save(); ctx.globalAlpha = night ? 0.26 : 0.5;
-  ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(night ? grain : darkGrain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+  if (on.dust) { ctx.save(); ctx.globalAlpha = night ? 0.26 : 0.5;
+  ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(night ? grain : darkGrain, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore(); }
   const headInk = night ? P.orange : P.ink;
   const orangePaper = (G.paper || 'orange') === 'orange';
   const tone = orangePaper ? 'orange' : 'cream';
@@ -881,10 +887,12 @@ function build() {
     papers.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.paper = b.dataset.paper; dbSetting('global', G); cards.forEach(redrawThumb); paintPapers(); }; });
   };
   paintPapers();
+  // each element in the frame is its own switch; lit means it is in
   const scenes = document.getElementById('scenes');
   const paintScenes = () => {
-    scenes.innerHTML = [['full', 'The hut and the birds'], ['plain', 'Just the card']].map(([k, l]) => `<button data-scene="${k}"${(G.scene || 'full') === k ? ' class="on"' : ''}>${l}</button>`).join('');
-    scenes.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.scene = b.dataset.scene; dbSetting('global', G); cards.forEach(redrawThumb); paintScenes(); }; });
+    const on = { ...ELEMENTS_DEFAULT, ...(G.elements || {}) };
+    scenes.innerHTML = Object.entries(ELEMENTS).map(([k, l]) => `<button data-el="${k}"${on[k] ? ' class="on"' : ''}>${l}</button>`).join('');
+    scenes.querySelectorAll('button').forEach((b) => { b.onclick = () => { G.elements = { ...on, [b.dataset.el]: !on[b.dataset.el] }; dbSetting('global', G); cards.forEach(redrawThumb); paintScenes(); }; });
   };
   paintScenes();
   const fmts = document.getElementById('fmts');
@@ -934,7 +942,7 @@ async function exportSample(f) {
 }
 
 (async function () {
-  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png'), load('stars', '/art/stars.jpg'), load('figL', '/art/figure-left.png'), load('figR', '/art/figure-right.png')]);
+  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png'), load('stars', '/art/stars.jpg'), load('hut', '/hut.webp'), load('figL', '/art/figure-left.png'), load('figR', '/art/figure-right.png')]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   const q = new URLSearchParams(location.search);
   if (q.has('export')) { await exportSample(q.get('fmt') || 'story'); return; }
