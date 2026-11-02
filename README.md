@@ -49,9 +49,10 @@ npm run dev
   drawn, with their picture or clip pasted on as an old print, their
   name, their part ("Starring as", "Playing", "Role") and a line about
   them in typewriter capitals, and the stamp. Round it, the poster's
-  night: the hut lit from inside, the two carved birds bled off the
-  edges, the stars and the orange dust over everything. "Just the card"
-  under Fine print leaves the night bare. Nothing else on the frame but
+  night: the artist's own star sky, the two carved birds standing the
+  full height of the frame and fading into the sky, and the orange dust
+  over everything. "Just the card" under Fine print leaves the night
+  bare. Nothing else on the frame but
   the heading; the date, venue and ticket line go in the caption.
   Cards are kept in the browser's own storage so they can be edited
   later, and come out as PNG or as a recorded clip.

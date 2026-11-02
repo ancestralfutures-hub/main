@@ -305,7 +305,23 @@ function drawArt(ctx, img, x, y, w, h, colour, alpha) {
 
 // The two carved birds, bled off the left and right edges as the poster
 // has them. They sit under everything else.
+const tallFig = document.createElement('canvas');
 function figures(ctx, W, H, colour, alpha, share) {
+  // `tall` stands them the full height of the frame, feet on its floor
+  // The carvings carry a spray of grain above them in the file; stood
+  // this tall it would fill the sky, so they fade out towards the top
+  // and the stars come through.
+  if (share === 'tall') {
+    tallFig.width = W; tallFig.height = H;
+    const f = tallFig.getContext('2d'); f.clearRect(0, 0, W, H);
+    if (ART.figL) { const w = H * (ART.figL.width / ART.figL.height); drawArt(f, ART.figL, -w * 0.3, 0, w, H, colour, 1); }
+    if (ART.figR) { const w = H * (ART.figR.width / ART.figR.height); drawArt(f, ART.figR, W - w * 0.7, 0, w, H, colour, 1); }
+    const g = f.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.22, 'rgba(0,0,0,0.12)'); g.addColorStop(0.55, 'rgba(0,0,0,1)');
+    f.globalCompositeOperation = 'destination-in'; f.fillStyle = g; f.fillRect(0, 0, W, H); f.globalCompositeOperation = 'source-over';
+    ctx.save(); ctx.globalAlpha = alpha; ctx.drawImage(tallFig, 0, 0); ctx.restore();
+    return;
+  }
   const w = W * (share || 0.27);
   if (ART.figL) { const h = w * (ART.figL.height / ART.figL.width); drawArt(ctx, ART.figL, -w * 0.22, H - h * 0.92, w, h, colour, alpha); }
   if (ART.figR) { const h = w * (ART.figR.height / ART.figR.width); drawArt(ctx, ART.figR, W - w * 0.78, H - h * 0.92, w, h, colour, alpha); }
@@ -527,27 +543,24 @@ function draw(ctx, W, H, card, G, source, t) {
   // stars and the dust of grain over all of it; or the poster's orange.
   const night = G.ground === 'night';
   const scene = (G.scene || 'full') === 'full';
-  if (night) {
-    const g = ctx.createRadialGradient(W / 2, H * 0.34, 0, W / 2, H * 0.34, Math.max(W, H) * 0.78);
-    g.addColorStop(0, '#110f0c'); g.addColorStop(0.72, P.ground); g.addColorStop(1, P.ground);
-    ctx.fillStyle = g;
-  } else ctx.fillStyle = P.orange;
+  ctx.fillStyle = night ? P.ground : P.orange;
   ctx.fillRect(0, 0, W, H);
+  // the poster's own sky, covering the frame and anchored to the top so
+  // its stars stay in
+  if (night && ART.stars) {
+    const img = ART.stars, s = Math.max(W / img.width, H / img.height);
+    const sw = img.width * s, sh = img.height * s;
+    ctx.drawImage(img, (W - sw) / 2, 0, sw, sh);
+  }
   const r = rnd(card.seed || 7);
   const sq = Math.max(0, Math.min(1, (1.78 - H / W) / 0.78)); // 0 for a story, 1 for a square
   const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
   if (night) {
     // the dust first, so the stars stay sharp on top of it
     ctx.save(); ctx.globalAlpha = scene ? 0.7 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
-    for (let i = 0; i < (W * H) / 16000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.18 + s * 0.5; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; const d = s > 0.96 ? 2.4 : s > 0.8 ? 1.6 : 1.1; ctx.fillRect(x, y, d, d); }
-    // and a few of the poster's big soft stars
-    for (let i = 0; i < 7 + Math.round(H / W * 4); i++) { const x = r() * W, y = r() * H * 0.9, rad = W * 0.002 + r() * W * 0.0035; ctx.globalAlpha = 0.75 + r() * 0.25; ctx.fillStyle = '#f3efe4'; ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(x, y, rad * 2.2, 0, Math.PI * 2); ctx.fill(); }
     ctx.globalAlpha = 1;
-    if (scene) {
-      // the squarer the frame, the lower the hut sits and the smaller the birds
-      if (ART.hut) { const hw = W * 0.98, hh = hw * (ART.hut.height / ART.hut.width); ctx.save(); ctx.globalCompositeOperation = 'lighten'; ctx.globalAlpha = 0.55; ctx.drawImage(ART.hut, (W - hw) / 2, H * (1.02 + 0.05 * sq) - hh, hw, hh); ctx.restore(); }
-      figures(ctx, W, H, P.orange, 0.42, 0.27 - 0.08 * sq);
-    }
+    // the two birds, the full height of the frame, held back behind the card
+    if (scene) figures(ctx, W, H, P.orange, 0.42, 'tall');
   } else if (scene) {
     figures(ctx, W, H, P.ink, 0.7, 0.27 - 0.08 * sq);
     if (ART.hutline) { const hw = W * 1.04, hh = hw * (ART.hutline.height / ART.hutline.width); drawArt(ctx, ART.hutline, (W - hw) / 2, H - hh * 1.02, hw, hh, P.ink, 0.2); }
@@ -921,7 +934,7 @@ async function exportSample(f) {
 }
 
 (async function () {
-  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png'), load('hut', '/hut.webp'), load('figL', '/art/figure-left.png'), load('figR', '/art/figure-right.png')]);
+  await Promise.all([load('word', '/art/wordmark.png'), load('hutline', '/art/hut-line.png'), load('stars', '/art/stars.jpg'), load('figL', '/art/figure-left.png'), load('figR', '/art/figure-right.png')]);
   if (document.fonts && document.fonts.ready) await document.fonts.ready;
   const q = new URLSearchParams(location.search);
   if (q.has('export')) { await exportSample(q.get('fmt') || 'story'); return; }
