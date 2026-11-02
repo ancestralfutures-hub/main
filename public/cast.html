@@ -538,15 +538,15 @@ function draw(ctx, W, H, card, G, source, t) {
   const gx = -Math.floor(((t || 0) * 37) % 256), gy = -Math.floor(((t || 0) * 23) % 256);
   if (night) {
     // the dust first, so the stars stay sharp on top of it
-    ctx.save(); ctx.globalAlpha = scene ? 0.85 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
+    ctx.save(); ctx.globalAlpha = scene ? 0.7 : 0.55; ctx.translate(gx, gy); ctx.fillStyle = ctx.createPattern(speck, 'repeat'); ctx.fillRect(-gx, -gy, W, H); ctx.restore();
     for (let i = 0; i < (W * H) / 16000; i++) { const x = r() * W, y = r() * H, s = r(); ctx.globalAlpha = 0.18 + s * 0.5; ctx.fillStyle = s > 0.93 ? P.cream : '#cfc9a8'; const d = s > 0.96 ? 2.4 : s > 0.8 ? 1.6 : 1.1; ctx.fillRect(x, y, d, d); }
     // and a few of the poster's big soft stars
     for (let i = 0; i < 7 + Math.round(H / W * 4); i++) { const x = r() * W, y = r() * H * 0.9, rad = W * 0.002 + r() * W * 0.0035; ctx.globalAlpha = 0.75 + r() * 0.25; ctx.fillStyle = '#f3efe4'; ctx.beginPath(); ctx.arc(x, y, rad, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 0.18; ctx.beginPath(); ctx.arc(x, y, rad * 2.2, 0, Math.PI * 2); ctx.fill(); }
     ctx.globalAlpha = 1;
     if (scene) {
       // the squarer the frame, the lower the hut sits and the smaller the birds
-      if (ART.hut) { const hw = W * 0.98, hh = hw * (ART.hut.height / ART.hut.width); ctx.save(); ctx.globalCompositeOperation = 'lighten'; ctx.globalAlpha = 0.96; ctx.drawImage(ART.hut, (W - hw) / 2, H * (1.02 + 0.05 * sq) - hh, hw, hh); ctx.restore(); }
-      figures(ctx, W, H, P.orange, 0.8, 0.27 - 0.08 * sq);
+      if (ART.hut) { const hw = W * 0.98, hh = hw * (ART.hut.height / ART.hut.width); ctx.save(); ctx.globalCompositeOperation = 'lighten'; ctx.globalAlpha = 0.55; ctx.drawImage(ART.hut, (W - hw) / 2, H * (1.02 + 0.05 * sq) - hh, hw, hh); ctx.restore(); }
+      figures(ctx, W, H, P.orange, 0.42, 0.27 - 0.08 * sq);
     }
   } else if (scene) {
     figures(ctx, W, H, P.ink, 0.7, 0.27 - 0.08 * sq);
