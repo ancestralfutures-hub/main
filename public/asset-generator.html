@@ -159,7 +159,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
       </div>
       <div class="field">
         <div class="field-label"><span>Under it · set in spaced capitals</span></div>
-        <textarea id="inSub" rows="2">A sonic portrait by Shumba Maasai</textarea>
+        <textarea id="inSub" rows="2">A live encounter with sound by Shumba Maasai</textarea>
       </div>
       <div class="field">
         <div class="field-label"><span>Body · a sentence or two, optional</span></div>
@@ -171,7 +171,7 @@ select { border:1px solid var(--hairline); padding:.4em; }
       </div>
       <div class="field">
         <div class="field-label"><span>Foot right</span></div>
-        <input id="inFootR" value="15–22 October, 1pm–8pm">
+        <input id="inFootR" value="Saturday 7 November, doors 7pm">
       </div>
       <div class="field">
         <div class="field-label"><span>Title size</span><span id="titleScaleVal">100%</span></div>
@@ -355,9 +355,9 @@ const baseOf = (w, h) => { const r = w / h; return r > 2.2 ? Math.min(w, h * 2.4
 // --- What the tool is currently set to ---
 const S = {
   title:'DARÉ',
-  sub:'A sonic portrait by Shumba Maasai',
+  sub:'A live encounter with sound by Shumba Maasai',
   body:'',
-  footL:'', footR:'15–22 October, 1pm–8pm',
+  footL:'', footR:'Saturday 7 November, doors 7pm',
   titleScale:100, pos:'tc',
   image:null, imgFit:'cover', imgScale:100, imgPos:'center center', imgOpacity:100, wash:0,
   ground:'sky', text:PALETTE.cream,
@@ -370,8 +370,8 @@ const hutImg = new Image();
 const logoImg = new Image();
 
 const SITE = 'ancestralfutures.co.uk';
-const VENUE = 'Zimbabwe House, 429 Strand, London';
-const DATES = '15–22 October, 1pm–8pm';
+const VENUE = 'Bernie Grant Arts Centre, London N15';
+const DATES = 'Saturday 7 November, doors 7pm';
 
 // ===========================================================
 // THE NIGHT SKY
@@ -1040,15 +1040,15 @@ logoImg.src = 'dare-logo.png';
 
 // --- Presets ---
 const PRESETS = {
-  announce: { useLogo:true,  title:'DARÉ', sub:'A sonic portrait by Shumba Maasai', body:'', footL:VENUE, footR:DATES, pos:'tc', titleScale:100 },
+  announce: { useLogo:true,  title:'DARÉ', sub:'A live encounter with sound by Shumba Maasai', body:'', footL:VENUE, footR:DATES, pos:'tc', titleScale:100 },
   rules:    { useLogo:false, title:'Shoes off.\nNo phones.\nEnter the Daré.', sub:'', body:'', footL:VENUE, footR:DATES, pos:'ml', titleScale:52 },
-  artist:   { useLogo:false, title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ is his first installation.', footL:'', footR:SITE, pos:'bl', titleScale:46 },
+  artist:   { useLogo:false, title:'Shumba Maasai', sub:'Zimbabwean-born, London-based', body:'Working across music, sound and performance. DARÉ, a live encounter with sound, is at Bernie Grant Arts Centre on 7 November.', footL:'', footR:SITE, pos:'bl', titleScale:46 },
   date:     { useLogo:true,  title:'DARÉ', sub:DATES, body:'', footL:VENUE, footR:SITE, pos:'tc', titleScale:80 },
   tickets:  { useLogo:false, title:'Tickets are\nnow available.', sub:'', body:'', footL:VENUE, footR:DATES, pos:'ml', titleScale:62 },
   countdown:{ useLogo:false, title:'7', sub:'days to go', body:'', footL:VENUE, footR:DATES, pos:'mc', titleScale:180 },
   open:     { useLogo:false, title:'We are open', sub:'', body:'', footL:DATES, footR:SITE, pos:'mc', titleScale:74 },
-  venue:    { useLogo:true,  title:'DARÉ', sub:'Zimbabwe House, 429 Strand', body:'', footL:DATES, footR:SITE, pos:'tc', titleScale:80 },
-  thanks:   { useLogo:false, title:'Thank you\nfor coming.', sub:'', body:'', footL:'London', footR:'October 2026', pos:'ml', titleScale:60 },
+  venue:    { useLogo:true,  title:'DARÉ', sub:'Bernie Grant Arts Centre, Tottenham', body:'', footL:DATES, footR:SITE, pos:'tc', titleScale:80 },
+  thanks:   { useLogo:false, title:'Thank you\nfor coming.', sub:'', body:'', footL:'Tottenham', footR:'November 2026', pos:'ml', titleScale:60 },
   quote:    { useLogo:false, title:'A sonic refuge.', sub:'A gathering of memory, feeling and imagination', body:'', footL:'', footR:SITE, pos:'ml', titleScale:60 },
   clear:    { useLogo:false, title:'', sub:'', body:'', footL:'', footR:'', pos:'bl', titleScale:100 },
 };
