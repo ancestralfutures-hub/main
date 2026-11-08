@@ -1,10 +1,9 @@
 <!doctype html>
 <!--
-  The header of the thank-you email after the show, drawn at 1200 by 675 and served as
-  public/thanks-show-email.jpg at 600 wide. The cast announcement's header
-  (cast-email.html) with two changes: it says THANK YOU instead of CAST
-  ANNOUNCEMENT, and TINYMAN is on the bill. Six names instead of five,
-  so the names are a little smaller to keep the footer clear.
+  The header of the thank-you email after the show, drawn at 1200 by 675 and
+  served as public/thanks-show-email.jpg at 600 wide. The same night as the
+  cast announcement's header (cast-email.html), the birds and the dust, but
+  no bill: the wordmark, THANK YOU, and where it was.
 
   To regenerate, serve the repository root and screenshot this page at
   1200 by 675 in headless Chrome, then write it as JPEG:
@@ -33,8 +32,6 @@
 <script>
 const P = { ground:'#0b0d0c', cream:'#f9f5cd', orange:'#f43e00', muted:'#908f78' };
 const FONT = "Figtree,'Helvetica Neue',Arial,sans-serif";
-const TITLE = 'THANK YOU';
-const CAST = ['Afronaut Zu', 'Ahnansé', 'Lex Amor', 'Zola Marcelle', 'MA.MOYO', 'Tinyman'];
 
 const ART = {};
 const load = (name, src) => new Promise((res) => { const i = new Image(); i.onload = () => { ART[name] = i; res(); }; i.onerror = () => { ART[name] = null; res(); }; i.src = src; });
@@ -79,21 +76,18 @@ function centreTracked(ctx, text, cx, y, tr) { fillTracked(ctx, text, cx - track
   f.globalCompositeOperation = 'destination-in'; f.fillStyle = g; f.fillRect(0, 0, W, H);
   ctx.globalAlpha = 0.5; ctx.drawImage(fig, 0, 0); ctx.globalAlpha = 1;
 
-  // the words
+  // the words: the wordmark, thank you, and where it was
   ctx.textBaseline = 'top';
-  ctx.fillStyle = P.orange; ctx.font = `800 30px ${FONT}`;
-  centreTracked(ctx, TITLE, W / 2, 54, 30 * 0.14);
-  if (ART.word) { const ww = 150, wh = ww * (ART.word.height / ART.word.width); drawArt(ctx, ART.word, W / 2 - ww / 2, 104, ww, wh, P.cream, 1); }
+  if (ART.word) { const ww = 190, wh = ww * (ART.word.height / ART.word.width); drawArt(ctx, ART.word, W / 2 - ww / 2, 150, ww, wh, P.cream, 1); }
 
-  ctx.fillStyle = P.cream;
-  const size = 50, gap = 57;
-  let y = 192;
-  for (const name of CAST) { ctx.font = `800 ${size}px ${FONT}`; centreTracked(ctx, name.toUpperCase(), W / 2, y, size * 0.04); y += gap; }
+  ctx.fillStyle = P.cream; ctx.font = `800 118px ${FONT}`;
+  centreTracked(ctx, 'THANK YOU', W / 2, 262, 118 * 0.04);
+
   ctx.fillStyle = P.orange; ctx.font = `600 24px ${FONT}`;
-  centreTracked(ctx, 'AND A FEW SURPRISES', W / 2, y + 8, 24 * 0.14);
+  centreTracked(ctx, 'FOR LAST NIGHT', W / 2, 410, 24 * 0.14);
 
   ctx.fillStyle = P.muted; ctx.font = `600 18px ${FONT}`;
-  centreTracked(ctx, 'SATURDAY 7 NOVEMBER  ·  BERNIE GRANT ARTS CENTRE  ·  DOORS 7PM', W / 2, H - 50, 18 * 0.12);
+  centreTracked(ctx, 'SATURDAY 7 NOVEMBER  ·  BERNIE GRANT ARTS CENTRE', W / 2, H - 50, 18 * 0.12);
 
   window.done = true;
 })();
